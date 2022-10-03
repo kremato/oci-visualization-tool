@@ -22,6 +22,12 @@ export const createCompartmentHierarchy = async (
     }
   }
 
+  if (compartmentDependecyHash.has("root")) {
+    console.debug(
+      "While creating compartment hierarchy, existing root key has been detected"
+    );
+  }
+
   const rootCompartment = await getCompartment(
     identityClient,
     rootCompartmentId
