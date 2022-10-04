@@ -1,4 +1,4 @@
-import common = require("oci-common");
+import common from "oci-common";
 
 const configurationFilePath = "/home/kremato/.oci/config";
 const profile = "DEFAULT";

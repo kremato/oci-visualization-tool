@@ -19,6 +19,7 @@ export class Clients {
     this.computeClient = getComputeClient(this.provider);
     this.identityClient = getIdentityClient(this.provider);
     this.limitsClient = getLimitsClient(this.provider);
+    this.provider.getKeyId
   }
 
   static getInstance() {
