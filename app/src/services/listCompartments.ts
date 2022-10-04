@@ -1,8 +1,8 @@
 import type * as identity from "oci-identity";
 
 export const listCompartments = async (
-  identityClient: identity.IdentityClient,
   compartmentId: string,
+  identityClient: identity.IdentityClient,
   compartmentIdInSubtree = false
 ): Promise<identity.models.Compartment[]> => {
   const listCompartmentsRequest: identity.requests.ListCompartmentsRequest = {
