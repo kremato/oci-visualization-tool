@@ -1,6 +1,6 @@
 import type { Region } from "oci-common";
 import * as identity from "oci-identity";
-import { HierarchyMap } from "../types/types";
+import { HierarchyMap, Compartment } from "../types/types";
 import { getCompartment } from "./getCompartment";
 
 /* returns HierarchyMap in which the root compartment, that was fetchech 
@@ -10,7 +10,7 @@ export const createCompartmentHierarchy = async (
   compartments: identity.models.Compartment[],
   identityClient: identity.IdentityClient
 ): Promise<HierarchyMap> => {
-  let compartmentDependecyHash = new Map<string, identity.models.Compartment[]>(
+  let compartmentDependecyHash: HierarchyMap = new Map<string, Compartment[]>(
     [[rootCompartmentId, []]]
   );
   for (let compartment of compartments) {

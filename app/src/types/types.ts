@@ -1,3 +1,4 @@
 import * as identity from "oci-identity";
 
-export type HierarchyMap = Map<string, identity.models.Compartment[]>;
+export type Compartment = identity.models.Compartment
+export type HierarchyMap = Map<string, Compartment>;
