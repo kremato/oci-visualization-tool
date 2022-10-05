@@ -1,4 +1,3 @@
-import type { Region } from "oci-common";
 import * as identity from "oci-identity";
 import { HierarchyMap, Compartment } from "../types/types";
 import { getCompartment } from "./getCompartment";

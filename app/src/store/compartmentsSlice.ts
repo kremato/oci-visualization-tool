@@ -14,12 +14,12 @@ interface ActionHierarchyMap {
 const compartmentsSlice = createSlice({
   name: 'compartments',
   initialState: {
-    compartments: [] as Compartment[],
-    hierarchyMap: new Map<string, Compartment[]> as HierarchyMap
+    compartmentsList: [] as Compartment[],
+    hierarchyMap: (new Map<string, Compartment[]>) as HierarchyMap
   },
   reducers: {
     replaceCompartments(state, action: PayloadAction<Compartment[]>) {
-      state.compartments = action.payload
+      state.compartmentsList = action.payload
     },
     replaceHierarchyMap(state, action: PayloadAction<HierarchyMap>) {
       state.hierarchyMap = action.payload
