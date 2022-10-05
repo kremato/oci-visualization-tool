@@ -1,14 +1,13 @@
-import { Provider, useDispatch } from "react-redux";
 import { Clients } from "../services/clients/clients";
 import { createCompartmentHierarchy } from "../services/createCompartmentHierarchy";
 import { listCompartments } from "../services/listCompartments";
 import { Compartment } from "../types/types";
 import { compartmentsActions } from "./compartmentsSlice";
+import { AppDispatch } from "./store";
 
-// TODO: try to remove any from ALL dispatch functions
-
+// TODO: pridat navratove hodnoty funckcii alebo prerobit podla navodu
 export const getCompartmentsList = () => {
-  return async (dispatch: any) => {
+  return async (dispatch: AppDispatch) => {
     const clients = Clients.getInstance();
     const rootCompartmentId = clients.provider.getTenantId();
     const compartments = await listCompartments(
@@ -16,16 +15,12 @@ export const getCompartmentsList = () => {
       clients.identityClient,
       true
     );
-    dispatch(
-      compartmentsActions.replaceCompartments({
-        compartments,
-      })
-    );
+    dispatch(compartmentsActions.replaceCompartments(compartments));
   };
 };
 
 export const getHierarchyMap = (compartments: Compartment[]) => {
-  return async (dispatch: any) => {
+  return async (dispatch: AppDispatch) => {
     const clients = Clients.getInstance();
     const rootCompartmentId = clients.provider.getTenantId();
     const hierarchyMap = await createCompartmentHierarchy(
@@ -33,10 +28,6 @@ export const getHierarchyMap = (compartments: Compartment[]) => {
       compartments,
       clients.identityClient
     );
-    dispatch(
-      compartmentsActions.replaceHierarchyMap({
-        hierarchyMap,
-      })
-    );
+    dispatch(compartmentsActions.replaceHierarchyMap(hierarchyMap));
   };
 };

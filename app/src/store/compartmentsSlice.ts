@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { HierarchyMap, Compartment } from "../types/types";
 
 interface ActionCompartmentsList {
@@ -18,11 +18,11 @@ const compartmentsSlice = createSlice({
     hierarchyMap: new Map<string, Compartment[]> as HierarchyMap
   },
   reducers: {
-    replaceCompartments(state, action: ActionCompartmentsList) {
-      state.compartments = action.payload.compartments
+    replaceCompartments(state, action: PayloadAction<Compartment[]>) {
+      state.compartments = action.payload
     },
-    replaceHierarchyMap(state, action: ActionHierarchyMap) {
-      state.hierarchyMap = action.payload.hierarchyMap
+    replaceHierarchyMap(state, action: PayloadAction<HierarchyMap>) {
+      state.hierarchyMap = action.payload
     },
   },
 });
