@@ -7,7 +7,7 @@ interface ActionCompartmentsList {
 }
 
 interface ActionHierarchyMap {
-  payload: {hierarchyMap: HierarchyMap},
+  payload: { hierarchyMap: HierarchyMap },
   type: string
 }
 
