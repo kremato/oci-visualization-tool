@@ -9,7 +9,7 @@ function App() {
 
   useEffect(() => {
     dispatch(getCompartmentsList());
-    dispatch(getHierarchyMap(compartmets));
+    //dispatch(getHierarchyMap(compartmets));
   }, [dispatch, compartmets]);
 
   return <div>AHOJ</div>;

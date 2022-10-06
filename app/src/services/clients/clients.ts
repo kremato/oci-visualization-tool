@@ -2,14 +2,14 @@ import { getProvider } from "./getProvider";
 import { ComputeClient } from "oci-core";
 import { IdentityClient } from "oci-identity";
 import { LimitsClient } from "oci-limits";
-import common from "oci-common";
 import { getComputeClient } from "./getComputeClient";
 import { getIdentityClient } from "./getIdentityClient";
 import { getLimitsClient } from "./getLimitsClient";
+import { SimpleAuthenticationDetailsProvider } from "oci-sdk";
 
 export class Clients {
   private static instance: Clients;
-  public readonly provider: common.ConfigFileAuthenticationDetailsProvider;
+  public readonly provider: SimpleAuthenticationDetailsProvider;
   public readonly computeClient: ComputeClient;
   public readonly identityClient: IdentityClient;
   public readonly limitsClient: LimitsClient;
@@ -19,7 +19,6 @@ export class Clients {
     this.computeClient = getComputeClient(this.provider);
     this.identityClient = getIdentityClient(this.provider);
     this.limitsClient = getLimitsClient(this.provider);
-    this.provider.getKeyId
   }
 
   static getInstance() {
