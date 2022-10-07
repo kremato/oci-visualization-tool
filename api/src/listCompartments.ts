@@ -1,4 +1,5 @@
 import type * as identity from "oci-identity";
+import { getCompartment } from "./getCompartment";
 
 export const listCompartments = async (
   compartmentId: string,
@@ -12,5 +13,6 @@ export const listCompartments = async (
   const response = await identityClient.listCompartments(
     listCompartmentsRequest
   );
-  return response.items;
+  const parentCompartment = [await getCompartment(compartmentId, identityClient)]
+  return parentCompartment.concat(response.items);
 };
