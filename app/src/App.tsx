@@ -1,18 +1,16 @@
 import { useEffect } from "react";
+import { Compartments } from "./components/Compartments/Compartments";
 import { useAppDispatch } from "./hooks/useAppDispatch";
-import { useAppSelector } from "./hooks/useAppSelector";
-import { getCompartmentsList, getHierarchyMap } from "./store/compartmentsActionCreators";
+import { fetchCompartmentsList } from "./store/compartmentsActionCreators";
 
 function App() {
   const dispatch = useAppDispatch();
-  const compartmets = useAppSelector((state) => state.compartments.compartmentsList)
 
   useEffect(() => {
-    dispatch(getCompartmentsList());
-    dispatch(getHierarchyMap(compartmets));
-  }, [dispatch, compartmets]);
+    dispatch(fetchCompartmentsList());
+  }, [dispatch]);
 
-  return <div>AHOJ</div>;
+  return <Compartments />;
 }
 
 export default App;

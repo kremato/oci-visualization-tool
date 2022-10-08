@@ -1,28 +1,20 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { HierarchyMap, Compartment } from "../types/types";
-
-interface ActionCompartmentsList {
-  payload: {compartments: Compartment[]},
-  type: string
-}
-
-interface ActionHierarchyMap {
-  payload: { hierarchyMap: HierarchyMap },
-  type: string
-}
+import { createCompartmentHierarchy } from "../services/createCompartmentHierarchy";
+import { HierarchyHash, Compartment } from "../types/types";
 
 const compartmentsSlice = createSlice({
-  name: 'compartments',
+  name: "compartments",
   initialState: {
     compartmentsList: [] as Compartment[],
-    hierarchyMap: (new Map<string, Compartment[]>) as HierarchyMap
+    hierarchyHash: {} as HierarchyHash,
   },
   reducers: {
     replaceCompartments(state, action: PayloadAction<Compartment[]>) {
-      state.compartmentsList = action.payload
-    },
-    replaceHierarchyMap(state, action: PayloadAction<HierarchyMap>) {
-      state.hierarchyMap = action.payload
+      state.compartmentsList = action.payload;
+      state.hierarchyHash = createCompartmentHierarchy(
+        import.meta.env.VITE_API,
+        action.payload
+      );
     },
   },
 });

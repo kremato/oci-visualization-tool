@@ -1,18 +1,21 @@
-import * as identity from "oci-identity";
-import { HierarchyMap, Compartment } from "../types/types";
-import { getCompartment } from "./getCompartment";
+/* import { HierarchyMap, Compartment } from "../types/types";
 
-/* returns HierarchyMap in which the root compartment, that was fetchech 
-with the use of rootCompartmentId can be found under 'root' key */
-export const createCompartmentHierarchy = async (
+ returns HierarchyMap in which the root compartment, that was fetchech 
+with the use of rootCompartmentId can be found under 'root' key
+export const createCompartmentHierarchy = (
   rootCompartmentId: string,
-  compartments: identity.models.Compartment[],
-  identityClient: identity.IdentityClient
-): Promise<HierarchyMap> => {
+  compartments: Compartment[],
+): HierarchyMap => {
   let compartmentDependecyHash: HierarchyMap = new Map<string, Compartment[]>(
     [[rootCompartmentId, []]]
   );
   for (let compartment of compartments) {
+
+    if (!compartment.compartmentId) {
+      compartmentDependecyHash.set("root", [compartment]);
+      continue
+    }
+
     const parent = compartmentDependecyHash.get(compartment.compartmentId);
     if (!parent) {
       compartmentDependecyHash.set(compartment.compartmentId, [compartment]);
@@ -21,17 +24,34 @@ export const createCompartmentHierarchy = async (
     }
   }
 
-  if (compartmentDependecyHash.has("root")) {
-    console.debug(
-      "While creating compartment hierarchy, existing root key has been detected"
-    );
-  }
+  return compartmentDependecyHash;
+}; */
 
-  const rootCompartment = await getCompartment(
-    identityClient,
-    rootCompartmentId
-  );
-  compartmentDependecyHash.set("root", [rootCompartment]);
+import { Compartment, HierarchyHash } from "../types/types";
+
+/* For now, this function assumes, that there is a root compartment in the compartmentsList 
+   and that this root compartment is received as an argument. */
+export const createCompartmentHierarchy = (
+  rootCompartmentId: string,
+  compartments: Compartment[]
+): HierarchyHash => {
+  let compartmentDependecyHash: HierarchyHash = {
+    [rootCompartmentId]: [],
+  };
+
+  for (let compartment of compartments) {
+    if (!compartment.compartmentId) {
+      compartmentDependecyHash["root"] = [compartment];
+      continue;
+    }
+
+    const parent = compartmentDependecyHash[compartment.compartmentId];
+    if (!parent) {
+      compartmentDependecyHash[compartment.compartmentId] = [compartment];
+    } else {
+      parent.push(compartment);
+    }
+  }
 
   return compartmentDependecyHash;
 };

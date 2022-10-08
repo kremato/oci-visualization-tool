@@ -1,33 +1,19 @@
-import { Clients } from "../services/clients/clients";
-import { createCompartmentHierarchy } from "../services/createCompartmentHierarchy";
-import { listCompartments } from "../services/listCompartments";
 import { Compartment } from "../types/types";
 import { compartmentsActions } from "./compartmentsSlice";
 import { AppDispatch } from "./store";
 
 // TODO: pridat navratove hodnoty funckcii alebo prerobit podla navodu
-export const getCompartmentsList = () => {
+export const fetchCompartmentsList = () => {
   return async (dispatch: AppDispatch) => {
-    const clients = Clients.getInstance();
-    const rootCompartmentId = clients.provider.getTenantId();
-    const compartments = await listCompartments(
-      rootCompartmentId,
-      clients.identityClient,
-      true
-    );
-    dispatch(compartmentsActions.replaceCompartments(compartments));
-  };
-};
+    try {
+      const request = new Request(`${import.meta.env.VITE_API}/compartments`);
 
-export const getHierarchyMap = (compartments: Compartment[]) => {
-  return async (dispatch: AppDispatch) => {
-    const clients = Clients.getInstance();
-    const rootCompartmentId = clients.provider.getTenantId();
-    const hierarchyMap = await createCompartmentHierarchy(
-      rootCompartmentId,
-      compartments,
-      clients.identityClient
-    );
-    dispatch(compartmentsActions.replaceHierarchyMap(hierarchyMap));
+      const response = await fetch(request);
+      const data = await response.json() as Compartment[]
+      dispatch(compartmentsActions.replaceCompartments(data));
+      //dispatch(compartmentsActions.replaceCompartments(data))
+    } catch (e) {
+      console.log(e);
+    }
   };
 };

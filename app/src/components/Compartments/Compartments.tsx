@@ -1,6 +1,9 @@
-import type * as identity from "oci-identity";
-import { HierarchyMap } from "../../types/types";
+import { useAppSelector } from "../../hooks/useAppSelector";
 
-export const Compartments = (hierarchyMap: HierarchyMap) => {
+export const Compartments = () => {
+  const compartmets = useAppSelector(
+    (state) => state.compartments.compartmentsList
+  );
+
   return <div>this is a Compartment</div>;
 };
