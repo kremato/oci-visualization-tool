@@ -41,15 +41,15 @@ export const createCompartmentHierarchy = (
 
   for (let compartment of compartments) {
     if (!compartment.compartmentId) {
-      compartmentDependecyHash["root"] = [compartment];
+      compartmentDependecyHash["rootId"] = [compartment];
       continue;
     }
 
-    const parent = compartmentDependecyHash[compartment.compartmentId];
-    if (!parent) {
+    const children = compartmentDependecyHash[compartment.compartmentId];
+    if (!children) {
       compartmentDependecyHash[compartment.compartmentId] = [compartment];
     } else {
-      parent.push(compartment);
+      children.push(compartment);
     }
   }
 

@@ -1,5 +1,7 @@
 import { useEffect } from "react";
+import { Compartment } from "./components/Compartments/Compartment";
 import { Compartments } from "./components/Compartments/Compartments";
+import { Foo } from "./components/Compartments/Foo";
 import { useAppDispatch } from "./hooks/useAppDispatch";
 import { fetchCompartmentsList } from "./store/compartmentsActionCreators";
 
@@ -10,7 +12,12 @@ function App() {
     dispatch(fetchCompartmentsList());
   }, [dispatch]);
 
-  return <Compartments />;
+  return (
+    <>
+      <Compartment id={"rootId"} depth={0} />
+      {/* <Foo id={"a"} depth={0} /> */}
+    </>
+  );
 }
 
 export default App;
