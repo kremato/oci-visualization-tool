@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Compartment } from "./components/Compartments/Compartment";
-import { Compartments } from "./components/Compartments/Compartments";
 import { Foo } from "./components/Compartments/Foo";
 import { useAppDispatch } from "./hooks/useAppDispatch";
 import { fetchCompartmentsList } from "./store/compartmentsActionCreators";
