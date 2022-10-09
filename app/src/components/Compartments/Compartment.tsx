@@ -14,6 +14,8 @@ import StarBorder from "@mui/icons-material/StarBorder";
 import { useState } from "react";
 import { CollapsableWrapper } from "./CollapsableWrapper";
 import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from '@mui/icons-material/Remove';
+import { ListItem } from "@mui/material";
 
 interface Props {
   id: string;
@@ -32,6 +34,7 @@ export const Compartment = ({ depth, id, name }: Props) => {
   }
 
   const currentId = id === "rootId" ? hierarchyHash[id][0].id : id;
+  // this is undefined in case there are no children
   const children =
     id === "rootId"
       ? hierarchyHash[hierarchyHash[id][0].id]
@@ -47,16 +50,22 @@ export const Compartment = ({ depth, id, name }: Props) => {
     setOpen(!open);
   };
 
+  const icon = open ? <RemoveIcon /> : <AddIcon />
+
   return (
     <>
-      <ListItemButton
-        onClick={children && handleClick}
-      >
-        <ListItemIcon>
-          <AddIcon />
+      <ListItem sx={{ pt: 0, pr: 0, pb: 0, pl: depth*2 }} onClick={children && handleClick}>
+        <ListItemIcon sx={{ minWidth: "10%" }}>
+          {children && icon}
         </ListItemIcon>
-        <ListItemText primary={name} secondary={currentId} />
-      </ListItemButton>
+        <ListItemText
+          primary={name}
+          secondary={currentId}
+          sx={{ mt: 0, mb: 0, lineHeight: 1.25 }}
+          primaryTypographyProps={{ sx: { lineHeight: 1.25 } }}
+          secondaryTypographyProps={{ sx: { lineHeight: 1.25 } }}
+        />
+      </ListItem>
       <CollapsableWrapper condition={children !== undefined} open={open}>
         <>
           {children?.map((compartment) => {

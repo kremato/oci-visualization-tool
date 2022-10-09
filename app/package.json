@@ -20,7 +20,8 @@
     "oci-sdk": "^2.44.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-redux": "^8.0.4"
+    "react-redux": "^8.0.4",
+    "react-window": "^1.8.7"
   },
   "devDependencies": {
     "@babel/core": "^7.19.3",
@@ -33,6 +34,7 @@
     "@storybook/testing-library": "^0.0.13",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
+    "@types/react-window": "^1.8.5",
     "@vitejs/plugin-react": "^2.1.0",
     "babel-loader": "^8.2.5",
     "typescript": "^4.6.4",
