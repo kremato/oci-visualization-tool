@@ -1,7 +1,7 @@
 import { useAppSelector } from "../../hooks/useAppSelector";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
-import { IconButton, ListItem, ListItemText } from "@mui/material";
+import { Checkbox, IconButton, ListItem, ListItemText } from "@mui/material";
 import { CollapsableWrapper } from "./CollapsableWrapper";
 import { useState } from "react";
 
@@ -37,6 +37,13 @@ export const Compartment = ({ depth, id, name }: Props) => {
     name = hierarchyHash[id][0].name;
   }
 
+  const primary = (
+    <div>
+      <span>{name}</span>
+      <Checkbox defaultChecked size="small" />
+    </div>
+  );
+
   const handleClick = () => {
     setOpen(!open);
   };
@@ -52,10 +59,12 @@ export const Compartment = ({ depth, id, name }: Props) => {
           {children && icon}
         </IconButton>
         <ListItemText
-          primary={name}
-          secondary={currentId}
+          primary={primary}
+          // secondary={currentId}
           sx={{ mt: 0, mb: 0, lineHeight: 1.25 }}
-          primaryTypographyProps={{ sx: { lineHeight: 1.25 } }}
+          primaryTypographyProps={{
+            sx: { lineHeight: 1.25, "& span": { padding: 0 } },
+          }}
           secondaryTypographyProps={{ sx: { lineHeight: 1.25 } }}
         />
       </ListItem>
@@ -67,6 +76,7 @@ export const Compartment = ({ depth, id, name }: Props) => {
                 depth={depth + 1}
                 id={compartment.id}
                 name={compartment.name}
+                key={compartment.id}
               />
             );
           })}

@@ -4,6 +4,7 @@ import { getProvider } from "./clients/getProvider";
 import { listCompartments } from "./listCompartments";
 import { Clients } from "./clients/clients";
 import cors from "cors";
+import { listRegionSubscriptions } from "./listRegionSubscriptions";
 
 dotenv.config();
 
@@ -20,6 +21,12 @@ app.get("/compartments", async (req: Request, res: Response) => {
     true
   );
   res.status(200).send(JSON.stringify(compartments));
+});
+
+app.get("/regions", async (req: Request, res: Response) => {
+  const regions = await listRegionSubscriptions(tenancyId);
+
+  res.status(200).send(JSON.stringify(regions));
 });
 
 app.listen(port, () => {

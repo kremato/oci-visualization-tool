@@ -9,9 +9,8 @@ export const fetchCompartmentsList = () => {
       const request = new Request(`${import.meta.env.VITE_API}/compartments`);
 
       const response = await fetch(request);
-      const data = await response.json() as Compartment[]
+      const data = (await response.json()) as Compartment[];
       dispatch(compartmentsActions.replaceCompartments(data));
-      //dispatch(compartmentsActions.replaceCompartments(data))
     } catch (e) {
       console.log(e);
     }
