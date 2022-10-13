@@ -5,6 +5,7 @@ import { fetchCompartmentsList } from "./store/compartmentsActionCreators";
 import "./App.css";
 import { Regions } from "./components/Regions/Region";
 import { fetchRegionsList } from "./store/regionsActionCreators";
+import { fetchServicesList } from "./store/servicesActionCreator";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -12,6 +13,7 @@ function App() {
   useEffect(() => {
     dispatch(fetchCompartmentsList());
     dispatch(fetchRegionsList());
+    dispatch(fetchServicesList())
   }, [dispatch]);
 
   return (

@@ -2,11 +2,13 @@ import { configureStore } from "@reduxjs/toolkit";
 
 import compartmentsSlice from "./compartmentsSlice";
 import regionsSlice from "./regionsSlice";
+import servicesSlice from "./servicesSlice";
 
 const store = configureStore({
   reducer: {
     compartments: compartmentsSlice.reducer,
     regions: regionsSlice.reducer,
+    services: servicesSlice.reducer,
   },
 });
 
