@@ -7,6 +7,7 @@ import { getServiceLimits } from "./services/getServiceLimits";
 import { Region } from "oci-common";
 import { outputServiceLimits } from "./utils/outputServiceLimits";
 import type { LimitDefinitionsMap } from "./types/types";
+import { listServices } from "./services/listServices";
 
 (async () => {
   try {
@@ -34,6 +35,11 @@ import type { LimitDefinitionsMap } from "./types/types";
     app.get("/regions", async (req: Request, res: Response) => {
       const regions = await listRegionSubscriptions(tenancyId);
       res.status(200).send(JSON.stringify(regions));
+    });
+
+    app.get("/services", async (req: Request, res: Response) => {
+      const services = await listServices(tenancyId);
+      res.status(200).send(JSON.stringify(services));
     });
 
     app.listen(port, () => {
