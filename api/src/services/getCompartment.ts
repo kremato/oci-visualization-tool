@@ -1,4 +1,4 @@
-import type * as identity from "oci-identity";
+import type { identity } from "oci-sdk";
 
 export const getCompartment = async (
   compartmentId: string,

@@ -1,34 +1,47 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
-import { getProvider } from "./clients/getProvider";
-import { listCompartments } from "./listCompartments";
-import { Clients } from "./clients/clients";
+import { listCompartments } from "./services/listCompartments";
 import cors from "cors";
-import { listRegionSubscriptions } from "./listRegionSubscriptions";
+import { listRegionSubscriptions } from "./services/listRegionSubscriptions";
+import { getServiceLimits } from "./services/getServiceLimits";
+import { Region } from "oci-common";
+import { outputServiceLimits } from "./utils/outputServiceLimits";
+import type { LimitDefinitionsMap } from "./types/types";
 
-dotenv.config();
+(async () => {
+  try {
+    dotenv.config();
 
-const app: Express = express();
-app.use(cors());
-const port = process.env["PORT"];
-const tenancyId = process.env["TENANCY_ID"]!;
-const clients = Clients.getInstance();
+    const app: Express = express();
+    app.use(cors());
+    const port = process.env["PORT"];
+    const tenancyId = process.env["TENANCY_ID"]!;
+    /* const serviceLimitDefinitions = await getServiceLimits(
+      Region.CA_MONTREAL_1,
+      tenancyId
+    );
+    outputServiceLimits(
+      serviceLimitDefinitions as LimitDefinitionsMap,
+      "serviceLimits.txt",
+      true
+    ); */
 
-app.get("/compartments", async (req: Request, res: Response) => {
-  const compartments = await listCompartments(
-    tenancyId,
-    clients.identityClient,
-    true
-  );
-  res.status(200).send(JSON.stringify(compartments));
-});
+    app.get("/compartments", async (req: Request, res: Response) => {
+      const compartments = await listCompartments(tenancyId, true);
+      res.status(200).send(JSON.stringify(compartments));
+    });
 
-app.get("/regions", async (req: Request, res: Response) => {
-  const regions = await listRegionSubscriptions(tenancyId);
+    app.get("/regions", async (req: Request, res: Response) => {
+      const regions = await listRegionSubscriptions(tenancyId);
+      res.status(200).send(JSON.stringify(regions));
+    });
 
-  res.status(200).send(JSON.stringify(regions));
-});
-
-app.listen(port, () => {
-  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
-});
+    app.listen(port, () => {
+      console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+    });
+  } catch (error) {
+    console.log("Error executing example" + error);
+  } finally {
+    console.debug("DONE");
+  }
+})();

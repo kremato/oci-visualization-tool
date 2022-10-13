@@ -1,11 +1,9 @@
 import { LimitsClient } from "oci-limits";
-import type { ConfigFileAuthenticationDetailsProvider } from "oci-common";
+import { Provider } from "./clients";
 
-export const getLimitsClient = (
-  provider: ConfigFileAuthenticationDetailsProvider
-): LimitsClient => {
+export const getLimitsClient = (): LimitsClient => {
   const limitsClient = new LimitsClient({
-    authenticationDetailsProvider: provider,
+    authenticationDetailsProvider: Provider.getInstance().provider,
   });
   return limitsClient;
 };

@@ -1,4 +1,4 @@
-import { getProvider } from "./getProvider";
+/* import { getProvider } from "./getProvider";
 import type { ComputeClient } from "oci-core";
 import type { IdentityClient } from "oci-identity";
 import type { LimitsClient } from "oci-limits";
@@ -27,6 +27,28 @@ export class Clients {
       return this.instance;
     }
     this.instance = new Clients();
+    return this.instance;
+  }
+}
+ */
+
+import { getProvider } from "./getProvider";
+import type common from "oci-common";
+
+export class Provider {
+  private static instance: Provider;
+  public readonly provider: common.ConfigFileAuthenticationDetailsProvider;
+
+  private constructor() {
+    this.provider = getProvider();
+    this.provider.getKeyId;
+  }
+
+  static getInstance() {
+    if (this.instance) {
+      return this.instance;
+    }
+    this.instance = new Provider();
     return this.instance;
   }
 }

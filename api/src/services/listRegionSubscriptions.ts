@@ -1,5 +1,5 @@
 import { identity } from "oci-sdk";
-import { getProvider } from "./clients/getProvider";
+import { getProvider } from "../clients/getProvider";
 
 export const listRegionSubscriptions = async (tenancyId: string) => {
   const client = new identity.IdentityClient({
@@ -15,5 +15,5 @@ export const listRegionSubscriptions = async (tenancyId: string) => {
     listRegionSubscriptionsRequest
   );
 
-  return listRegionSubscriptionsResponse.items
+  return listRegionSubscriptionsResponse.items;
 };
