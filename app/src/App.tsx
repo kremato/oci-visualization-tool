@@ -3,9 +3,10 @@ import { CompartmentList } from "./components/Compartments/CompartmentList";
 import { useAppDispatch } from "./hooks/useAppDispatch";
 import { fetchCompartmentsList } from "./store/compartmentsActionCreators";
 import "./App.css";
-import { Regions } from "./components/Regions/Region";
+import { RegionList } from "./components/Regions/RegionList";
 import { fetchRegionsList } from "./store/regionsActionCreators";
 import { fetchServicesList } from "./store/servicesActionCreator";
+import { ServiceList } from "./components/Services/ServiceList";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -13,13 +14,14 @@ function App() {
   useEffect(() => {
     dispatch(fetchCompartmentsList());
     dispatch(fetchRegionsList());
-    dispatch(fetchServicesList())
+    dispatch(fetchServicesList());
   }, [dispatch]);
 
   return (
     <div className="App">
       <CompartmentList />
-      <Regions />
+      <RegionList />
+      <ServiceList />
     </div>
   );
 }

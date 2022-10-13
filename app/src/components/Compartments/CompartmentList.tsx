@@ -1,28 +1,10 @@
-import ListSubheader from "@mui/material/ListSubheader";
-import List from "@mui/material/List";
 import { Compartment } from "./Compartment";
+import { SelectionList } from "../../layouts/SelectionLists";
 
 export const CompartmentList = () => {
   return (
-    <List
-      sx={{
-        width: "100%",
-        maxWidth: 360,
-        bgcolor: "background.paper",
-        position: "relative",
-        overflow: "auto",
-        maxHeight: 300,
-      }}
-      component="nav"
-      aria-labelledby="nested-list-subheader"
-      subheader={
-        <ListSubheader component="div" id="nested-list-subheader">
-          Compartments
-        </ListSubheader>
-      }
-      dense={true}
-    >
+    <SelectionList subheader={"Compartments"}>
       <Compartment id="rootId" depth={0} />
-    </List>
+    </SelectionList>
   );
 };
