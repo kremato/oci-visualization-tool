@@ -1,4 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
+import checkboxSlice from "./checkboxSlice";
 
 import compartmentsSlice from "./compartmentsSlice";
 import regionsSlice from "./regionsSlice";
@@ -9,6 +10,7 @@ const store = configureStore({
     compartments: compartmentsSlice.reducer,
     regions: regionsSlice.reducer,
     services: servicesSlice.reducer,
+    checkbox: checkboxSlice.reducer,
   },
 });
 
