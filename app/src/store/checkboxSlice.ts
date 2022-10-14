@@ -1,29 +1,71 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { useAppSelector } from "../hooks/useAppSelector";
-import { CheckboxHash } from "../types/types";
+import {
+  CheckboxHash,
+  Compartment,
+  Region,
+  RegionSubscription,
+  ServiceSummary,
+} from "../types/types";
+import store from "./store";
 
 const checkboxSlice = createSlice({
   name: "checkbox",
   initialState: {
-    checkboxHash: {} as CheckboxHash,
+    checkboxHash: {
+      compartments: {},
+      regions: {},
+      services: {},
+    } as CheckboxHash,
   },
   reducers: {
-    replaceCheckboxHash(state) {
-      const megaList = useAppSelector((state) => {
-        return [
-          ...state.compartments.compartmentsList,
-          ...state.regions.regionsList,
-          ...state.services.servicesList,
-        ];
-      });
+    // TODO: refactor
+    replaceCheckboxHash(
+      state,
+      action: PayloadAction<{
+        compartments: Compartment[];
+        regions: RegionSubscription[];
+        services: ServiceSummary[];
+      }>
+    ) {
+      for (const compartment of action.payload.compartments) {
+        state.checkboxHash.compartments[compartment.id] = false;
+      }
 
-      for (const item of megaList) {
-        console.log(item);
+      for (const region of action.payload.regions) {
+        state.checkboxHash.regions[region.regionKey] = false;
+      }
+
+      for (const service of action.payload.services) {
+        if (!service.name) {
+          console.debug(
+            "No service name. Service skipped when adding to checkboxHash."
+          );
+          continue;
+        }
+        state.checkboxHash.services[service.name] = false;
       }
     },
-    updateCheckboxHash(state, action: PayloadAction<{ id: string }>) {
-      const isChecked = state.checkboxHash[action.payload.id];
-      state.checkboxHash[action.payload.id] = !isChecked;
+    // TODO: refactor
+    updateCheckboxHash(
+      state,
+      action: PayloadAction<{ id: string; type: string }>
+    ) {
+      let isChecked;
+      if (action.payload.type === "compartment") {
+        isChecked = state.checkboxHash.compartments[action.payload.id];
+        state.checkboxHash.compartments[action.payload.id] = !isChecked;
+        return;
+      }
+
+      if (action.payload.type === "region") {
+        isChecked = state.checkboxHash.regions[action.payload.id];
+        state.checkboxHash.regions[action.payload.id] = !isChecked;
+        return;
+      }
+
+      isChecked = state.checkboxHash.services[action.payload.id];
+      state.checkboxHash.services[action.payload.id] = !isChecked;
     },
   },
 });
