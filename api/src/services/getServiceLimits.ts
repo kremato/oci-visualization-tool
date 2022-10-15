@@ -35,13 +35,14 @@ const perServiceName = (
 
 export const getServiceLimits = async (
   region: Region,
-  compartmentId: string,
+  tenancyId: string,
   scoped = false
 ): Promise<LimitDefinitionsPerScope | LimitDefinitionsMap> => {
   const limitsClient = getLimitsClient();
   limitsClient.region = region;
+  // must be tenancy, for some reason
   const listLimitDefinitionsRequest: requests.ListLimitDefinitionsRequest = {
-    compartmentId,
+    compartmentId: tenancyId,
   };
   const servicesPerScope = new Map<string, LimitDefinitionsMap>();
   const servicesPerServiceName: LimitDefinitionsMap = new Map<

@@ -1,14 +1,15 @@
 import { useAppSelector } from "../../hooks/useAppSelector";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
-import { Checkbox, IconButton, ListItem, ListItemText } from "@mui/material";
+import { IconButton, ListItem, ListItemText } from "@mui/material";
 import { CollapsableWrapper } from "./CollapsableWrapper";
 import { useState } from "react";
+import { ModifiableCheckbox } from "../../layouts/ModifiableCheckbox";
 
 interface Props {
   id: string;
   depth: number;
-  name?: string;
+  name: string;
 }
 
 export const Compartment = ({ depth, id, name }: Props) => {
@@ -17,30 +18,15 @@ export const Compartment = ({ depth, id, name }: Props) => {
     (state) => state.compartments.hierarchyHash
   );
 
-  if (Object.keys(hierarchyHash).length === 0) {
-    return <div>Loading...</div>;
-  }
-
-  const currentId = id === "rootId" ? hierarchyHash[id][0].id : id;
   // this is undefined in case there are no children
-  const children =
-    id === "rootId"
-      ? hierarchyHash[hierarchyHash[id][0].id]
-      : hierarchyHash[id];
+  const children = hierarchyHash[id];
 
   const icon = open ? <RemoveIcon /> : <AddIcon />;
-
-  // it name is undefined, it means this is this rootId
-  // compartment and that is why there is one element in children,
-  // and that is the root compartment
-  if (!name) {
-    name = hierarchyHash[id][0].name;
-  }
 
   const primary = (
     <div>
       <span>{name}</span>
-      <Checkbox defaultChecked size="small" />
+      <ModifiableCheckbox id={id} type={"compartment"} />
     </div>
   );
 
@@ -60,7 +46,7 @@ export const Compartment = ({ depth, id, name }: Props) => {
         </IconButton>
         <ListItemText
           primary={primary}
-          // secondary={currentId}
+          secondary={id}
           sx={{ mt: 0, mb: 0, lineHeight: 1.25 }}
           primaryTypographyProps={{
             sx: { lineHeight: 1.25, "& span": { padding: 0 } },

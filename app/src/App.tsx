@@ -7,7 +7,8 @@ import { RegionList } from "./components/Regions/RegionList";
 import { fetchRegionsList } from "./store/regionsActionCreators";
 import { fetchServicesList } from "./store/servicesActionCreator";
 import { ServiceList } from "./components/Services/ServiceList";
-import { fillCheckboxes } from "./store/checkboxActionCreators";
+import { createLimitsOverview, fillCheckboxes } from "./store/checkboxActionCreators";
+import { ModifiableButton } from "./layouts/ModifiableButton";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -24,11 +25,17 @@ function App() {
     customEffect();
   }, [dispatch]);
 
+  const sendData = () => {
+    console.log('Button clicked')
+    dispatch(createLimitsOverview())
+  }
+
   return (
     <div className="App">
       <CompartmentList />
       <RegionList />
       <ServiceList />
+      <ModifiableButton text={"Send"} action={sendData} />
     </div>
   );
 }

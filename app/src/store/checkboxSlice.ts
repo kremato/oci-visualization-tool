@@ -1,13 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { useAppSelector } from "../hooks/useAppSelector";
 import {
   CheckboxHash,
   Compartment,
-  Region,
   RegionSubscription,
   ServiceSummary,
 } from "../types/types";
-import store from "./store";
 
 const checkboxSlice = createSlice({
   name: "checkbox",
