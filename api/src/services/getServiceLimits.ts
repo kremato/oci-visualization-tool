@@ -1,7 +1,7 @@
-import type { Region } from "oci-common";
-import { requests, models } from "oci-limits";
+import { LimitsClient, requests, models } from "oci-limits";
 import { getLimitsClient } from "../clients/getLimitsClient";
 import type {
+  CommonRegion,
   LimitDefinitionsMap,
   LimitDefinitionsPerScope,
 } from "../types/types";
@@ -34,13 +34,13 @@ const perServiceName = (
 };
 
 export const getServiceLimits = async (
-  region: Region,
+  region: CommonRegion,
   tenancyId: string,
   scoped = false
 ): Promise<LimitDefinitionsPerScope | LimitDefinitionsMap> => {
-  const limitsClient = getLimitsClient();
-  limitsClient.region = region;
-  // must be tenancy, for some reason
+
+  const limitsClient = getLimitsClient()
+  limitsClient.region = region
   const listLimitDefinitionsRequest: requests.ListLimitDefinitionsRequest = {
     compartmentId: tenancyId,
   };

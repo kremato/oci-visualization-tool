@@ -1,5 +1,5 @@
 import type { limits } from "oci-sdk";
-import { Provider } from "../clients/clients";
+import { Provider } from "../clients/provider";
 import { getLimitsClient } from "../clients/getLimitsClient";
 
 /* I was not able to find a request that would be able to list

@@ -1,5 +1,5 @@
 import { LimitsClient } from "oci-limits";
-import { Provider } from "./clients";
+import { Provider } from "./provider";
 
 export const getLimitsClient = (): LimitsClient => {
   const limitsClient = new LimitsClient({

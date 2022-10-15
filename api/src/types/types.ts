@@ -1,6 +1,8 @@
-import type { identity, limits } from "oci-sdk";
+import type { common, identity, limits } from "oci-sdk";
 
 export type Compartment = identity.models.Compartment;
+export type IdentityRegion = identity.models.Region;
+export type CommonRegion = common.Region;
 export type RegionSubscription = identity.models.RegionSubscription;
 export type ServiceSummary = limits.models.ServiceSummary;
 
@@ -15,3 +17,4 @@ export type CheckboxHash = {
   regions: { [id: string]: boolean };
   services: { [id: string]: boolean };
 };
+export type ServiceLimits = Map<CommonRegion, LimitDefinitionsPerScope>
