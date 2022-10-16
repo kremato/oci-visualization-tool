@@ -18,6 +18,12 @@ import { listRegions } from "./services/listRegions";
 import { common } from "oci-sdk";
 import { getServiceLimits } from "./services/getServiceLimits";
 import { Provider } from "./clients/provider";
+import { getCipherInfo } from "crypto";
+import { getCompartmentResources } from "./services/getCompartmentResources";
+
+interface MyRegion extends CommonRegion {
+  
+}
 
 (async () => {
   try {
@@ -48,6 +54,8 @@ import { Provider } from "./clients/provider";
       compartments = compartments.concat(
         await listCompartments(tenancyId, true)
       );
+      console.log(await listRegionSubscriptions(tenancyId))
+      console.log(common.Region.values())
       regionSubscriptions = regionSubscriptions.concat(
         await listRegionSubscriptions(tenancyId)
       );
@@ -55,9 +63,9 @@ import { Provider } from "./clients/provider";
         await listServices(tenancyId)
       );
       regions = common.Region.values().filter((region) =>
-        regionSubscriptions.some(
+        region.regionCode && regionSubscriptions.some(
           (item) => item.regionKey === region.regionCode?.toUpperCase()
-        )
+        ) 
       );
 
       // This can become a bottleneck
@@ -73,7 +81,7 @@ import { Provider } from "./clients/provider";
           )) as LimitDefinitionsPerScope
         );
       }
-      console.log("[Server]: App.use() finished");
+      console.log("[server]: App.use() finished");
     });
 
     app.get("/compartments", async (req: Request, res: Response) => {
@@ -88,26 +96,20 @@ import { Provider } from "./clients/provider";
       res.status(200).send(JSON.stringify(serviceSubscriptions));
     });
 
-    const sleep = (ms = 2000) => new Promise((r) => setTimeout(r, ms));
-
-    const a = async () => {
-      await sleep(10000);
-      console.log("a");
-    };
-    const b = async () => {
-      await sleep();
-      console.log("b");
-    };
-    const c = async () => {
-      await sleep(6000);
-      console.log("c");
-    };
     app.post("/limits", async (req: Request, res: Response) => {
       // TODO: validation
       const data = req.body as CheckboxHash;
-      //res.status(200).send(JSON.stringify(data));
       console.log("LIMITS");
-      Promise.all([a(), b(), c()]);
+      console.log(data)
+      res.status(200).send(JSON.stringify(data));
+      
+      const filteredCompartments = compartments.filter(compartment => {
+        data.compartments[compartment.id]
+      })
+      const filterdRegions = regions.filter(region => {
+        data.regions[region.regionCode?.toUpperCase()!]
+      })
+      //getCompartmentResources()
     });
   } catch (error) {
     console.log("Error executing" + error);

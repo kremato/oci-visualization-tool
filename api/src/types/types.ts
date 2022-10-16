@@ -18,3 +18,4 @@ export type CheckboxHash = {
   services: { [id: string]: boolean };
 };
 export type ServiceLimits = Map<CommonRegion, LimitDefinitionsPerScope>
+export type IdentityADSet = Set<identity.models.AvailabilityDomain>;
