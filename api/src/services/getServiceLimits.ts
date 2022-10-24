@@ -41,7 +41,7 @@ export const getServiceLimits = async (
 ): Promise<LimitDefinitionsPerScope | LimitDefinitionsMap> => {
   const limitsClient = getLimitsClient();
   // TODO: je tu potrebne nastavovat region, nie je to pre kazdy region rovnake?
-  // daniel pise, ze must be tenancy, a asi na tom nieco je
+  // pise, ze must be tenancy, a asi na tom nieco je
   limitsClient.region = region;
   const listLimitDefinitionsRequest: requests.ListLimitDefinitionsRequest = {
     compartmentId: Provider.getInstance().provider.getTenantId(),

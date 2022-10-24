@@ -125,7 +125,7 @@ import { getCompartmentRegionResources } from "./services/getCompartmentRegionRe
       }
       console.log(compartmentToRegions);
       console.log(JSON.stringify(Array.from(compartmentToRegions.entries())));
-      console.log(JSON.stringify({ a: [...compartmentToRegions] }));
+      console.log(JSON.stringify([...compartmentToRegions]));
       res.status(200).send(JSON.stringify(compartmentToRegions));
     });
   } catch (error) {
