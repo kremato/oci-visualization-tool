@@ -1,10 +1,12 @@
 import type { LimitDefinitionSummary } from "oci-limits/lib/model";
+import type { bool } from "yup";
 import { getIdentityClient } from "../clients/getIdentityClient";
 import { getLimitsClient } from "../clients/getLimitsClient";
 import { Provider } from "../clients/provider";
 import type {
   CommonRegion,
   Compartment,
+  Foo,
   LimitDefinitionsMap,
   LimitDefinitionsPerScope,
 } from "../types/types";
@@ -15,13 +17,14 @@ export const getCompartmentResources = async (
   compartment: Compartment,
   region: CommonRegion,
   limitDefinitionsPerScope: LimitDefinitionsPerScope,
-  filter: (scope: string) => boolean
+  scopeFilter: (scope: string) => boolean,
+  serviceFilter: (serviceName: string) => boolean
 ) => {
   const identityClient = getIdentityClient(Provider.getInstance().provider);
   const limitsClient = getLimitsClient();
   limitsClient.region = region;
 
-  const foo = new Map<
+  const foo: Foo = new Map<
     string,
     Map<
       LimitDefinitionSummary,
@@ -33,15 +36,17 @@ export const getCompartmentResources = async (
       }[]
     >
   >();
+  const availabilityDomains = await getAvailibilityDomainsPerRegion(
+    identityClient
+  );
   for (let [scope, serviceDefinitionMap] of limitDefinitionsPerScope) {
-    if (filter(scope)) continue;
+    if (scopeFilter(scope)) continue;
     for (const [serviceName, limitDefinitions] of serviceDefinitionMap) {
+      if (serviceFilter(serviceName)) continue;
       foo.set(serviceName, new Map());
       for (const limitDefinitionSummary of limitDefinitions) {
-        const availabilityDomains = await getAvailibilityDomainsPerRegion(
-          identityClient
-        );
         const limitADsMap = foo.get(serviceName)!;
+        console.log(`Limit: ${limitDefinitionSummary.name}\n`)
         limitADsMap.set(limitDefinitionSummary, []);
         for (const availabilityDomain of availabilityDomains) {
           const resourceAvailability = await getResourceAvailability(
@@ -64,6 +69,13 @@ export const getCompartmentResources = async (
             quota,
           };
           limitADsMap.get(limitDefinitionSummary)?.push(object);
+          console.log(`\t${
+            availabilityDomain.name
+          }${" ".repeat(32)} available: ${
+            available
+          }${" ".repeat(12)} | used: ${resourceAvailability.used}${" ".repeat(
+            12
+          )} | quota: ${quota}\n`)
         }
       }
     }

@@ -10,6 +10,8 @@ export const listCompartments = async (
 ): Promise<Compartment[]> => {
   const identityClient = getIdentityClient(Provider.getInstance().provider);
 
+  // TODO: compartmentIdInSubtree should be set inside the function rather then
+  // rely on user to pass it only in case compartmentId is tenancy
   const listCompartmentsRequest: identity.requests.ListCompartmentsRequest = {
     compartmentId,
     compartmentIdInSubtree,
@@ -17,6 +19,8 @@ export const listCompartments = async (
   const response = await identityClient.listCompartments(
     listCompartmentsRequest
   );
+
+  // TODO: this should be added only when tenancyId is passed as compartmentId
   const parentCompartment = [
     await getCompartment(compartmentId, identityClient),
   ];

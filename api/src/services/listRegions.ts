@@ -2,6 +2,7 @@ import type { identity } from "oci-sdk";
 import { getIdentityClient } from "../clients/getIdentityClient";
 import { Provider } from "../clients/provider";
 
+// TODO: deprecated?
 export const listRegions = async () => {
   const identityClient = getIdentityClient(Provider.getInstance().provider);
 

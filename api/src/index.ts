@@ -7,6 +7,8 @@ import type {
   CheckboxHash,
   CommonRegion,
   Compartment,
+  CompartmentToRegions,
+  Foo,
   IdentityRegion,
   LimitDefinitionsPerScope,
   RegionSubscription,
@@ -20,10 +22,7 @@ import { getServiceLimits } from "./services/getServiceLimits";
 import { Provider } from "./clients/provider";
 import { getCipherInfo } from "crypto";
 import { getCompartmentResources } from "./services/getCompartmentResources";
-
-interface MyRegion extends CommonRegion {
-  
-}
+import { getCompartmentRegionResources } from "./services/getCompartmentRegionResources";
 
 (async () => {
   try {
@@ -48,14 +47,15 @@ interface MyRegion extends CommonRegion {
     let regionSubscriptions: RegionSubscription[] = [];
     let regions: CommonRegion[] = [];
     let serviceSubscriptions: ServiceSummary[] = [];
+    const serviceLimits: ServiceLimits = new Map();
 
     app.listen(port, async () => {
       console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
       compartments = compartments.concat(
         await listCompartments(tenancyId, true)
       );
-      console.log(await listRegionSubscriptions(tenancyId))
-      console.log(common.Region.values())
+      console.log(await listRegionSubscriptions(tenancyId));
+      console.log(common.Region.values());
       regionSubscriptions = regionSubscriptions.concat(
         await listRegionSubscriptions(tenancyId)
       );
@@ -63,22 +63,14 @@ interface MyRegion extends CommonRegion {
         await listServices(tenancyId)
       );
       regions = common.Region.values().filter((region) =>
-        region.regionCode && regionSubscriptions.some(
-          (item) => item.regionKey === region.regionCode?.toUpperCase()
-        ) 
+        regionSubscriptions.some((item) => item.regionName === region.regionId)
       );
-
       // This can become a bottleneck
       console.log("before");
-      const serviceLimits: ServiceLimits = new Map();
       for (const region of regions) {
         serviceLimits.set(
           region,
-          (await getServiceLimits(
-            region,
-            tenancyId,
-            true
-          )) as LimitDefinitionsPerScope
+          (await getServiceLimits(region, true)) as LimitDefinitionsPerScope
         );
       }
       console.log("[server]: App.use() finished");
@@ -100,16 +92,42 @@ interface MyRegion extends CommonRegion {
       // TODO: validation
       const data = req.body as CheckboxHash;
       console.log("LIMITS");
-      console.log(data)
-      res.status(200).send(JSON.stringify(data));
-      
-      const filteredCompartments = compartments.filter(compartment => {
-        data.compartments[compartment.id]
-      })
-      const filterdRegions = regions.filter(region => {
-        data.regions[region.regionCode?.toUpperCase()!]
-      })
-      //getCompartmentResources()
+      console.log(JSON.stringify(data));
+      //res.status(200).send(JSON.stringify(data));
+
+      const filteredCompartments = compartments.filter((compartment) => {
+        return data.compartments[compartment.id];
+      });
+      const filterdRegions = regions.filter((region) => {
+        return data.regions[region.regionId];
+      });
+
+      const compartmentToRegions: CompartmentToRegions = new Map();
+      console.log("for");
+      for (const compartment of filteredCompartments) {
+        compartmentToRegions.set(compartment, new Map());
+        for (const region of filterdRegions) {
+          const limits = serviceLimits.get(region);
+          const regionToScope = compartmentToRegions.get(compartment)!;
+          console.log("regionToScope");
+          const regionServicesObject = await getCompartmentRegionResources(
+            compartment,
+            region,
+            limits!,
+            (scope: string) => {
+              return scope !== "AD";
+            },
+            (serviceName: string) => {
+              return serviceName !== "compute";
+            }
+          );
+          regionToScope.set(region, regionServicesObject);
+        }
+      }
+      console.log(compartmentToRegions);
+      console.log(JSON.stringify(Array.from(compartmentToRegions.entries())));
+      console.log(JSON.stringify({ a: [...compartmentToRegions] }));
+      res.status(200).send(JSON.stringify(compartmentToRegions));
     });
   } catch (error) {
     console.log("Error executing" + error);

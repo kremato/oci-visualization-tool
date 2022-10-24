@@ -1,10 +1,12 @@
 import { LimitsClient, requests, models } from "oci-limits";
 import { getLimitsClient } from "../clients/getLimitsClient";
+import { Provider } from "../clients/provider";
 import type {
   CommonRegion,
   LimitDefinitionsMap,
   LimitDefinitionsPerScope,
 } from "../types/types";
+import { outputToFile } from "./outputToFile";
 
 const perScope = (
   servicesPerScope: LimitDefinitionsPerScope,
@@ -35,14 +37,14 @@ const perServiceName = (
 
 export const getServiceLimits = async (
   region: CommonRegion,
-  tenancyId: string,
   scoped = false
 ): Promise<LimitDefinitionsPerScope | LimitDefinitionsMap> => {
-
-  const limitsClient = getLimitsClient()
-  limitsClient.region = region
+  const limitsClient = getLimitsClient();
+  // TODO: je tu potrebne nastavovat region, nie je to pre kazdy region rovnake?
+  // daniel pise, ze must be tenancy, a asi na tom nieco je
+  limitsClient.region = region;
   const listLimitDefinitionsRequest: requests.ListLimitDefinitionsRequest = {
-    compartmentId: tenancyId,
+    compartmentId: Provider.getInstance().provider.getTenantId(),
   };
   const servicesPerScope = new Map<string, LimitDefinitionsMap>();
   const servicesPerServiceName: LimitDefinitionsMap = new Map<
@@ -57,10 +59,12 @@ export const getServiceLimits = async (
   }
 
   let opc: string | undefined = undefined;
+  let logJSON: string = "";
   do {
     !opc || (listLimitDefinitionsRequest.page = opc);
     const listLimitDefinitionsResponse =
       await limitsClient.listLimitDefinitions(listLimitDefinitionsRequest);
+    logJSON += JSON.stringify(listLimitDefinitionsResponse.items, null, 4);
     for (const limitDefinitionSummary of listLimitDefinitionsResponse.items) {
       if (scoped) {
         perScope(servicesPerScope, limitDefinitionSummary);
@@ -71,6 +75,7 @@ export const getServiceLimits = async (
     opc = listLimitDefinitionsResponse.opcNextPage;
   } while (opc);
 
+  outputToFile("test/limitDefinitionListAllJSON.txt", logJSON);
   if (scoped) return servicesPerScope;
 
   return servicesPerServiceName;
