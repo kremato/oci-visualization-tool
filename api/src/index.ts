@@ -21,7 +21,6 @@ import { common } from "oci-sdk";
 import { getServiceLimits } from "./services/getServiceLimits";
 import { Provider } from "./clients/provider";
 import { getCipherInfo } from "crypto";
-import { getCompartmentResources } from "./services/getCompartmentResources";
 import { getCompartmentRegionResources } from "./services/getCompartmentRegionResources";
 
 (async () => {

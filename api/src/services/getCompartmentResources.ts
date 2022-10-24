@@ -11,7 +11,7 @@ import type {
   LimitDefinitionsPerScope,
 } from "../types/types";
 import { getAvailibilityDomainsPerRegion } from "./getAvailibilityDomainsPerRegion";
-import { getResourceAvailability } from "./getResourceAvailibility";
+import { getResourceAvailabilityAD, getResourceAvailabilityRegion } from "./getResourceAvailibility";
 
 export const getCompartmentResources = async (
   compartment: Compartment,
@@ -49,7 +49,7 @@ export const getCompartmentResources = async (
         console.log(`Limit: ${limitDefinitionSummary.name}\n`)
         limitADsMap.set(limitDefinitionSummary, []);
         for (const availabilityDomain of availabilityDomains) {
-          const resourceAvailability = await getResourceAvailability(
+          const resourceAvailability = await getResourceAvailabilityAD(
             limitsClient,
             compartment.id,
             availabilityDomain,

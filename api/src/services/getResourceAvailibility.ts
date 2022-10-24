@@ -1,10 +1,11 @@
-import type { identity, limits } from 'oci-sdk'
+import type { identity, limits } from "oci-sdk";
 
-export const getResourceAvailability = async (
+// TODO: Code duplication
+export const getResourceAvailabilityAD = async (
   limitsClient: limits.LimitsClient,
   compartmentId: string,
-  availabilityDomain: identity.models.AvailabilityDomain,
-  limitDefinitionSummary: limits.models.LimitDefinitionSummary
+  limitDefinitionSummary: limits.models.LimitDefinitionSummary,
+  availabilityDomain: identity.models.AvailabilityDomain
 ): Promise<limits.models.ResourceAvailability | undefined> => {
   if (
     !limitDefinitionSummary.name ||
@@ -18,12 +19,12 @@ export const getResourceAvailability = async (
     return;
   }
 
-  const getResourceAvailabilityRequest: limits.requests.GetResourceAvailabilityRequest =
+  let getResourceAvailabilityRequest: limits.requests.GetResourceAvailabilityRequest =
     {
       serviceName: limitDefinitionSummary.serviceName,
       limitName: limitDefinitionSummary.name,
       compartmentId,
-      availabilityDomain: availabilityDomain.name,
+      availabilityDomain: availabilityDomain.name!,
     };
 
   const getResourceAvailabilityResponse =
@@ -31,3 +32,33 @@ export const getResourceAvailability = async (
 
   return getResourceAvailabilityResponse.resourceAvailability;
 };
+
+export const getResourceAvailabilityRegion = async (
+  limitsClient: limits.LimitsClient,
+  compartmentId: string,
+  limitDefinitionSummary: limits.models.LimitDefinitionSummary,
+): Promise<limits.models.ResourceAvailability | undefined> => {
+  if (
+    !limitDefinitionSummary.name ||
+    !limitDefinitionSummary.serviceName
+  ) {
+    console.debug(
+      `Unable to create GetResourceAvailabilityRequest because either limitDefinitionSummary.name,
+      limitDefinitionSummary.serviceName or is undefined`
+    );
+    return;
+  }
+
+  let getResourceAvailabilityRequest: limits.requests.GetResourceAvailabilityRequest =
+    {
+      serviceName: limitDefinitionSummary.serviceName,
+      limitName: limitDefinitionSummary.name,
+      compartmentId,
+    };
+
+  const getResourceAvailabilityResponse =
+    await limitsClient.getResourceAvailability(getResourceAvailabilityRequest);
+
+  return getResourceAvailabilityResponse.resourceAvailability;
+};
+
