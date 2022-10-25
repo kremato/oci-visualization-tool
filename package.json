@@ -1,0 +1,10 @@
+{
+  "name": "oci-visualization-tool",
+  "version": "1.0.0",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspaces"
+  }
+}
