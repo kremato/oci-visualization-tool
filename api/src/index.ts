@@ -8,19 +8,16 @@ import type {
   CommonRegion,
   Compartment,
   CompartmentToRegions,
-  Foo,
-  IdentityRegion,
   LimitDefinitionsPerScope,
   RegionSubscription,
   ServiceLimits,
   ServiceSummary,
+  ResourceObjectAD,
 } from "./types/types";
 import { listServices } from "./services/listServices";
-import { listRegions } from "./services/listRegions";
 import { common } from "oci-sdk";
 import { getServiceLimits } from "./services/getServiceLimits";
 import { Provider } from "./clients/provider";
-import { getCipherInfo } from "crypto";
 import { getCompartmentRegionResources } from "./services/getCompartmentRegionResources";
 
 (async () => {
@@ -90,9 +87,6 @@ import { getCompartmentRegionResources } from "./services/getCompartmentRegionRe
     app.post("/limits", async (req: Request, res: Response) => {
       // TODO: validation
       const data = req.body as CheckboxHash;
-      console.log("LIMITS");
-      console.log(JSON.stringify(data));
-      //res.status(200).send(JSON.stringify(data));
 
       const filteredCompartments = compartments.filter((compartment) => {
         return data.compartments[compartment.id];
@@ -102,13 +96,11 @@ import { getCompartmentRegionResources } from "./services/getCompartmentRegionRe
       });
 
       const compartmentToRegions: CompartmentToRegions = new Map();
-      console.log("for");
       for (const compartment of filteredCompartments) {
         compartmentToRegions.set(compartment, new Map());
         for (const region of filterdRegions) {
           const limits = serviceLimits.get(region);
           const regionToScope = compartmentToRegions.get(compartment)!;
-          console.log("regionToScope");
           const regionServicesObject = await getCompartmentRegionResources(
             compartment,
             region,
@@ -123,10 +115,18 @@ import { getCompartmentRegionResources } from "./services/getCompartmentRegionRe
           regionToScope.set(region, regionServicesObject);
         }
       }
-      console.log(compartmentToRegions);
-      console.log(JSON.stringify(Array.from(compartmentToRegions.entries())));
-      console.log(JSON.stringify([...compartmentToRegions]));
-      res.status(200).send(JSON.stringify(compartmentToRegions));
+
+      const responseData = JSON.stringify(compartmentToRegions, function replacer(key, value) {
+        if (value instanceof Map) {
+          return {
+            dataType: "Map",
+            value: Array.from(value.entries()),
+          };
+        } else {
+          return value;
+        }
+      });
+      res.status(200).send(responseData);
     });
   } catch (error) {
     console.log("Error executing" + error);

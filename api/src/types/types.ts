@@ -31,6 +31,7 @@ export type ResourceObjectRegion = {
   available: string;
   used: string;
 };
+
 export type ServiceResourceMapAD = Map<string, ResourceObjectAD[]>;
 export type ServiceResourceMapRegion = Map<
   string,

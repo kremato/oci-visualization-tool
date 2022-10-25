@@ -1,13 +1,10 @@
-import type { LimitDefinitionSummary } from "oci-limits/lib/model";
-import type { bool } from "yup";
+
 import { getIdentityClient } from "../clients/getIdentityClient";
 import { getLimitsClient } from "../clients/getLimitsClient";
 import { Provider } from "../clients/provider";
 import type {
   CommonRegion,
   Compartment,
-  Foo,
-  LimitDefinitionsMap,
   LimitDefinitionsPerScope,
   RegionServicesObject,
   ResourceObjectRegion,
@@ -44,11 +41,9 @@ export const getCompartmentRegionResources = async (
     if (scope === "GLOBAL") continue;
     logFormattedOutput += `Scope: ${scope}\n`;
     for (const [serviceName, limitDefinitions] of serviceLimitMap) {
-      console.log(serviceName);
-      // if (serviceFilter(serviceName)) continue;
+      if (!["compute"].includes(serviceName)) continue;
       logFormattedOutput += `\tService: ${serviceName}\n`;
       if (scope === "AD") {
-        console.log("AD");
         const aDScopeMap = regionServicesObject.aDScope;
         aDScopeMap.set(serviceName, []);
 
@@ -86,10 +81,10 @@ export const getCompartmentRegionResources = async (
               resourceAvailability.used
             }${" ".repeat(12)} | quota: ${quota}\n`;
           }
+          aDScopeMap.get(serviceName)?.push(serviceResourceObject);
         }
       }
       if (scope == "REGION") {
-        console.log("REGION");
         const serviceResourceMap = regionServicesObject.regionScope;
         serviceResourceMap.set(serviceName, []);
         const resourceList = serviceResourceMap.get(serviceName)!;
@@ -119,6 +114,7 @@ export const getCompartmentRegionResources = async (
           }${" ".repeat(32)} available: ${available}${" ".repeat(12)} | used: ${
             resourceAvailability.used
           }\n`;
+          resourceList.push(resourceObject);
         }
       }
     }
