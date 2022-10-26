@@ -48,29 +48,12 @@ export type CompartmentToRegions = Map<
   identity.models.Compartment,
   RegionToScope
 >;
-// ------------------------------------------------------------
-// This map is used to export aggregated information in the following form of encapsulation:
-// compartment -> {region, (serviceName -> (limitDefinition -> {count limits from AD}[]))}[]
-export type ExportDataMap = Map<
-  Compartment,
-  { region: CommonRegion; services: Foo }[]
->;
+
 export type CheckboxHash = {
   compartments: { [id: string]: boolean };
   regions: { [id: string]: boolean };
   services: { [id: string]: boolean };
 };
-export type Foo = Map<
-  string,
-  Map<
-    limits.models.LimitDefinitionSummary,
-    {
-      name: string | undefined;
-      available: number;
-      used: number;
-      quota: number;
-    }[]
-  >
->;
+
 export type ServiceLimits = Map<CommonRegion, LimitDefinitionsPerScope>;
 export type IdentityADSet = Set<identity.models.AvailabilityDomain>;

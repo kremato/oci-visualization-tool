@@ -46,7 +46,7 @@ export const Compartment = ({ depth, id, name }: Props) => {
         </IconButton>
         <ListItemText
           primary={primary}
-          secondary={id}
+          /* secondary={id} */
           sx={{ mt: 0, mb: 0, lineHeight: 1.25 }}
           primaryTypographyProps={{
             sx: { lineHeight: 1.25, "& span": { padding: 0 } },
