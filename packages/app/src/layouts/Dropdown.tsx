@@ -25,7 +25,7 @@ export const Dropdown = ({ name, options }: Props) => {
     if (name === Names.Service) {
       action = inputActions.replaceServicesId;
     }
-    dispatch(action(options.map((item) => item.id)));
+    dispatch(action(selected.map((item) => item.id)));
   };
 
   const namePlural = name + "s";
