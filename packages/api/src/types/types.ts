@@ -49,10 +49,10 @@ export type CompartmentToRegions = Map<
   RegionToScope
 >;
 
-export type CheckboxHash = {
-  compartments: { [id: string]: boolean };
-  regions: { [id: string]: boolean };
-  services: { [id: string]: boolean };
+export type InputData = {
+  compartments: string[];
+  regions: string[];
+  services: string[];
 };
 
 export type ServiceLimits = Map<CommonRegion, LimitDefinitionsPerScope>;

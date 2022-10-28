@@ -39,9 +39,11 @@ export const getCompartmentRegionResources = async (
   for (let [scope, serviceLimitMap] of limitDefinitionsPerScope) {
     // if (scopeFilter(scope)) continue;
     if (scope === "GLOBAL") continue;
+    console.log(scope)
     logFormattedOutput += `Scope: ${scope}\n`;
     for (const [serviceName, limitDefinitions] of serviceLimitMap) {
       if (!["compute"].includes(serviceName)) continue;
+      console.log(serviceName)
       logFormattedOutput += `\tService: ${serviceName}\n`;
       if (scope === "AD") {
         const aDScopeMap = regionServicesObject.aDScope;

@@ -4,7 +4,7 @@ import { listCompartments } from "./services/listCompartments";
 import cors from "cors";
 import { listRegionSubscriptions } from "./services/listRegionSubscriptions";
 import type {
-  CheckboxHash,
+  InputData,
   CommonRegion,
   Compartment,
   CompartmentToRegions,
@@ -86,13 +86,13 @@ import { getCompartmentRegionResources } from "./services/getCompartmentRegionRe
 
     app.post("/limits", async (req: Request, res: Response) => {
       // TODO: validation
-      const data = req.body as CheckboxHash;
+      const data = req.body as InputData;
 
       const filteredCompartments = compartments.filter((compartment) => {
-        return data.compartments[compartment.id];
+        return data.compartments.includes(compartment.id);
       });
       const filterdRegions = regions.filter((region) => {
-        return data.regions[region.regionId];
+        return data.regions.includes(region.regionId);
       });
 
       const compartmentToRegions: CompartmentToRegions = new Map();
@@ -116,16 +116,19 @@ import { getCompartmentRegionResources } from "./services/getCompartmentRegionRe
         }
       }
 
-      const responseData = JSON.stringify(compartmentToRegions, function replacer(key, value) {
-        if (value instanceof Map) {
-          return {
-            dataType: "Map",
-            value: Array.from(value.entries()),
-          };
-        } else {
-          return value;
+      const responseData = JSON.stringify(
+        compartmentToRegions,
+        function replacer(key, value) {
+          if (value instanceof Map) {
+            return {
+              dataType: "Map",
+              value: Array.from(value.entries()),
+            };
+          } else {
+            return value;
+          }
         }
-      });
+      );
       res.status(200).send(responseData);
     });
   } catch (error) {

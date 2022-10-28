@@ -51,7 +51,8 @@ export const getServiceLimits = async (
     string,
     models.LimitDefinitionSummary[]
   >();
-  for (const scope of Object.values(models.LimitDefinitionSummary.ScopeType)) {
+  const scopeType = models.LimitDefinitionSummary.ScopeType;
+  for (const scope of [scopeType.Global, scopeType.Region, scopeType.Ad]) {
     servicesPerScope.set(
       scope,
       new Map<string, models.LimitDefinitionSummary[]>()
