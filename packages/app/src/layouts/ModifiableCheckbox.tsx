@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Checkbox } from "@mui/material";
 import { useAppDispatch } from "../hooks/useAppDispatch";
-import { checkboxActions } from "../store/checkboxSlice";
+import { inputActions } from "../store/checkboxSlice";
 
 interface Props {
   id: string;
@@ -14,7 +14,12 @@ export const ModifiableCheckbox = (props: Props) => {
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(event.target.checked);
-    dispatch(checkboxActions.updateCheckboxHash(props));
+    /* dispatch(
+      inputActions.updateCheckboxHash({
+        idList: [props.id],
+        type: props.type,
+      })
+    ); */
   };
 
   return <Checkbox size="small" checked={checked} onChange={handleChange} />;

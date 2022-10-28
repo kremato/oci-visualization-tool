@@ -6,12 +6,12 @@ export type RegionSubscription = identity.models.RegionSubscription;
 export type HierarchyMap = Map<string, Compartment[]>;
 export type ServiceSummary = limits.models.ServiceSummary;
 
-export type CheckboxHash = {
-  compartments: { [id: string]: boolean };
-  regions: { [id: string]: boolean };
-  services: { [id: string]: boolean };
-};
-
 export interface HierarchyHash {
   [id: string]: identity.models.Compartment[];
+}
+
+export enum Names {
+  Compartment = "compartment",
+  Region = "region",
+  Service = "service",
 }
