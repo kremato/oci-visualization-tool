@@ -1,13 +1,13 @@
 import { getCompartment } from "./getCompartment";
 import type { identity } from "oci-sdk";
 import { getIdentityClient } from "../clients/getIdentityClient";
-import type { Compartment } from "../types/types";
+import type { IdentityCompartment } from "../types/types";
 import { Provider } from "../clients/provider";
 
 export const listCompartments = async (
   compartmentId: string,
   compartmentIdInSubtree = false
-): Promise<Compartment[]> => {
+): Promise<IdentityCompartment[]> => {
   const identityClient = getIdentityClient(Provider.getInstance().provider);
 
   // TODO: compartmentIdInSubtree should be set inside the function rather then

@@ -33,6 +33,7 @@ export const Dropdown = ({ name, options }: Props) => {
     <Autocomplete
       multiple
       id={namePlural}
+      isOptionEqualToValue={(option, value) => option.id === value.id}
       onChange={(_event, newValue) => {
         handleChange(newValue);
       }}

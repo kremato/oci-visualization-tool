@@ -1,10 +1,8 @@
-
 import { getIdentityClient } from "../clients/getIdentityClient";
 import { getLimitsClient } from "../clients/getLimitsClient";
 import { Provider } from "../clients/provider";
 import type {
   CommonRegion,
-  Compartment,
   LimitDefinitionsPerScope,
   RegionServicesObject,
   ResourceObjectRegion,
@@ -18,7 +16,7 @@ import {
 import { outputToFile } from "./outputToFile";
 
 export const getCompartmentRegionResources = async (
-  compartment: Compartment,
+  compartmentId: string,
   region: CommonRegion,
   limitDefinitionsPerScope: LimitDefinitionsPerScope,
   scopeFilter: (scope: string) => boolean,
@@ -28,9 +26,13 @@ export const getCompartmentRegionResources = async (
   const limitsClient = getLimitsClient();
   limitsClient.region = region;
 
-  const regionServicesObject: RegionServicesObject = {
+  /* const regionServicesObject: RegionServicesObject = {
     aDScope: new Map(),
     regionScope: new Map(),
+  }; */
+  const regionServicesObject: RegionServicesObject = {
+    aDScope: Object.create(null),
+    regionScope: Object.create(null),
   };
   const availabilityDomains = await getAvailibilityDomainsPerRegion(
     identityClient
@@ -39,15 +41,16 @@ export const getCompartmentRegionResources = async (
   for (let [scope, serviceLimitMap] of limitDefinitionsPerScope) {
     // if (scopeFilter(scope)) continue;
     if (scope === "GLOBAL") continue;
-    console.log(scope)
+    console.log(scope);
     logFormattedOutput += `Scope: ${scope}\n`;
     for (const [serviceName, limitDefinitions] of serviceLimitMap) {
       if (!["compute"].includes(serviceName)) continue;
-      console.log(serviceName)
+      console.log(serviceName);
       logFormattedOutput += `\tService: ${serviceName}\n`;
       if (scope === "AD") {
-        const aDScopeMap = regionServicesObject.aDScope;
-        aDScopeMap.set(serviceName, []);
+        const aDScopeHash = regionServicesObject.aDScope;
+        // aDScopeHash.set(serviceName, []);
+        aDScopeHash[serviceName] = [];
 
         for (const limitDefinitionSummary of limitDefinitions) {
           const serviceResourceObject: ResourceObjectAD = {
@@ -58,7 +61,7 @@ export const getCompartmentRegionResources = async (
           for (const availabilityDomain of availabilityDomains) {
             const resourceAvailability = await getResourceAvailabilityAD(
               limitsClient,
-              compartment.id,
+              compartmentId,
               limitDefinitionSummary,
               availabilityDomain
             );
@@ -83,13 +86,14 @@ export const getCompartmentRegionResources = async (
               resourceAvailability.used
             }${" ".repeat(12)} | quota: ${quota}\n`;
           }
-          aDScopeMap.get(serviceName)?.push(serviceResourceObject);
+          aDScopeHash[serviceName]?.push(serviceResourceObject);
         }
       }
       if (scope == "REGION") {
-        const serviceResourceMap = regionServicesObject.regionScope;
-        serviceResourceMap.set(serviceName, []);
-        const resourceList = serviceResourceMap.get(serviceName)!;
+        const serviceResourceHash = regionServicesObject.regionScope;
+        // serviceResourceMap.set(serviceName, []);
+        const resourceList: ResourceObjectRegion[] = [];
+        serviceResourceHash[serviceName] = resourceList;
         for (const limitDefinitionSummary of limitDefinitions) {
           const resourceObject: ResourceObjectRegion = {
             resourceName: limitDefinitionSummary.name,
@@ -99,7 +103,7 @@ export const getCompartmentRegionResources = async (
 
           const resourceAvailability = await getResourceAvailabilityRegion(
             limitsClient,
-            compartment.id,
+            compartmentId,
             limitDefinitionSummary
           );
 

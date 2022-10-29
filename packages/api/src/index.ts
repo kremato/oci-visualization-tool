@@ -6,19 +6,21 @@ import { listRegionSubscriptions } from "./services/listRegionSubscriptions";
 import type {
   InputData,
   CommonRegion,
-  Compartment,
-  CompartmentToRegions,
+  IdentityCompartment,
+  CompartmentsHash,
   LimitDefinitionsPerScope,
   RegionSubscription,
   ServiceLimits,
   ServiceSummary,
   ResourceObjectAD,
+  RegionsHash,
 } from "./types/types";
 import { listServices } from "./services/listServices";
 import { common } from "oci-sdk";
 import { getServiceLimits } from "./services/getServiceLimits";
 import { Provider } from "./clients/provider";
 import { getCompartmentRegionResources } from "./services/getCompartmentRegionResources";
+import { replacer } from "./utils/replacer";
 
 (async () => {
   try {
@@ -39,7 +41,7 @@ import { getCompartmentRegionResources } from "./services/getCompartmentRegionRe
       "serviceLimits.txt",
       true
     ); */
-    let compartments: Compartment[] = [];
+    let compartments: IdentityCompartment[] = [];
     let regionSubscriptions: RegionSubscription[] = [];
     let regions: CommonRegion[] = [];
     let serviceSubscriptions: ServiceSummary[] = [];
@@ -95,14 +97,19 @@ import { getCompartmentRegionResources } from "./services/getCompartmentRegionRe
         return data.regions.includes(region.regionId);
       });
 
-      const compartmentToRegions: CompartmentToRegions = new Map();
+      const compartmentToRegions: CompartmentsHash = Object.create(null);
       for (const compartment of filteredCompartments) {
-        compartmentToRegions.set(compartment, new Map());
+        //compartmentToRegions.set(compartment, new Map());
+        const myCompartment: RegionsHash = Object.create(null);
+        myCompartment.compartmentName = compartment.name;
+        myCompartment.regions = Object.create(null);
+        compartmentToRegions[compartment.id] = myCompartment;
         for (const region of filterdRegions) {
           const limits = serviceLimits.get(region);
-          const regionToScope = compartmentToRegions.get(compartment)!;
+          //const regionToScope = compartmentToRegions.get(compartment)!;
+          const regionToScope = compartmentToRegions[compartment.id]!;
           const regionServicesObject = await getCompartmentRegionResources(
-            compartment,
+            compartment.id,
             region,
             limits!,
             (scope: string) => {
@@ -112,23 +119,54 @@ import { getCompartmentRegionResources } from "./services/getCompartmentRegionRe
               return serviceName !== "compute";
             }
           );
-          regionToScope.set(region, regionServicesObject);
+          // regionToScope.set(region, regionServicesObject);
+          /* console.log(regionToScope);
+          if (regionToScope !== undefined) {
+            console.log(regionToScope.regions);
+          } */
+          regionToScope.regions[region.regionId] = regionServicesObject;
         }
       }
 
+      /* console.log("!REPLACER!");
       const responseData = JSON.stringify(
         compartmentToRegions,
         function replacer(key, value) {
           if (value instanceof Map) {
             return {
               dataType: "Map",
-              value: Array.from(value.entries()),
+              value: Array.from(value.entries()), // or with spread: value: [...value]
             };
           } else {
             return value;
           }
         }
       );
+      console.log(responseData);
+      console.log("!REVIVER!");
+      console.log(
+        JSON.parse(responseData, function reviver(key, value) {
+          console.log("KEY:");
+          console.log(key);
+          console.log("VALUE:");
+          console.log(value);
+          if (typeof value === "object" && value !== null) {
+            if (value.dataType === "Map") {
+              console.log("VALUE.VALUE");
+              console.log(value.value);
+              return new Map(value.value);
+            }
+          }
+          return value;
+        })
+      ); */
+      console.log("Regular object {}")
+      console.log({})
+      console.log("Empty object")
+      console.log(Object.create(null))
+      console.log(compartmentToRegions)
+      const responseData = JSON.stringify(compartmentToRegions);
+      console.log(responseData)
       res.status(200).send(responseData);
     });
   } catch (error) {

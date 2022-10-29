@@ -1,0 +1,892 @@
+
+> api@1.0.0 start
+> npm run build; node dist/index.js;
+
+
+> api@1.0.0 build
+> tsc
+
+DONE
+⚡️[server]: Server is running at http://localhost:8546
+[
+  {
+    regionKey: 'YUL',
+    regionName: 'ca-montreal-1',
+    status: 'READY',
+    isHomeRegion: true
+  }
+]
+Call to Regions.values() without having contacted IMDS (Instance Metadata Service, only available on OCI instances); if you do need the region from IMDS, call Region.enableInstanceMetadata() before calling Region.values()
+[
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'ap-chuncheon-1',
+    _regionCode: 'yny'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'ap-mumbai-1',
+    _regionCode: 'bom'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'ap-hyderabad-1',
+    _regionCode: 'hyd'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'ap-seoul-1',
+    _regionCode: 'icn'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'ap-sydney-1',
+    _regionCode: 'syd'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'ap-melbourne-1',
+    _regionCode: 'mel'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'ap-osaka-1',
+    _regionCode: 'kix'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'ap-tokyo-1',
+    _regionCode: 'nrt'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'ca-montreal-1',
+    _regionCode: 'yul'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'ca-toronto-1',
+    _regionCode: 'yyz'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'eu-frankfurt-1',
+    _regionCode: 'fra'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'eu-zurich-1',
+    _regionCode: 'zrh'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'sa-saopaulo-1',
+    _regionCode: 'gru'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'uk-cardiff-1',
+    _regionCode: 'cwl'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'uk-london-1',
+    _regionCode: 'lhr'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'us-ashburn-1',
+    _regionCode: 'iad'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'us-phoenix-1',
+    _regionCode: 'phx'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'eu-amsterdam-1',
+    _regionCode: 'ams'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'me-jeddah-1',
+    _regionCode: 'jed'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'us-sanjose-1',
+    _regionCode: 'sjc'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'me-dubai-1',
+    _regionCode: 'dxb'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'sa-santiago-1',
+    _regionCode: 'scl'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'sa-vinhedo-1',
+    _regionCode: 'vcp'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'il-jerusalem-1',
+    _regionCode: 'mtz'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'eu-marseille-1',
+    _regionCode: 'mrs'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'ap-singapore-1',
+    _regionCode: 'sin'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'me-abudhabi-1',
+    _regionCode: 'auh'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'eu-milan-1',
+    _regionCode: 'lin'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'eu-stockholm-1',
+    _regionCode: 'arn'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'af-johannesburg-1',
+    _regionCode: 'jnb'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'eu-paris-1',
+    _regionCode: 'cdg'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'mx-queretaro-1',
+    _regionCode: 'qro'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud.com', _realmId: 'oc1' },
+    _regionId: 'eu-madrid-1',
+    _regionCode: 'mad'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclegovcloud.com', _realmId: 'oc2' },
+    _regionId: 'us-langley-1',
+    _regionCode: 'lfi'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclegovcloud.com', _realmId: 'oc2' },
+    _regionId: 'us-luke-1',
+    _regionCode: 'luf'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclegovcloud.com', _realmId: 'oc3' },
+    _regionId: 'us-gov-ashburn-1',
+    _regionCode: 'ric'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclegovcloud.com', _realmId: 'oc3' },
+    _regionId: 'us-gov-chicago-1',
+    _regionCode: 'pia'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclegovcloud.com', _realmId: 'oc3' },
+    _regionId: 'us-gov-phoenix-1',
+    _regionCode: 'tus'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclegovcloud.uk', _realmId: 'oc4' },
+    _regionId: 'uk-gov-london-1',
+    _regionCode: 'ltn'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclegovcloud.uk', _realmId: 'oc4' },
+    _regionId: 'uk-gov-cardiff-1',
+    _regionCode: 'brs'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud8.com', _realmId: 'oc8' },
+    _regionId: 'ap-chiyoda-1',
+    _regionCode: 'nja'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud8.com', _realmId: 'oc8' },
+    _regionId: 'ap-ibaraki-1',
+    _regionCode: 'ukb'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud9.com', _realmId: 'oc9' },
+    _regionId: 'me-dcc-muscat-1',
+    _regionCode: 'mct'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud10.com', _realmId: 'oc10' },
+    _regionId: 'ap-dcc-canberra-1',
+    _regionCode: 'wga'
+  },
+  Region {
+    _realm: Realm { _secondLevelDomain: 'oraclecloud14.com', _realmId: 'oc14' },
+    _regionId: 'eu-dcc-milan-1',
+    _regionCode: 'bgy'
+  }
+]
+before
+[server]: App.use() finished
+output > test/limitDefinitionListAllJSON.txt
+REGION
+compute
+AD
+compute
+Map(1) {
+  {
+    id: 'ocid1.tenancy.oc1..aaaaaaaatnaaaz7xxkorhpmxbkei45dqukxv2zcqz34akwgpuu6xkpl4l6ha',
+    name: 'jakubkrajcik1',
+    description: 'jakubkrajcik1',
+    timeCreated: '2022-05-17T17:55:48.278Z',
+    freeformTags: {},
+    definedTags: {},
+    isAccessible: true,
+    lifecycleState: 'ACTIVE'
+  } => Map(1) {
+    {
+      _realm: [Object],
+      _regionId: 'ca-montreal-1',
+      _regionCode: 'yul'
+    } => { aDScope: [Map], regionScope: [Map] }
+  }
+}
+OUTPUT
+ocid1.tenancy.oc1..aaaaaaaatnaaaz7xxkorhpmxbkei45dqukxv2zcqz34akwgpuu6xkpl4l6ha
+	undefined
+		compute
+			bm-dense-io1-36-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			bm-dense-io2-52-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			bm-gpu2-2-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			bm-gpu3-8-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			bm-hpc2-36-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			bm-standard-b1-44-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			bm-standard-e2-64-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			bm-standard1-36-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			bm-standard2-52-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			dense-io-e4-core-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			dense-io-e4-core-count-reservable
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			dense-io-e4-core-reserved-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			dense-io-e4-memory-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			dense-io-e4-memory-count-reservable
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			dense-io-e4-memory-reserved-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			dense-io1-core-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			dense-io1-core-count-reservable
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			dense-io1-core-reserved-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			dense-io2-core-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			dense-io2-core-count-reservable
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			dense-io2-core-reserved-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			dvh-dense-io2-core-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			dvh-optimized3-core-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			dvh-standard-e2-core-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			dvh-standard-e3-core-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			dvh-standard-e4-core-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			dvh-standard2-52-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			dvh-standard2-core-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			dvh-standard3-core-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			gpu-a10-core-count-reservable
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			gpu-a10-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			gpu-a10-reserved-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			gpu2-core-count-reservable
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			gpu2-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			gpu2-reserved-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			gpu3-core-count-reservable
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			gpu3-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			gpu3-reserved-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			gpu4-core-count-reservable
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			gpu4-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			gpu4-reserved-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			high-io1-core-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			high-io1-core-count-reservable
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			high-io1-core-reserved-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			hpc2-core-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			hpc2-core-count-reservable
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			hpc2-core-reserved-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			optimized3-core-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			optimized3-core-count-reservable
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			optimized3-core-reserved-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			optimized3-memory-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			optimized3-memory-count-reservable
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			optimized3-memory-reserved-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard-a1-core-count
+				fHhM:CA-MONTREAL-1-AD-1
+				4
+				0
+				undefined
+			standard-a1-core-count-reservable
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard-a1-core-reserved-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard-a1-memory-count
+				fHhM:CA-MONTREAL-1-AD-1
+				24
+				0
+				undefined
+			standard-a1-memory-count-reservable
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard-a1-memory-reserved-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard-b1-core-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard-b1-core-count-reservable
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard-b1-core-reserved-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard-e2-core-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard-e2-core-count-reservable
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard-e2-core-reserved-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard-e2-micro-core-count
+				fHhM:CA-MONTREAL-1-AD-1
+				1
+				1
+				undefined
+			standard-e3-core-ad-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard-e3-core-count-reservable
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard-e3-core-reserved-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard-e3-memory-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard-e3-memory-count-reservable
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard-e3-memory-reserved-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard-e4-core-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard-e4-core-count-reservable
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard-e4-core-reserved-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard-e4-memory-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard-e4-memory-count-reservable
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard-e4-memory-reserved-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard1-core-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard1-core-count-reservable
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard1-core-reserved-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard2-core-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard2-core-count-reservable
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard2-core-reserved-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard3-core-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard3-core-count-reservable
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard3-core-reserved-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard3-memory-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard3-memory-count-reservable
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			standard3-memory-reserved-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-dense-io1-16-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-dense-io1-4-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-dense-io1-8-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-dense-io2-16-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-dense-io2-24-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-dense-io2-8-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-gpu2-1-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-gpu3-1-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-gpu3-2-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-gpu3-4-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-standard-b1-1
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-standard-b1-16
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-standard-b1-2
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-standard-b1-4
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-standard-b1-8
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-standard-e2-1-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-standard-e2-1-micro-count
+				fHhM:CA-MONTREAL-1-AD-1
+				1
+				1
+				undefined
+			vm-standard-e2-2-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-standard-e2-4-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-standard-e2-8-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-standard1-1-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-standard1-16-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-standard1-2-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-standard1-4-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-standard1-8-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-standard2-1-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-standard2-16-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-standard2-2-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-standard2-24-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-standard2-4-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+			vm-standard2-8-count
+				fHhM:CA-MONTREAL-1-AD-1
+				0
+				0
+				undefined
+		compute
+			custom-image-count
+			0
+			0
+			standard-a1-core-regional-count
+			4
+			0
+			standard-a1-memory-regional-count
+			24
+			0
+
+output > test/getCompartmentsRegionResources.txt
