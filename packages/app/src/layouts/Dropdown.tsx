@@ -2,7 +2,7 @@ import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import { ListItemText, Typography } from "@mui/material";
 import { capitalizeFirstLetter } from "../utils/capitalizeFirstLetter";
-import { inputActions } from "../store/checkboxSlice";
+import { inputActions } from "../store/inputSlice";
 import { useAppDispatch } from "../hooks/useAppDispatch";
 import { Checkbox } from "@mui/material";
 import { Names } from "../types/types";

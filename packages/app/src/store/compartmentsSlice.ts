@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { createCompartmentHierarchy } from "../services/createCompartmentHierarchy";
-import { HierarchyHash, Compartment, CheckboxHash } from "../types/types";
+import { HierarchyHash, Compartment } from "../types/types";
 
 const compartmentsSlice = createSlice({
   name: "compartments",

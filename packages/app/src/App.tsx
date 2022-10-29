@@ -7,7 +7,7 @@ import { RegionList } from "./components/Regions/RegionList";
 import { fetchRegionsList } from "./store/regionsActionCreators";
 import { fetchServicesList } from "./store/servicesActionCreator";
 import { ServiceList } from "./components/Services/ServiceList";
-import { fetchLimitsData } from "./store/checkboxActionCreators";
+import { fetchLimitsData } from "./store/inputActionCreators";
 import { ModifiableButton } from "./layouts/ModifiableButton";
 import { Grid } from "@mui/material";
 import { Compartments } from "./components/Compartments/Compartments";
@@ -37,28 +37,6 @@ function App() {
     </div> */
   }
 
-  {
-    /* <Grid container spacing={2} sx={{ p: "1rem" }}>
-    <Grid item xs={4}>
-      <Compartments />
-    </Grid>
-    <Grid item xs={4}>
-      <Regions />
-    </Grid>
-    <Grid item xs={3}>
-      <Services />
-    </Grid>
-    <Grid item xs={1}>
-      <ModifiableButton text={"Send"} action={sendData} />
-    </Grid>
-    <Grid item xs={6}>
-      <div>xs=6</div>
-    </Grid>
-    <Grid item xs={6}>
-      <div>xs=6</div>
-    </Grid>
-  </Grid>; */
-  }
   return (
     <div className="App">
       <Grid container spacing={2} sx={{ p: "1rem" }}>
@@ -75,6 +53,22 @@ function App() {
           <ModifiableButton text={"Send"} action={sendData} />
         </Grid>
         <Grid item xs={6}>
+          <div>xs=6</div>
+          <div>xs=6</div>
+          <div>xs=6</div>
+          <div>xs=6</div>
+          <div>xs=6</div>
+          <div>xs=6</div>
+          <div>xs=6</div>
+          <div>xs=6</div>
+          <div>xs=6</div>
+          <div>xs=6</div>
+          <div>xs=6</div>
+          <div>xs=6</div>
+          <div>xs=6</div>
+          <div>xs=6</div>
+          <div>xs=6</div>
+          <div>xs=6</div>
           <div>xs=6</div>
         </Grid>
         <Grid item xs={6}>

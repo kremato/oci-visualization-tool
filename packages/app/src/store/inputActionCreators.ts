@@ -1,4 +1,4 @@
-import { inputActions } from "./checkboxSlice";
+import { inputActions } from "./inputSlice";
 import store, { AppDispatch } from "./store";
 
 // TODO: pridat navratove hodnoty funckcii alebo prerobit podla navodu
@@ -31,8 +31,9 @@ export const fetchLimitsData = () => {
       },
     });
 
-    const data = await fetch(request);
+    const response = await fetch(request);
 
-    console.log(data);
+    const tmp = await response.json();
+    console.log(tmp);
   };
 };

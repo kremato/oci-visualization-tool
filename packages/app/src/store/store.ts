@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import inputSlice from "./checkboxSlice";
+import inputSlice from "./inputSlice";
 
 import compartmentsSlice from "./compartmentsSlice";
 import regionsSlice from "./regionsSlice";

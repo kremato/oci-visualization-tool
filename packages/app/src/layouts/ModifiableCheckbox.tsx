@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Checkbox } from "@mui/material";
 import { useAppDispatch } from "../hooks/useAppDispatch";
-import { inputActions } from "../store/checkboxSlice";
+import { inputActions } from "../store/inputSlice";
 
 interface Props {
   id: string;
