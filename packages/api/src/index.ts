@@ -121,40 +121,8 @@ import { replacer } from "./utils/replacer";
         }
       }
 
-      /* console.log("!REPLACER!");
-      const responseData = JSON.stringify(
-        compartmentToRegions,
-        function replacer(key, value) {
-          if (value instanceof Map) {
-            return {
-              dataType: "Map",
-              value: Array.from(value.entries()), // or with spread: value: [...value]
-            };
-          } else {
-            return value;
-          }
-        }
-      );
-      console.log(responseData);
-      console.log("!REVIVER!");
-      console.log(
-        JSON.parse(responseData, function reviver(key, value) {
-          console.log("KEY:");
-          console.log(key);
-          console.log("VALUE:");
-          console.log(value);
-          if (typeof value === "object" && value !== null) {
-            if (value.dataType === "Map") {
-              console.log("VALUE.VALUE");
-              console.log(value.value);
-              return new Map(value.value);
-            }
-          }
-          return value;
-        })
-      ); */
       const responseData = JSON.stringify(compartmentToRegions);
-      console.log(responseData)
+      console.log(responseData);
       res.status(200).send(responseData);
     });
   } catch (error) {

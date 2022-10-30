@@ -10,7 +10,7 @@ export const fetchCompartmentsList = () => {
 
       const response = await fetch(request);
       const data = (await response.json()) as Compartment[];
-      dispatch(compartmentsActions.replaceCompartments(data));
+      dispatch(compartmentsActions.replaceCompartmentList(data));
     } catch (e) {
       console.log(e);
     }

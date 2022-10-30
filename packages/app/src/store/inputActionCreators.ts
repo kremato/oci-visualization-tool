@@ -1,4 +1,6 @@
+import { CompartmentsHash } from "../types/types";
 import { parseResponse } from "../utils/parseResponse";
+import { compartmentsActions } from "./compartmentsSlice";
 import { inputActions } from "./inputSlice";
 import store, { AppDispatch } from "./store";
 
@@ -34,6 +36,7 @@ export const fetchLimitsData = () => {
     });
 
     const response = await fetch(request);
-    return await parseResponse(response);
+    const hash = (await parseResponse(response)) as CompartmentsHash;
+    dispatch(compartmentsActions.replaceCompartmentHash(hash));
   };
 };

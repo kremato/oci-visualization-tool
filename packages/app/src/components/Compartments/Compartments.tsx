@@ -4,7 +4,7 @@ import { Names } from "../../types/types";
 
 export const Compartments = () => {
   const compartments = useAppSelector(
-    (state) => state.compartments.compartmentsList
+    (state) => state.compartments.compartmentList
   );
 
   const options = compartments.map((compartment) => {
