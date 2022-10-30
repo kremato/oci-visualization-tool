@@ -26,10 +26,6 @@ export const getCompartmentRegionResources = async (
   const limitsClient = getLimitsClient();
   limitsClient.region = region;
 
-  /* const regionServicesObject: RegionServicesObject = {
-    aDScope: new Map(),
-    regionScope: new Map(),
-  }; */
   const regionServicesObject: RegionServicesObject = {
     aDScope: Object.create(null),
     regionScope: Object.create(null),
@@ -49,7 +45,6 @@ export const getCompartmentRegionResources = async (
       logFormattedOutput += `\tService: ${serviceName}\n`;
       if (scope === "AD") {
         const aDScopeHash = regionServicesObject.aDScope;
-        // aDScopeHash.set(serviceName, []);
         aDScopeHash[serviceName] = [];
 
         for (const limitDefinitionSummary of limitDefinitions) {
@@ -91,7 +86,6 @@ export const getCompartmentRegionResources = async (
       }
       if (scope == "REGION") {
         const serviceResourceHash = regionServicesObject.regionScope;
-        // serviceResourceMap.set(serviceName, []);
         const resourceList: ResourceObjectRegion[] = [];
         serviceResourceHash[serviceName] = resourceList;
         for (const limitDefinitionSummary of limitDefinitions) {

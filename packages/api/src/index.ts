@@ -99,14 +99,12 @@ import { replacer } from "./utils/replacer";
 
       const compartmentToRegions: CompartmentsHash = Object.create(null);
       for (const compartment of filteredCompartments) {
-        //compartmentToRegions.set(compartment, new Map());
         const myCompartment: RegionsHash = Object.create(null);
         myCompartment.compartmentName = compartment.name;
         myCompartment.regions = Object.create(null);
         compartmentToRegions[compartment.id] = myCompartment;
         for (const region of filterdRegions) {
           const limits = serviceLimits.get(region);
-          //const regionToScope = compartmentToRegions.get(compartment)!;
           const regionToScope = compartmentToRegions[compartment.id]!;
           const regionServicesObject = await getCompartmentRegionResources(
             compartment.id,
@@ -119,11 +117,6 @@ import { replacer } from "./utils/replacer";
               return serviceName !== "compute";
             }
           );
-          // regionToScope.set(region, regionServicesObject);
-          /* console.log(regionToScope);
-          if (regionToScope !== undefined) {
-            console.log(regionToScope.regions);
-          } */
           regionToScope.regions[region.regionId] = regionServicesObject;
         }
       }
@@ -160,11 +153,6 @@ import { replacer } from "./utils/replacer";
           return value;
         })
       ); */
-      console.log("Regular object {}")
-      console.log({})
-      console.log("Empty object")
-      console.log(Object.create(null))
-      console.log(compartmentToRegions)
       const responseData = JSON.stringify(compartmentToRegions);
       console.log(responseData)
       res.status(200).send(responseData);

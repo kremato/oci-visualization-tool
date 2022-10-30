@@ -1,3 +1,4 @@
+import { parseResponse } from "../utils/parseResponse";
 import { inputActions } from "./inputSlice";
 import store, { AppDispatch } from "./store";
 
@@ -33,25 +34,6 @@ export const fetchLimitsData = () => {
     });
 
     const response = await fetch(request);
-
-    console.log("body used");
-    console.log(response.body);
-    const reader = response.body!.getReader();
-    let fulltext = "";
-    let line = (await reader.read()).value;
-    while (line) {
-      fulltext += new TextDecoder().decode(line);
-      line = (await reader.read()).value;
-    }
-
-    const foo = JSON.parse(fulltext, function reviver(k, v) {
-      if (v && typeof v === "object" && !Array.isArray(v)) {
-        return Object.assign(Object.create(null), v);
-      }
-      return v;
-    });
-    console.log(foo);
-    //const tmp = await response.json();
-    //console.log(tmp);
+    return await parseResponse(response);
   };
 };
