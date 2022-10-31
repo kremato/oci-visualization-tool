@@ -13,7 +13,9 @@ import type {
   ServiceLimits,
   ServiceSummary,
   ResourceObjectAD,
-  RegionsHash,
+  CompartmentData,
+  StringHash,
+  ServiceScopeObject,
 } from "./types/types";
 import { listServices } from "./services/listServices";
 import { common } from "oci-sdk";
@@ -46,14 +48,13 @@ import { replacer } from "./utils/replacer";
     let regions: CommonRegion[] = [];
     let serviceSubscriptions: ServiceSummary[] = [];
     const serviceLimits: ServiceLimits = new Map();
+    const compartmentHash: CompartmentsHash = Object.create(null);
 
     app.listen(port, async () => {
       console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
       compartments = compartments.concat(
         await listCompartments(tenancyId, true)
       );
-      console.log(await listRegionSubscriptions(tenancyId));
-      console.log(common.Region.values());
       regionSubscriptions = regionSubscriptions.concat(
         await listRegionSubscriptions(tenancyId)
       );
@@ -63,13 +64,24 @@ import { replacer } from "./utils/replacer";
       regions = common.Region.values().filter((region) =>
         regionSubscriptions.some((item) => item.regionName === region.regionId)
       );
-      // This can become a bottleneck
-      console.log("before");
       for (const region of regions) {
         serviceLimits.set(
           region,
           (await getServiceLimits(region, true)) as LimitDefinitionsPerScope
         );
+      }
+      // fill compartmentHash with compartments and regions
+      for (const compartment of compartments) {
+        const compartmentData: CompartmentData = Object.create(null);
+        compartmentData["compartmentName"] = compartment.name;
+        compartmentData["regions"] = Object.create(null);
+        compartmentHash[compartment.id] = compartmentData;
+        for (const region of regions) {
+          const regionServicesObject: ServiceScopeObject = Object.create(null);
+          regionServicesObject["aDScope"] = Object.create(null);
+          regionServicesObject["regionScope"] = Object.create(null);
+          compartmentData.regions[region.regionId] = regionServicesObject;
+        }
       }
       console.log("[server]: App.use() finished");
     });
@@ -96,10 +108,65 @@ import { replacer } from "./utils/replacer";
       const filterdRegions = regions.filter((region) => {
         return data.regions.includes(region.regionId);
       });
+      const filterdServices = serviceSubscriptions.filter((service) => {
+        return data.services.includes(service.name);
+      });
 
-      const compartmentToRegions: CompartmentsHash = Object.create(null);
       for (const compartment of filteredCompartments) {
-        const myCompartment: RegionsHash = Object.create(null);
+        for (const region of filterdRegions) {
+          for (const service of filterdServices) {
+            const serviceScopeObject =
+              compartmentHash[compartment.id]?.regions[region.regionId];
+            if (!serviceScopeObject) {
+              console.log("[index.ts]: 'undefined' regionServicesObject");
+              continue;
+            }
+            if (!serviceScopeObject.aDScope[service.name]) {
+              const limits = serviceLimits.get(region);
+              await getCompartmentRegionResources(
+                compartment.id,
+                region,
+                limits!,
+                service.name,
+                serviceScopeObject
+              );
+            }
+          }
+        }
+      }
+
+      const responseCompartmentHash: CompartmentsHash = Object.create(null);
+      for (const compartment of filteredCompartments) {
+        const compartmentData: CompartmentData = Object.create(null);
+        compartmentData["compartmentName"] = compartment.name;
+        compartmentData["regions"] = Object.create(null);
+        responseCompartmentHash[compartment.id] = compartmentData;
+        for (const region of filterdRegions) {
+          const serviceScopeObject: ServiceScopeObject = Object.create(null);
+          serviceScopeObject["aDScope"] = Object.create(null);
+          serviceScopeObject["regionScope"] = Object.create(null);
+          for (const service of filterdServices) {
+            const aDScope =
+              compartmentHash[compartment.id]?.regions[region.regionId]
+                ?.aDScope[service.name];
+            if (aDScope) {
+              serviceScopeObject.aDScope[service.name] = aDScope;
+            }
+            const regionScope =
+              compartmentHash[compartment.id]?.regions[region.regionId]
+                ?.regionScope[service.name];
+            if (regionScope) {
+              serviceScopeObject.regionScope[service.name] = regionScope;
+            }
+          }
+          compartmentData.regions[region.regionId] = serviceScopeObject;
+        }
+        responseCompartmentHash[compartment.id] = compartmentData;
+      }
+
+      /* const compartmentToRegions: CompartmentsHash = Object.create(null);
+      for (const compartment of filteredCompartments) {
+        const myCompartment: CompartmentData = Object.create(null);
         myCompartment.compartmentName = compartment.name;
         myCompartment.regions = Object.create(null);
         compartmentToRegions[compartment.id] = myCompartment;
@@ -119,9 +186,9 @@ import { replacer } from "./utils/replacer";
           );
           regionToScope.regions[region.regionId] = regionServicesObject;
         }
-      }
+      } */
 
-      const responseData = JSON.stringify(compartmentToRegions);
+      const responseData = JSON.stringify(responseCompartmentHash);
       console.log(responseData);
       res.status(200).send(responseData);
     });

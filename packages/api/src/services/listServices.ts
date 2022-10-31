@@ -1,6 +1,6 @@
 import type { limits } from "oci-sdk";
-import { Provider } from "../clients/provider";
 import { getLimitsClient } from "../clients/getLimitsClient";
+import type { ServiceSummary } from "../types/types";
 
 /* I was not able to find a request that would be able to list
    all services that OCI offers. So for the time being, list
@@ -14,9 +14,13 @@ export const listServices = async (tenancyId: string) => {
 
   const iterator = limitsClient.listServicesRecordIterator(listServicesRequest);
 
-  const result = [];
+  const result: ServiceSummary[] = [];
   for await (let item of iterator) {
-    result.push(item);
+    if (item.name === undefined) {
+      console.log("[listServices.ts]: Service with 'undefined' name filtered.");
+      continue;
+    }
+    result.push(item as ServiceSummary);
   }
 
   return result;
