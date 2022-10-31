@@ -52,11 +52,8 @@ function App() {
         <Grid item xs={1}>
           <ModifiableButton text={"Send"} action={sendData} />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12}>
           <CompartmentList />
-        </Grid>
-        <Grid item xs={6}>
-          <div>xs=6</div>
         </Grid>
       </Grid>
       ;

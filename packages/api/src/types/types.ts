@@ -23,8 +23,8 @@ export interface StringHash<Value> {
 export type LimitDefinitionsPerScope = Map<string, LimitDefinitionsMap>;
 export type ResourceObjectAD = {
   resourceName: string | undefined;
-  availibilityDomain: {
-    name: string | undefined;
+  availibilityDomainList: {
+    aDName: string | undefined;
     available: string;
     used: string;
     quota: string;

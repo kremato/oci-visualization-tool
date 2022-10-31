@@ -8,7 +8,9 @@ export type HierarchyMap = Map<string, Compartment[]>;
 export type ServiceSummary = Omit<limits.models.ServiceSummary, "name"> & {
   name: string;
 };
-
+export interface StringHash<Value> {
+  [id: string]: Value;
+}
 export interface HierarchyHash {
   [id: string]: identity.models.Compartment[];
 }
@@ -21,8 +23,8 @@ export enum Names {
 
 export type ResourceObjectAD = {
   resourceName: string | undefined;
-  availibilityDomain: {
-    name: string | undefined;
+  availibilityDomainList: {
+    aDName: string | undefined;
     available: string;
     used: string;
     quota: string;
@@ -33,23 +35,19 @@ export type ResourceObjectRegion = {
   available: string;
   used: string;
 };
-
-export type ServiceResourceHashAD = { [id: string]: [] };
-
+// export type ServiceResourceHashAD = Map<string, ResourceObjectAD[]>;
+export type ServiceResourceHashAD = StringHash<ResourceObjectAD[]>;
+// export type ServiceResourceHashRegion = Map<string, ResourceObjectRegion[]>;
 export type ServiceResourceHashRegion = {
   [id: string]: ResourceObjectRegion[];
 };
-
-export type RegionServicesObject = {
+export type ServiceScopeObject = {
   aDScope: ServiceResourceHashAD;
   regionScope: ServiceResourceHashRegion;
 };
-
-export type RegionsHash = {
+// export type RegionToScope = Map<CommonRegion, RegionServicesObject>;
+export type CompartmentData = {
   compartmentName: string;
-  regions: { [id: string]: RegionServicesObject };
+  regions: StringHash<ServiceScopeObject>;
 };
-
-export type CompartmentsHash = {
-  [id: string]: RegionsHash;
-};
+export type CompartmentsHash = StringHash<CompartmentData>;

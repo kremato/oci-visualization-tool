@@ -46,7 +46,7 @@ export const getCompartmentRegionResources = async (
       for (const limitDefinitionSummary of limitDefinitions) {
         const serviceResourceObject: ResourceObjectAD = {
           resourceName: limitDefinitionSummary.name,
-          availibilityDomain: [],
+          availibilityDomainList: [],
         };
         logFormattedOutput += `\t\tResource: ${limitDefinitionSummary.name}\n`;
         for (const availabilityDomain of availabilityDomains) {
@@ -64,8 +64,8 @@ export const getCompartmentRegionResources = async (
           const quota =
             resourceAvailability.effectiveQuotaValue?.toString() || "undefined";
 
-          serviceResourceObject.availibilityDomain.push({
-            name: availabilityDomain.name,
+          serviceResourceObject.availibilityDomainList.push({
+            aDName: availabilityDomain.name,
             available,
             used,
             quota,

@@ -1,5 +1,5 @@
 import { useAppSelector } from "../../hooks/useAppSelector";
-import { MyAccordion } from "../../layouts/MyAccordion";
+import { CompartmentDataAccordion } from "../../layouts/CompartmentDataAccordion";
 
 export const CompartmentList = () => {
   const compartmentHash = useAppSelector(
@@ -9,7 +9,12 @@ export const CompartmentList = () => {
   return (
     <>
       {Object.values(compartmentHash).map((compartment) => {
-        return <MyAccordion />;
+        return (
+          <CompartmentDataAccordion
+            compartmentName={compartment.compartmentName}
+            regions={compartment.regions}
+          />
+        );
       })}
     </>
   );
