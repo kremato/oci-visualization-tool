@@ -37,6 +37,7 @@ export const fetchLimitsData = () => {
 
     const response = await fetch(request);
     const hash = (await parseResponse(response)) as CompartmentsHash;
+    console.log(hash);
     dispatch(compartmentsActions.replaceCompartmentHash(hash));
   };
 };

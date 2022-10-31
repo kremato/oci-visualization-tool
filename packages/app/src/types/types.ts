@@ -5,7 +5,9 @@ export type IdentityRegion = identity.models.Region;
 export type CommonRegion = common.Region;
 export type RegionSubscription = identity.models.RegionSubscription;
 export type HierarchyMap = Map<string, Compartment[]>;
-export type ServiceSummary = limits.models.ServiceSummary;
+export type ServiceSummary = Omit<limits.models.ServiceSummary, "name"> & {
+  name: string;
+};
 
 export interface HierarchyHash {
   [id: string]: identity.models.Compartment[];
@@ -32,7 +34,7 @@ export type ResourceObjectRegion = {
   used: string;
 };
 
-export type ServiceResourceHashAD = { [id: string]:  [] };
+export type ServiceResourceHashAD = { [id: string]: [] };
 
 export type ServiceResourceHashRegion = {
   [id: string]: ResourceObjectRegion[];
