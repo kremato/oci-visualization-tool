@@ -7,7 +7,7 @@ const compartmentsSlice = createSlice({
   initialState: {
     compartmentList: [] as Compartment[],
     hierarchyHash: {} as HierarchyHash,
-    compartmentHash: {},
+    compartmentHash: Object.create(null) as CompartmentsHash,
   },
   reducers: {
     replaceCompartmentList(state, action: PayloadAction<Compartment[]>) {

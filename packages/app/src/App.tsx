@@ -10,7 +10,7 @@ import { ServiceList } from "./components/Services/ServiceList";
 import { fetchLimitsData } from "./store/inputActionCreators";
 import { ModifiableButton } from "./layouts/ModifiableButton";
 import { Grid } from "@mui/material";
-import { Compartments } from "./components/Compartments/Compartments";
+import { Compartments } from "./components/Compartments/InputCompartments";
 import { Regions } from "./components/Regions/Regions";
 import { Services } from "./components/Services/Services";
 
@@ -53,23 +53,7 @@ function App() {
           <ModifiableButton text={"Send"} action={sendData} />
         </Grid>
         <Grid item xs={6}>
-          <div>xs=6</div>
-          <div>xs=6</div>
-          <div>xs=6</div>
-          <div>xs=6</div>
-          <div>xs=6</div>
-          <div>xs=6</div>
-          <div>xs=6</div>
-          <div>xs=6</div>
-          <div>xs=6</div>
-          <div>xs=6</div>
-          <div>xs=6</div>
-          <div>xs=6</div>
-          <div>xs=6</div>
-          <div>xs=6</div>
-          <div>xs=6</div>
-          <div>xs=6</div>
-          <div>xs=6</div>
+          <CompartmentList />
         </Grid>
         <Grid item xs={6}>
           <div>xs=6</div>
