@@ -1,14 +1,15 @@
 import { ResourceObjectAD, ServiceScopeObject } from "../types/types";
 
 interface Props {
+  serviceName: string;
   resourceObjectADList: ResourceObjectAD[];
 }
 
-export const ADTable = ({ resourceObjectADList }: Props) => {
+export const ADTable = ({ serviceName, resourceObjectADList }: Props) => {
   return (
     <table>
       <tr>
-        <th>AD Scope</th>
+        <th>{serviceName}</th>
       </tr>
       <tr>
         <th>Limit Name</th>

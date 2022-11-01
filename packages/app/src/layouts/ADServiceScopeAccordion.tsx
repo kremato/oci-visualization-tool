@@ -10,12 +10,12 @@ interface Props {
   serviceName: string;
   resourceObjectADList: ResourceObjectAD[];
 }
-export const ADServiceScopeAccordion = ({
+export const ADScopeAccordion = ({
   serviceName,
   resourceObjectADList,
 }: Props) => (
   <div>
-    <Accordion>
+    {/* <Accordion>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls={`${serviceName}-compartment-content`}
@@ -26,6 +26,6 @@ export const ADServiceScopeAccordion = ({
       <AccordionDetails>
         <ADTable resourceObjectADList={resourceObjectADList} />
       </AccordionDetails>
-    </Accordion>
+    </Accordion> */}
   </div>
 );
