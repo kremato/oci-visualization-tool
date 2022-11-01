@@ -1,6 +1,6 @@
 import type { limits } from "oci-sdk";
 import { getLimitsClient } from "../clients/getLimitsClient";
-import type { ServiceSummary } from "../types/types";
+import type { ServiceSummary } from "common";
 
 /* I was not able to find a request that would be able to list
    all services that OCI offers. So for the time being, list

@@ -3,8 +3,8 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { ResourceObjectAD, ServiceScopeObject } from "../types/types";
 import { ADTable } from "./ADTable";
+import { ResourceObjectAD } from "common";
 
 interface Props {
   serviceName: string;

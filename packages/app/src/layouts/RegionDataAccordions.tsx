@@ -3,9 +3,9 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { ServiceScopeObject } from "../types/types";
 import { ADTable } from "./ADTable";
 import { RegionTable } from "./RegionTable";
+import { ServiceScopeObject } from "common";
 
 interface Props {
   regionName: string;

@@ -3,8 +3,8 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { ServiceScopeObject, StringHash } from "../types/types";
 import { RegionDataAccordion } from "./RegionDataAccordions";
+import { StringHash, ServiceScopeObject } from "common";
 
 interface Props {
   compartmentName: string;

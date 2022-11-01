@@ -3,26 +3,25 @@ import dotenv from "dotenv";
 import { listCompartments } from "./services/listCompartments";
 import cors from "cors";
 import { listRegionSubscriptions } from "./services/listRegionSubscriptions";
-import type {
-  InputData,
-  CommonRegion,
-  IdentityCompartment,
-  CompartmentsHash,
-  LimitDefinitionsPerScope,
-  RegionSubscription,
-  ServiceLimits,
-  ServiceSummary,
-  ResourceObjectAD,
-  CompartmentData,
-  StringHash,
-  ServiceScopeObject,
-} from "./types/types";
 import { listServices } from "./services/listServices";
 import { common } from "oci-sdk";
 import { getServiceLimits } from "./services/getServiceLimits";
 import { Provider } from "./clients/provider";
 import { getCompartmentRegionResources } from "./services/getCompartmentRegionResources";
 import { replacer } from "./utils/replacer";
+import type {
+  CompartmentData,
+  CompartmentsHash,
+  InputData,
+  ServiceScopeObject,
+} from "common";
+import type {
+  IdentityCompartment,
+  RegionSubscription,
+  CommonRegion,
+  ServiceSummary,
+} from "common";
+import type { LimitDefinitionsPerScope, ServiceLimits } from "./types/types";
 
 (async () => {
   try {

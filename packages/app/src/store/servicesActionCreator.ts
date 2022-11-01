@@ -1,4 +1,4 @@
-import { ServiceSummary } from "../types/types";
+import { ServiceSummary } from "common";
 import { servicesActions } from "./servicesSlice";
 import { AppDispatch } from "./store";
 

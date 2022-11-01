@@ -1,4 +1,4 @@
-import { CompartmentsHash } from "../types/types";
+import { CompartmentsHash } from "common";
 import { parseResponse } from "../utils/parseResponse";
 import { compartmentsActions } from "./compartmentsSlice";
 import { inputActions } from "./inputSlice";

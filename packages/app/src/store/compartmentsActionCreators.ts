@@ -1,4 +1,4 @@
-import { Compartment } from "../types/types";
+import { IdentityCompartment } from "common";
 import { compartmentsActions } from "./compartmentsSlice";
 import { AppDispatch } from "./store";
 
@@ -9,7 +9,7 @@ export const fetchCompartmentsList = () => {
       const request = new Request(`${import.meta.env.VITE_API}/compartments`);
 
       const response = await fetch(request);
-      const data = (await response.json()) as Compartment[];
+      const data = (await response.json()) as IdentityCompartment[];
       dispatch(compartmentsActions.replaceCompartmentList(data));
     } catch (e) {
       console.log(e);

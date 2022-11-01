@@ -1,7 +1,7 @@
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { useAppSelector } from "../../hooks/useAppSelector";
-import { RegionSubscription } from "../../types/types";
+import { RegionSubscription } from "common";
 import { SelectionList } from "../../layouts/SelectionLists";
 import { ModifiableCheckbox } from "../../layouts/ModifiableCheckbox";
 

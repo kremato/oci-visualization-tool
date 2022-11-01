@@ -2,7 +2,7 @@ import {
   ResourceObjectAD,
   ResourceObjectRegion,
   ServiceScopeObject,
-} from "../types/types";
+} from "common";
 
 interface Props {
   serviceName: string;

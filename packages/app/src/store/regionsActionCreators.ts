@@ -1,4 +1,4 @@
-import { RegionSubscription } from "../types/types";
+import { RegionSubscription } from "common";
 import { regionsActions } from "./regionsSlice";
 import { AppDispatch } from "./store";
 

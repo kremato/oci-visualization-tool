@@ -1,8 +1,8 @@
+import type { CommonRegion } from "common";
 import { LimitsClient, requests, models } from "oci-limits";
 import { getLimitsClient } from "../clients/getLimitsClient";
 import { Provider } from "../clients/provider";
 import type {
-  CommonRegion,
   LimitDefinitionsMap,
   LimitDefinitionsPerScope,
 } from "../types/types";

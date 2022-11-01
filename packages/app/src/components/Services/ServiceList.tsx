@@ -2,7 +2,7 @@ import { FormControlLabel, FormGroup } from "@mui/material";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { ModifiableCheckbox } from "../../layouts/ModifiableCheckbox";
 import { SelectionList } from "../../layouts/SelectionLists";
-import { ServiceSummary } from "../../types/types";
+import { ServiceSummary } from "common";
 
 export const ServiceList = () => {
   const services = useAppSelector((state) => state.services.servicesList);

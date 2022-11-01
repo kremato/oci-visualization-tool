@@ -1,8 +1,8 @@
 import { getCompartment } from "./getCompartment";
 import type { identity } from "oci-sdk";
 import { getIdentityClient } from "../clients/getIdentityClient";
-import type { IdentityCompartment } from "../types/types";
 import { Provider } from "../clients/provider";
+import type { IdentityCompartment } from "common";
 
 export const listCompartments = async (
   compartmentId: string,

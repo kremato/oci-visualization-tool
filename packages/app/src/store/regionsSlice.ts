@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RegionSubscription } from "../types/types";
+import { RegionSubscription } from "common";
 
 const regionsSlice = createSlice({
   name: "regions",

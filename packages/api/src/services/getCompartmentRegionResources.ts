@@ -1,13 +1,13 @@
+import type {
+  CommonRegion,
+  ServiceScopeObject,
+  ResourceObjectAD,
+  ResourceObjectRegion,
+} from "common";
 import { getIdentityClient } from "../clients/getIdentityClient";
 import { getLimitsClient } from "../clients/getLimitsClient";
 import { Provider } from "../clients/provider";
-import type {
-  CommonRegion,
-  LimitDefinitionsPerScope,
-  ServiceScopeObject,
-  ResourceObjectRegion,
-  ResourceObjectAD,
-} from "../types/types";
+import type { LimitDefinitionsPerScope } from "../types/types";
 import { getAvailibilityDomainsPerRegion } from "./getAvailibilityDomainsPerRegion";
 import {
   getResourceAvailabilityAD,

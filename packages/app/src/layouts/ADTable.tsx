@@ -1,4 +1,4 @@
-import { ResourceObjectAD, ServiceScopeObject } from "../types/types";
+import { ResourceObjectAD } from "common";
 
 interface Props {
   serviceName: string;

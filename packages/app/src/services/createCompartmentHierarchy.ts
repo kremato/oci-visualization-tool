@@ -27,13 +27,14 @@ export const createCompartmentHierarchy = (
   return compartmentDependecyHash;
 }; */
 
-import { Compartment, HierarchyHash } from "../types/types";
+import { IdentityCompartment } from "common";
+import { HierarchyHash } from "../types/types";
 
 /* For now, this function assumes, that there is a root compartment in the compartmentsList 
    and that this root compartment is received as an argument. */
 export const createCompartmentHierarchy = (
   rootCompartmentId: string,
-  compartments: Compartment[]
+  compartments: IdentityCompartment[]
 ): HierarchyHash => {
   let compartmentDependecyHash: HierarchyHash = {
     [rootCompartmentId]: [],

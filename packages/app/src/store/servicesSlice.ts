@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ServiceSummary } from "../types/types";
+import { ServiceSummary } from "common";
 
 const servicesSlice = createSlice({
   name: "services",
