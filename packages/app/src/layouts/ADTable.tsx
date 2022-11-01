@@ -8,6 +8,9 @@ export const ADTable = ({ resourceObjectADList }: Props) => {
   return (
     <table>
       <tr>
+        <th>AD Scope</th>
+      </tr>
+      <tr>
         <th>Limit Name</th>
         <th>Availibility Domain</th>
         <th>Available</th>
