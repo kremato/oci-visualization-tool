@@ -13,7 +13,7 @@ import {
   getResourceAvailabilityAD,
   getResourceAvailabilityRegion,
 } from "./getResourceAvailibility";
-import { outputToFile } from "./outputToFile";
+import { outputToFile } from "../utils/outputToFile";
 
 export const getCompartmentRegionResources = async (
   compartmentId: string,

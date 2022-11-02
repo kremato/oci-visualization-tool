@@ -6,7 +6,7 @@ import type {
   LimitDefinitionsMap,
   LimitDefinitionsPerScope,
 } from "../types/types";
-import { outputToFile } from "./outputToFile";
+import { outputToFile } from "../utils/outputToFile";
 
 const perScope = (
   servicesPerScope: LimitDefinitionsPerScope,

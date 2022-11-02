@@ -8,7 +8,6 @@
     "isolatedModules": true,
     "preserveWatchOutput": true,
     "skipLibCheck": true,
-    "noEmit": true,
-  },
-  "exclude": ["node_modules"]
+    "noEmit": true
+  }
 }
