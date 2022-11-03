@@ -8,4 +8,5 @@ export enum Names {
   Compartment = "compartment",
   Region = "region",
   Service = "service",
+  AD = "AD",
 }
