@@ -30,7 +30,9 @@ export const getCompartmentRegionResources = async (
     console.log(scope);
     logFormattedOutput += `Scope: ${scope}\n`;
     // for (const serviceName of serviceList) {
-    const limitDefinitions = serviceLimitMap.get(serviceName)!;
+    const limitDefinitions = serviceLimitMap.get(serviceName);
+    // there is no service with that name in current scope
+    if (!limitDefinitions) continue;
     console.log(serviceName);
     logFormattedOutput += `\tService: ${serviceName}\n`;
     if (scope === "AD") {
