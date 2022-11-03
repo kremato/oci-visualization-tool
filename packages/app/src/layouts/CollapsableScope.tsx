@@ -33,5 +33,7 @@ export const CollapsableScope = ({ scope, resourceObjectList }: Props) => {
       );
     }
   );
-  return <AccordionWrapper title={scope}>{children}</AccordionWrapper>;
+  return (
+    <AccordionWrapper title={`${scope} Scope`}>{children}</AccordionWrapper>
+  );
 };

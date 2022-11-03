@@ -7,12 +7,6 @@ export const CompartmentList = () => {
     (state) => state.compartments.compartmentHash
   );
 
-  {
-    /* <CompartmentDataAccordion
-            compartmentName={compartment.compartmentName}
-            regions={compartment.regions}
-          /> */
-  }
   return (
     <>
       {Object.values(compartmentHash).map((compartment) => {
