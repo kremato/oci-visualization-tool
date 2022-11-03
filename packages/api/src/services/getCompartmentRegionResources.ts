@@ -1,13 +1,10 @@
 import type {
-  CommonRegion,
   ServiceScopeObject,
   ResourceObjectAD,
   ResourceObjectRegion,
 } from "common";
-import { getIdentityClient } from "../clients/getIdentityClient";
 import { getLimitsClient } from "../clients/getLimitsClient";
-import { Provider } from "../clients/provider";
-import type { LimitDefinitionsPerScope } from "../types/types";
+import type { CommonRegion, LimitDefinitionsPerScope } from "../types/types";
 import { getAvailibilityDomainsPerRegion } from "./getAvailibilityDomainsPerRegion";
 import {
   getResourceAvailabilityAD,
@@ -22,13 +19,10 @@ export const getCompartmentRegionResources = async (
   serviceName: string,
   regionServicesObject: ServiceScopeObject
 ): Promise<ServiceScopeObject> => {
-  const identityClient = getIdentityClient(Provider.getInstance().provider);
   const limitsClient = getLimitsClient();
   limitsClient.region = region;
 
-  const availabilityDomains = await getAvailibilityDomainsPerRegion(
-    identityClient
-  );
+  const availabilityDomains = await getAvailibilityDomainsPerRegion(region);
   let logFormattedOutput = "";
   for (let [scope, serviceLimitMap] of limitDefinitionsPerScope) {
     // if (scopeFilter(scope)) continue;
@@ -44,12 +38,19 @@ export const getCompartmentRegionResources = async (
       aDScopeHash[serviceName] = [];
 
       for (const limitDefinitionSummary of limitDefinitions) {
+        /* console.log(
+          "Name: " +
+            limitDefinitionSummary.name +
+            "; ServiceName: " +
+            limitDefinitionSummary.serviceName
+        ); */
         const serviceResourceObject: ResourceObjectAD = {
           resourceName: limitDefinitionSummary.name,
           availibilityDomainList: [],
         };
         logFormattedOutput += `\t\tResource: ${limitDefinitionSummary.name}\n`;
         for (const availabilityDomain of availabilityDomains) {
+          /* console.log("\tAD: " + availabilityDomain.name); */
           const resourceAvailability = await getResourceAvailabilityAD(
             limitsClient,
             compartmentId,

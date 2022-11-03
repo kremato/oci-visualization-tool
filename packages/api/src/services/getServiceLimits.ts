@@ -1,4 +1,4 @@
-import type { CommonRegion } from "common";
+import type { CommonRegion } from "../types/types";
 import { LimitsClient, requests, models } from "oci-limits";
 import { getLimitsClient } from "../clients/getLimitsClient";
 import { Provider } from "../clients/provider";

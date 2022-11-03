@@ -3,7 +3,6 @@ import type { common, identity, limits } from "oci-sdk";
 // grep --exclude=\node_modules -rnw ../app -e "CompartmentsHash"
 export type IdentityCompartment = identity.models.Compartment;
 export type IdentityRegion = identity.models.Region; // IdentityRegion is not used anywhere
-export type CommonRegion = common.Region; // CommonRegion is not used in app
 export type RegionSubscription = identity.models.RegionSubscription;
 export type ServiceSummary = Omit<limits.models.ServiceSummary, "name"> & {
   name: string;
@@ -37,8 +36,3 @@ export type CompartmentData = {
   regions: StringHash<ServiceScopeObject>;
 };
 export type CompartmentsHash = StringHash<CompartmentData>;
-export type InputData = {
-  compartments: string[];
-  regions: string[];
-  services: string[];
-}; // InputData is not used in app

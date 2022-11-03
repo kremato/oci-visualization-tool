@@ -8,20 +8,21 @@ import { common } from "oci-sdk";
 import { getServiceLimits } from "./services/getServiceLimits";
 import { Provider } from "./clients/provider";
 import { getCompartmentRegionResources } from "./services/getCompartmentRegionResources";
-import { replacer } from "./utils/replacer";
+
 import type {
-  CompartmentData,
-  CompartmentsHash,
+  CommonRegion,
   InputData,
-  ServiceScopeObject,
-} from "common";
+  LimitDefinitionsPerScope,
+  ServiceLimits,
+} from "./types/types";
 import type {
   IdentityCompartment,
   RegionSubscription,
-  CommonRegion,
   ServiceSummary,
+  CompartmentsHash,
+  CompartmentData,
+  ServiceScopeObject,
 } from "common";
-import type { LimitDefinitionsPerScope, ServiceLimits } from "./types/types";
 
 (async () => {
   try {

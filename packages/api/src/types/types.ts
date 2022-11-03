@@ -1,6 +1,6 @@
-import type { CommonRegion } from "common";
-import type { identity, limits } from "oci-sdk";
+import type { common, identity, limits } from "oci-sdk";
 
+export type CommonRegion = common.Region; // CommonRegion is not used in app
 export type LimitDefinitionsMap = Map<
   string,
   limits.models.LimitDefinitionSummary[]
