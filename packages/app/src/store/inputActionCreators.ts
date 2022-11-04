@@ -1,4 +1,4 @@
-import { CompartmentsHash } from "common";
+import { CompartmentsHash, InputData } from "common";
 import { parseResponse } from "../utils/parseResponse";
 import { compartmentsActions } from "./compartmentsSlice";
 import { inputActions } from "./inputSlice";
@@ -19,10 +19,11 @@ import store, { AppDispatch } from "./store";
 
 export const fetchLimitsData = () => {
   return async (dispatch: AppDispatch, getState: typeof store.getState) => {
-    const inputData = {
+    const inputData: InputData = {
       compartments: getState().input.compartments,
       regions: getState().input.regions,
       services: getState().input.services,
+      scopes: getState().input.scopes,
     };
 
     console.log(inputData);

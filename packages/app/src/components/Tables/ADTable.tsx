@@ -1,9 +1,9 @@
-import { ResourceObjectAD } from "common";
+import { ResourceDataAD } from "common";
 import React from "react";
 
 interface Props {
   serviceName: string;
-  resourceObjectADList: ResourceObjectAD[];
+  resourceObjectADList: ResourceDataAD[];
 }
 
 export const ADTable = ({ serviceName, resourceObjectADList }: Props) => {

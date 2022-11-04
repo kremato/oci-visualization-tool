@@ -1,5 +1,5 @@
 import { ServiceScopeObject } from "common";
-import { Names } from "../../types/types";
+import { Names } from "common";
 import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
 import { AccordionWrapper } from "../../layouts/AccordionWrapper";
 import { CollapsableScope } from "../Scopes/CollapsableScope";

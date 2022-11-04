@@ -11,6 +11,7 @@ import { Grid } from "@mui/material";
 import { CompartmentsDropdown } from "./components/Compartments/CompartmentsDropdown";
 import { RegionsDropdown } from "./components/Regions/RegionsDropdown";
 import { Services } from "./components/Services/Services";
+import { ScopesDropdown } from "./components/Scopes/ScopesDropdown";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -38,14 +39,17 @@ function App() {
   return (
     <div className="App">
       <Grid container spacing={2} sx={{ p: "1rem" }}>
-        <Grid item xs={4}>
+        <Grid item xs={3}>
           <CompartmentsDropdown />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={3}>
           <RegionsDropdown />
         </Grid>
         <Grid item xs={3}>
           <Services />
+        </Grid>
+        <Grid item xs={3}>
+          <ScopesDropdown />
         </Grid>
         <Grid item xs={1}>
           <ModifiableButton text={"Send"} action={sendData} />

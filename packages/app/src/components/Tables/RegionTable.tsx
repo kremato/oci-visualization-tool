@@ -1,8 +1,8 @@
-import { ResourceObjectRegion } from "common";
+import { ResourceDataRegion } from "common";
 
 interface Props {
   serviceName: string;
-  resourceObjectRegionList: ResourceObjectRegion[];
+  resourceObjectRegionList: ResourceDataRegion[];
 }
 
 export const RegionTable = ({

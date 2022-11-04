@@ -5,7 +5,7 @@ import { capitalizeFirstLetter } from "../utils/capitalizeFirstLetter";
 import { inputActions } from "../store/inputSlice";
 import { useAppDispatch } from "../hooks/useAppDispatch";
 import { Checkbox } from "@mui/material";
-import { Names } from "../types/types";
+import { Names } from "common";
 
 type DropdownItem = { label: string; id: string };
 
@@ -24,6 +24,9 @@ export const Dropdown = ({ name, options }: Props) => {
     }
     if (name === Names.Service) {
       action = inputActions.replaceServicesId;
+    }
+    if (name === Names.Scope) {
+      action = inputActions.replaceScopes;
     }
     dispatch(action(selected.map((item) => item.id)));
   };

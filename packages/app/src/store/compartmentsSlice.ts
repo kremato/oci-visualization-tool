@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { createCompartmentHierarchy } from "../services/createCompartmentHierarchy";
+import { createCompartmentHierarchy } from "../utils/createCompartmentHierarchy";
 import { HierarchyHash } from "../types/types";
 import { CompartmentsHash, IdentityCompartment } from "common";
 
