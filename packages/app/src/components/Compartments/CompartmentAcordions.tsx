@@ -8,11 +8,12 @@ export const CompartmentAccordions = () => {
 
   return (
     <>
-      {Object.values(compartmentHash).map((compartment) => {
+      {Object.entries(compartmentHash).map(([compartmentId, compartment]) => {
         return (
           <CollapsableCompartment
             compartmentName={compartment.compartmentName}
             regions={compartment.regions}
+            key={compartmentId}
           />
         );
       })}

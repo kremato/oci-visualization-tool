@@ -14,6 +14,7 @@ export const CollapsableCompartment = ({ compartmentName, regions }: Props) => {
         <CollapsableRegion
           regionName={regionName}
           serviceScopeObject={serviceScopeObject}
+          key={regionName}
         />
       ))}
     </AccordionWrapper>
