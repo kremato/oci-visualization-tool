@@ -1,8 +1,8 @@
 import { ServiceScopeObject } from "common";
-import { Names } from "../types/types";
-import { capitalizeFirstLetter } from "../utils/capitalizeFirstLetter";
-import { AccordionWrapper } from "./AccordionWrapper";
-import { CollapsableScope } from "./CollapsableScope";
+import { Names } from "../../types/types";
+import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
+import { AccordionWrapper } from "../../layouts/AccordionWrapper";
+import { CollapsableScope } from "../Scopes/CollapsableScope";
 
 interface Props {
   regionName: string;

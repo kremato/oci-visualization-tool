@@ -1,7 +1,7 @@
 import { useAppSelector } from "../../hooks/useAppSelector";
-import { CollapsableCompartment } from "../../layouts/CollapsableCompartment";
+import { CollapsableCompartment } from "./CollapsableCompartment";
 
-export const CompartmentList = () => {
+export const CompartmentAccordions = () => {
   const compartmentHash = useAppSelector(
     (state) => state.compartments.compartmentHash
   );

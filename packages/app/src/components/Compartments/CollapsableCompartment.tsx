@@ -1,6 +1,6 @@
 import { StringHash, ServiceScopeObject } from "common";
-import { AccordionWrapper } from "./AccordionWrapper";
-import { CollapsableRegion } from "./CollapsableRegion";
+import { AccordionWrapper } from "../../layouts/AccordionWrapper";
+import { CollapsableRegion } from "../Regions/CollapsableRegion";
 
 interface Props {
   compartmentName: string;

@@ -2,7 +2,7 @@ import { useAppSelector } from "../../hooks/useAppSelector";
 import { Dropdown } from "../../layouts/Dropdown";
 import { Names } from "../../types/types";
 
-export const Compartments = () => {
+export const CompartmentsDropdown = () => {
   const compartments = useAppSelector(
     (state) => state.compartments.compartmentList
   );

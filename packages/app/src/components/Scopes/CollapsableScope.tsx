@@ -4,10 +4,10 @@ import {
   ServiceResourceHashAD,
   StringHash,
 } from "common";
-import { Names } from "../types/types";
-import { AccordionWrapper } from "./AccordionWrapper";
-import { ADTable } from "./ADTable";
-import { RegionTable } from "./RegionTable";
+import { Names } from "../../types/types";
+import { AccordionWrapper } from "../../layouts/AccordionWrapper";
+import { ADTable } from "../Tables/ADTable";
+import { RegionTable } from "../Tables/RegionTable";
 
 interface Props {
   scope: string;

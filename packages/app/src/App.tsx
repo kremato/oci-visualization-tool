@@ -1,17 +1,15 @@
 import { useEffect } from "react";
-import { CompartmentList } from "./components/Compartments/CompartmentList";
+import { CompartmentAccordions } from "./components/Compartments/CompartmentAcordions";
 import { useAppDispatch } from "./hooks/useAppDispatch";
 import { fetchCompartmentsList } from "./store/compartmentsActionCreators";
 import "./App.css";
-import { RegionList } from "./components/Regions/RegionList";
 import { fetchRegionsList } from "./store/regionsActionCreators";
 import { fetchServicesList } from "./store/servicesActionCreator";
-import { ServiceList } from "./components/Services/ServiceList";
 import { fetchLimitsData } from "./store/inputActionCreators";
 import { ModifiableButton } from "./layouts/ModifiableButton";
 import { Grid } from "@mui/material";
-import { Compartments } from "./components/Compartments/InputCompartments";
-import { Regions } from "./components/Regions/Regions";
+import { CompartmentsDropdown } from "./components/Compartments/CompartmentsDropdown";
+import { RegionsDropdown } from "./components/Regions/RegionsDropdown";
 import { Services } from "./components/Services/Services";
 
 function App() {
@@ -41,10 +39,10 @@ function App() {
     <div className="App">
       <Grid container spacing={2} sx={{ p: "1rem" }}>
         <Grid item xs={4}>
-          <Compartments />
+          <CompartmentsDropdown />
         </Grid>
         <Grid item xs={4}>
-          <Regions />
+          <RegionsDropdown />
         </Grid>
         <Grid item xs={3}>
           <Services />
@@ -53,7 +51,7 @@ function App() {
           <ModifiableButton text={"Send"} action={sendData} />
         </Grid>
         <Grid item xs={12}>
-          <CompartmentList />
+          <CompartmentAccordions />
         </Grid>
       </Grid>
       ;
