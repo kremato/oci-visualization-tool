@@ -31,11 +31,16 @@ export interface ScopeObject {
   aDScopeHash: StringHash<ResourceDataAD[]>;
   regionScopeHash: StringHash<ResourceDataRegion[]>;
 }
-
+export interface ResourceDataGlobal {
+  resourceName: string | undefined;
+  available: string;
+  used: string;
+  quota: string;
+}
 export interface CompartmentData {
   compartmentName: string;
   regions: StringHash<ScopeObject>;
-  global?: StringHash<ScopeObject>;
+  global?: StringHash<ResourceDataGlobal[]>;
 }
 export interface CompartmentsHash extends StringHash<CompartmentData> {}
 export enum Names {

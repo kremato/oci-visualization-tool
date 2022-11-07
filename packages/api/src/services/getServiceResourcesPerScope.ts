@@ -4,6 +4,7 @@ import {
   ResourceDataRegion,
   StringHash,
   Names,
+  ResourceDataGlobal,
 } from "common";
 import { getLimitsClient } from "../clients/getLimitsClient";
 import type {
@@ -18,6 +19,8 @@ import {
 } from "./getResourceAvailibility";
 import { outputToFile } from "../utils/outputToFile";
 import path from "path";
+import { getResourceAvailability } from "./tmp";
+import { Provider } from "../clients/provider";
 
 export const getServiceResourcesPerScope = async (
   compartmentId: string,
@@ -36,6 +39,8 @@ export const getServiceResourcesPerScope = async (
   let logFormattedOutput = "";
   const aDScopeHash: StringHash<ResourceDataAD[]> = Object.create(null);
   const serviceResourceHash: StringHash<ResourceDataRegion[]> =
+    Object.create(null);
+  const globalServiceResourceHash: StringHash<ResourceDataGlobal[]> =
     Object.create(null);
   for (let [scope, serviceLimitMap] of limitDefinitionsPerScope) {
     if (!requestedScopes.includes(scope)) continue;
@@ -68,7 +73,13 @@ export const getServiceResourcesPerScope = async (
             );
             return;
           }
-          const resourceAvailability = await getResourceAvailabilityAD(
+          /* const resourceAvailability = await getResourceAvailabilityAD(
+            limitsClient,
+            compartmentId,
+            limitDefinitionSummary,
+            availabilityDomain
+          ); */
+          const resourceAvailability = await getResourceAvailability(
             limitsClient,
             compartmentId,
             limitDefinitionSummary,
@@ -113,7 +124,7 @@ export const getServiceResourcesPerScope = async (
           );
           return;
         }
-        const resourceAvailability = await getResourceAvailabilityRegion(
+        const resourceAvailability = await getResourceAvailability(
           limitsClient,
           compartmentId,
           limitDefinitionSummary
@@ -138,9 +149,41 @@ export const getServiceResourcesPerScope = async (
       }
       serviceResourceHash[serviceName] = resourceList;
     }
-    /* if (scope == Names.Global.toUpperCase()) {
-      const globalServiceResourceHash: StringHash<{}>;
-    } */
+    if (scope == Names.Global.toUpperCase()) {
+      const resourceList: ResourceDataGlobal[] = [];
+      for (const limitDefinitionSummary of limitDefinitions) {
+        const resourceDataGlobal: ResourceDataGlobal = {
+          resourceName: limitDefinitionSummary.name,
+          available: "",
+          used: "",
+          quota: "",
+        };
+
+        const resourceAvailability = await getResourceAvailability(
+          limitsClient,
+          Provider.getInstance().provider.getTenantId(),
+          limitDefinitionSummary
+        );
+
+        if (!resourceAvailability) continue;
+        resourceAvailability.effectiveQuotaValue;
+        const available = resourceAvailability.available?.toString() || "n/a";
+        const used = resourceAvailability.used?.toString() || "n/a";
+        const quota =
+          resourceAvailability.effectiveQuotaValue?.toString() || "n/a";
+
+        resourceDataGlobal.available = available;
+        resourceDataGlobal.used = used;
+        resourceDataGlobal.quota = quota;
+        logFormattedOutput += `\t\tResource: ${
+          limitDefinitionSummary.name
+        }${" ".repeat(32)} available: ${available}${" ".repeat(
+          12
+        )} | used: ${used}${" ".repeat(12)} | qouta: ${quota}\n`;
+        resourceList.push(resourceDataGlobal);
+      }
+      globalServiceResourceHash[serviceName] = resourceList;
+    }
   }
 
   if (requestedScopes.includes(Names.AD)) {
