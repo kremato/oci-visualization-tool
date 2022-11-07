@@ -7,7 +7,7 @@ import { ReactNode } from "react";
 
 interface Props {
   title: string;
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 export const AccordionWrapper = ({ title, children }: Props) => {

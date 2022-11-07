@@ -1,5 +1,5 @@
 import { CompartmentsHash, InputData } from "common";
-import { parseResponse } from "../utils/parseResponse";
+import { parseResponseBody } from "../utils/parseResponseBody";
 import { compartmentsActions } from "./compartmentsSlice";
 import { inputActions } from "./inputSlice";
 import store, { AppDispatch } from "./store";
@@ -19,13 +19,7 @@ import store, { AppDispatch } from "./store";
 
 export const fetchLimitsData = () => {
   return async (dispatch: AppDispatch, getState: typeof store.getState) => {
-    const inputData: InputData = {
-      compartments: getState().input.compartments,
-      regions: getState().input.regions,
-      services: getState().input.services,
-      scopes: getState().input.scopes,
-    };
-
+    const inputData: InputData = getState().input;
     console.log(inputData);
     const request = new Request(`${import.meta.env.VITE_API}/limits`, {
       method: "POST",
@@ -37,7 +31,15 @@ export const fetchLimitsData = () => {
     });
 
     const response = await fetch(request);
-    const hash = (await parseResponse(response)) as CompartmentsHash;
+
+    // Response code 409 in this case means, that there have already been newer
+    // post request made on ${import.meta.env.VITE_API}/limits
+    if (response.status === 409) {
+      console.log(`Received status code 409, old request rejected`);
+      return;
+    }
+
+    const hash = (await parseResponseBody(response)) as CompartmentsHash;
     console.log(hash);
     dispatch(compartmentsActions.replaceCompartmentHash(hash));
   };

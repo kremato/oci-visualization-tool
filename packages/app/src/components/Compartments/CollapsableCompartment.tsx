@@ -1,10 +1,10 @@
-import { StringHash, ServiceScopeObject } from "common";
+import { StringHash, ScopeObject } from "common";
 import { AccordionWrapper } from "../../layouts/AccordionWrapper";
 import { CollapsableRegion } from "../Regions/CollapsableRegion";
 
 interface Props {
   compartmentName: string;
-  regions: StringHash<ServiceScopeObject>;
+  regions: StringHash<ScopeObject>;
 }
 
 export const CollapsableCompartment = ({ compartmentName, regions }: Props) => {

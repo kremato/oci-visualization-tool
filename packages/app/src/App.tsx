@@ -46,10 +46,10 @@ function App() {
           <RegionsDropdown />
         </Grid>
         <Grid item xs={3}>
-          <Services />
+          <ScopesDropdown />
         </Grid>
         <Grid item xs={3}>
-          <ScopesDropdown />
+          <Services />
         </Grid>
         <Grid item xs={1}>
           <ModifiableButton text={"Send"} action={sendData} />

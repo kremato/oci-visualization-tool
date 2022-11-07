@@ -1,6 +1,6 @@
 import { reviver } from "./reviver";
 
-export const parseResponse = async (response: Response) => {
+export const parseResponseBody = async (response: Response) => {
   let fullText = "";
   if (response.body) {
     const reader = response.body!.getReader();

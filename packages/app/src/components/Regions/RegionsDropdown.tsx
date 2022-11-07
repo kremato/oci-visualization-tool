@@ -1,6 +1,6 @@
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { Dropdown } from "../../layouts/Dropdown";
-import { Names } from "../../types/types";
+import { Names } from "common";
 
 export const RegionsDropdown = () => {
   const regions = useAppSelector((state) => state.regions.regionsList);

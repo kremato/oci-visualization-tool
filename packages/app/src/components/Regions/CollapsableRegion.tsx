@@ -1,4 +1,4 @@
-import { ServiceScopeObject } from "common";
+import { ScopeObject } from "common";
 import { Names } from "common";
 import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
 import { AccordionWrapper } from "../../layouts/AccordionWrapper";
@@ -6,7 +6,7 @@ import { CollapsableScope } from "../Scopes/CollapsableScope";
 
 interface Props {
   regionName: string;
-  serviceScopeObject: ServiceScopeObject;
+  serviceScopeObject: ScopeObject;
 }
 
 export const CollapsableRegion = ({
@@ -15,14 +15,18 @@ export const CollapsableRegion = ({
 }: Props) => {
   return (
     <AccordionWrapper title={regionName}>
-      <CollapsableScope
-        scope={Names.AD}
-        resourceObjectList={serviceScopeObject.aDScope}
-      />
-      <CollapsableScope
-        scope={capitalizeFirstLetter(Names.Region)}
-        resourceObjectList={serviceScopeObject.regionScope}
-      />
+      {Object.keys(serviceScopeObject.aDScopeHash).length !== 0 && (
+        <CollapsableScope
+          scope={Names.AD}
+          resourceObjectList={serviceScopeObject.aDScopeHash}
+        />
+      )}
+      {Object.keys(serviceScopeObject.regionScopeHash).length !== 0 && (
+        <CollapsableScope
+          scope={capitalizeFirstLetter(Names.Region)}
+          resourceObjectList={serviceScopeObject.regionScopeHash}
+        />
+      )}
     </AccordionWrapper>
   );
 };

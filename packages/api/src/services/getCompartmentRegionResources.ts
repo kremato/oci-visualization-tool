@@ -1,12 +1,23 @@
-import type { ScopeObject, ResourceDataAD, ResourceDataRegion } from "common";
+import {
+  ScopeObject,
+  ResourceDataAD,
+  ResourceDataRegion,
+  StringHash,
+  Names,
+} from "common";
 import { getLimitsClient } from "../clients/getLimitsClient";
-import type { CommonRegion, LimitDefinitionsPerScope } from "../types/types";
+import type {
+  CommonRegion,
+  LimitDefinitionsPerScope,
+  Token,
+} from "../types/types";
 import { getAvailibilityDomainsPerRegion } from "./getAvailibilityDomainsPerRegion";
 import {
   getResourceAvailabilityAD,
   getResourceAvailabilityRegion,
 } from "./getResourceAvailibility";
 import { outputToFile } from "../utils/outputToFile";
+import path from "path";
 
 export const getCompartmentRegionResources = async (
   compartmentId: string,
@@ -14,15 +25,19 @@ export const getCompartmentRegionResources = async (
   limitDefinitionsPerScope: LimitDefinitionsPerScope,
   serviceName: string,
   requestedScopes: string[],
-  regionServicesObject: ScopeObject
-): Promise<ScopeObject> => {
+  regionServicesObject: ScopeObject,
+  initialPostLimitsCount: number,
+  token: Token
+): Promise<void> => {
   const limitsClient = getLimitsClient();
   limitsClient.region = region;
 
   const availabilityDomains = await getAvailibilityDomainsPerRegion(region);
   let logFormattedOutput = "";
+  const aDScopeHash: StringHash<ResourceDataAD[]> = Object.create(null);
+  const serviceResourceHash: StringHash<ResourceDataRegion[]> =
+    Object.create(null);
   for (let [scope, serviceLimitMap] of limitDefinitionsPerScope) {
-    // if (scopeFilter(scope)) continue;
     if (!requestedScopes.includes(scope)) continue;
     console.log(scope);
     logFormattedOutput += `Scope: ${scope}\n`;
@@ -32,9 +47,7 @@ export const getCompartmentRegionResources = async (
     console.log(serviceName);
     logFormattedOutput += `\tService: ${serviceName}\n`;
     if (scope === "AD") {
-      const aDScopeHash = regionServicesObject.aDScopeHash;
       aDScopeHash[serviceName] = [];
-
       for (const limitDefinitionSummary of limitDefinitions) {
         /* console.log(
           "Name: " +
@@ -49,6 +62,12 @@ export const getCompartmentRegionResources = async (
         logFormattedOutput += `\t\tResource: ${limitDefinitionSummary.name}\n`;
         for (const availabilityDomain of availabilityDomains) {
           /* console.log("\tAD: " + availabilityDomain.name); */
+          if (token.postLimitsCount != initialPostLimitsCount + 1) {
+            console.log(
+              `[${path.basename(__filename)}]: new request detected, aborting`
+            );
+            return;
+          }
           const resourceAvailability = await getResourceAvailabilityAD(
             limitsClient,
             compartmentId,
@@ -75,13 +94,12 @@ export const getCompartmentRegionResources = async (
             resourceAvailability.used
           }${" ".repeat(12)} | quota: ${quota}\n`;
         }
-        aDScopeHash[serviceName]?.push(serviceResourceObject);
+
+        aDScopeHash[serviceName]!.push(serviceResourceObject);
       }
     }
     if (scope == "REGION") {
-      const serviceResourceHash = regionServicesObject.regionScopeHash;
       const resourceList: ResourceDataRegion[] = [];
-      serviceResourceHash[serviceName] = resourceList;
       for (const limitDefinitionSummary of limitDefinitions) {
         const resourceObject: ResourceDataRegion = {
           resourceName: limitDefinitionSummary.name,
@@ -89,6 +107,12 @@ export const getCompartmentRegionResources = async (
           used: "",
         };
 
+        if (token.postLimitsCount != initialPostLimitsCount + 1) {
+          console.log(
+            `[${path.basename(__filename)}]: new request detected, aborting`
+          );
+          return;
+        }
         const resourceAvailability = await getResourceAvailabilityRegion(
           limitsClient,
           compartmentId,
@@ -110,11 +134,26 @@ export const getCompartmentRegionResources = async (
         }\n`;
         resourceList.push(resourceObject);
       }
+      serviceResourceHash[serviceName] = resourceList;
     }
-    //}
   }
+
+  // regionServicesObject = { aDScopeHash, regionScopeHash: serviceResourceHash };
+
+  if (requestedScopes.includes(Names.AD)) {
+    for (const [service, value] of Object.entries(aDScopeHash)) {
+      regionServicesObject.aDScopeHash[service] = aDScopeHash[service]!;
+    }
+  }
+  if (requestedScopes.includes(Names.Region.toUpperCase())) {
+    for (const [service, value] of Object.entries(aDScopeHash)) {
+      regionServicesObject.regionScopeHash[service] =
+        serviceResourceHash[service]!;
+    }
+  }
+  // regionServicesObject.aDScopeHash = aDScopeHash;
   outputToFile("test/getCompartmentsRegionResources.txt", logFormattedOutput);
-  return regionServicesObject;
+  // return regionServicesObject;
 };
 
 /* export const getCompartmentRegionResources = async (
