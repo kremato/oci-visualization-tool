@@ -2,12 +2,12 @@ import { ResourceDataRegion } from "common";
 
 interface Props {
   serviceName: string;
-  resourceObjectRegionList: ResourceDataRegion[];
+  resourceDataRegionList: ResourceDataRegion[];
 }
 
 export const RegionTable = ({
   serviceName,
-  resourceObjectRegionList,
+  resourceDataRegionList: resourceObjectRegionList,
 }: Props) => {
   return (
     <table>
@@ -19,6 +19,7 @@ export const RegionTable = ({
           <th>Limit Name</th>
           <th>Available</th>
           <th>Used</th>
+          <th>Quota</th>
         </tr>
       </thead>
       <tbody>
@@ -28,6 +29,7 @@ export const RegionTable = ({
               <td>{resourceObjectRegion.resourceName}</td>
               <td>{resourceObjectRegion.available}</td>
               <td>{resourceObjectRegion.used}</td>
+              <td>{resourceObjectRegion.quota}</td>
             </tr>
           );
         })}

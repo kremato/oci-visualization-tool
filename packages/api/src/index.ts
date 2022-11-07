@@ -7,7 +7,7 @@ import { listServices } from "./services/listServices";
 import { common } from "oci-sdk";
 import { getServiceLimits } from "./services/getServiceLimits";
 import { Provider } from "./clients/provider";
-import { getCompartmentRegionResources } from "./services/getCompartmentRegionResources";
+import { getServiceResourcesPerScope } from "./services/getServiceResourcesPerScope";
 import { Names } from "common";
 import path from "path";
 import type {
@@ -150,7 +150,7 @@ import {
 
             const limits = serviceLimits.get(region);
             promises.push(
-              getCompartmentRegionResources(
+              getServiceResourcesPerScope(
                 compartment.id,
                 region,
                 limits!,

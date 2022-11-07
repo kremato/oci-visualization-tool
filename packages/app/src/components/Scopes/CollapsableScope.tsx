@@ -22,7 +22,7 @@ export const CollapsableScope = ({ scope, resourceObjectList }: Props) => {
       return (
         <RegionTable
           serviceName={serviceName}
-          resourceObjectRegionList={resourceObjectList as ResourceDataRegion[]}
+          resourceDataRegionList={resourceObjectList as ResourceDataRegion[]}
           key={serviceName}
         ></RegionTable>
       );

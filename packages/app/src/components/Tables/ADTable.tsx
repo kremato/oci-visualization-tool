@@ -18,6 +18,7 @@ export const ADTable = ({ serviceName, resourceObjectADList }: Props) => {
           <th>Availibility Domain</th>
           <th>Available</th>
           <th>Used</th>
+          <th>Quota</th>
         </tr>
       </thead>
       <tbody>
@@ -33,6 +34,7 @@ export const ADTable = ({ serviceName, resourceObjectADList }: Props) => {
                     <td>{limits.aDName}</td>
                     <td>{limits.available}</td>
                     <td>{limits.used}</td>
+                    <td>{limits.quota}</td>
                   </React.Fragment>
                 );
               })}

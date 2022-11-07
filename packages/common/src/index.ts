@@ -11,6 +11,7 @@ export interface HierarchyMap extends Map<string, IdentityCompartment[]> {}
 export interface StringHash<Value> {
   [id: string]: Value;
 }
+
 export interface ResourceDataAD {
   resourceName: string | undefined;
   availibilityDomainList: {
@@ -24,14 +25,17 @@ export interface ResourceDataRegion {
   resourceName: string | undefined;
   available: string;
   used: string;
+  quota: string;
 }
 export interface ScopeObject {
   aDScopeHash: StringHash<ResourceDataAD[]>;
   regionScopeHash: StringHash<ResourceDataRegion[]>;
 }
+
 export interface CompartmentData {
   compartmentName: string;
   regions: StringHash<ScopeObject>;
+  global?: StringHash<ScopeObject>;
 }
 export interface CompartmentsHash extends StringHash<CompartmentData> {}
 export enum Names {
