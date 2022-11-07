@@ -141,12 +141,12 @@ export const getCompartmentRegionResources = async (
   // regionServicesObject = { aDScopeHash, regionScopeHash: serviceResourceHash };
 
   if (requestedScopes.includes(Names.AD)) {
-    for (const [service, value] of Object.entries(aDScopeHash)) {
+    for (const service of Object.keys(aDScopeHash)) {
       regionServicesObject.aDScopeHash[service] = aDScopeHash[service]!;
     }
   }
   if (requestedScopes.includes(Names.Region.toUpperCase())) {
-    for (const [service, value] of Object.entries(aDScopeHash)) {
+    for (const service of Object.keys(serviceResourceHash)) {
       regionServicesObject.regionScopeHash[service] =
         serviceResourceHash[service]!;
     }
