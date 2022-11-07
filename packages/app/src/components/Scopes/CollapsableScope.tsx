@@ -1,4 +1,9 @@
-import { ResourceDataAD, ResourceDataRegion, StringHash } from "common";
+import {
+  ResourceDataAD,
+  ResourceDataGlobal,
+  ResourceDataRegion,
+  StringHash,
+} from "common";
 import { Names } from "common";
 import { AccordionWrapper } from "../../layouts/AccordionWrapper";
 import { ADTable } from "../Tables/ADTable";
@@ -6,7 +11,9 @@ import { RegionTable } from "../Tables/RegionTable";
 
 interface Props {
   scope: string;
-  resourceObjectList: StringHash<ResourceDataAD[] | ResourceDataRegion[]>;
+  resourceObjectList: StringHash<
+    ResourceDataAD[] | ResourceDataRegion[] | ResourceDataGlobal[]
+  >;
 }
 export const CollapsableScope = ({ scope, resourceObjectList }: Props) => {
   const children = Object.entries(resourceObjectList).map(

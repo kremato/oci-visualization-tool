@@ -8,7 +8,7 @@ import { common } from "oci-sdk";
 import { getServiceLimits } from "./services/getServiceLimits";
 import { Provider } from "./clients/provider";
 import { getServiceResourcesPerScope } from "./services/getServiceResourcesPerScope";
-import { Names } from "common";
+import { Names, ResourceDataGlobal } from "common";
 import path from "path";
 import type {
   CommonRegion,
@@ -72,6 +72,9 @@ import {
         const compartmentData: CompartmentData = Object.create(null);
         compartmentData["compartmentName"] = compartment.name;
         compartmentData["regions"] = Object.create(null);
+        if (compartment.id === tenancyId) {
+          compartmentData["global"] = Object.create(null);
+        }
         compartmentHash[compartment.id] = compartmentData;
         for (const region of regions) {
           const regionServicesObject: ScopeObject = Object.create(null);
@@ -112,15 +115,10 @@ import {
         return data.services.includes(service.name);
       });
 
-      /* const responseCompartmentHash: CompartmentsHash = Object.create(null); */
       const promises: Promise<void>[] = [];
+      const globalServiceResourceHash = compartmentHash[tenancyId]!.global!;
       for (const compartment of filteredCompartments) {
-        /* const responseCompartmentData = createCompartmentDataObject(
-          compartment.name
-        );
-        responseCompartmentHash[compartment.id] = responseCompartmentData; */
         for (const region of filteredRegions) {
-          const responseServiceScopeObject = createServiceScopeObject();
           for (const service of filteredServices) {
             const cachedScopeObject =
               compartmentHash[compartment.id]?.regions[region.regionId];
@@ -147,6 +145,11 @@ import {
               !cachedScopeObject.regionScopeHash[service.name]
             )
               filteredScopesForService.push(Names.Region.toUpperCase());
+            if (
+              data.scopes.includes(Names.Global) &&
+              !globalServiceResourceHash[service.name]
+            )
+              filteredScopesForService.push(Names.Global.toUpperCase());
 
             const limits = serviceLimits.get(region);
             promises.push(
@@ -158,7 +161,8 @@ import {
                 filteredScopesForService,
                 cachedScopeObject,
                 initialPostLimitsCount,
-                token
+                token,
+                globalServiceResourceHash
               )
             );
           }
@@ -176,6 +180,9 @@ import {
         const compartmentData: CompartmentData = Object.create(null);
         compartmentData["compartmentName"] = compartment.name;
         compartmentData["regions"] = Object.create(null);
+        if (compartment.id === tenancyId) {
+          compartmentData["global"] = Object.create(null);
+        }
         responseCompartmentHash[compartment.id] = compartmentData;
         for (const region of filteredRegions) {
           const serviceScopeObject: ScopeObject = Object.create(null);
@@ -193,6 +200,13 @@ import {
                 ?.regionScopeHash[service.name];
             if (data.scopes.includes(Names.Region) && regionScope) {
               serviceScopeObject.regionScopeHash[service.name] = regionScope;
+            }
+            if (
+              data.scopes.includes(Names.Global) &&
+              compartment.id === tenancyId
+            ) {
+              compartmentData.global![service.name] =
+                compartmentHash[tenancyId]!.global![service.name]!;
             }
           }
           compartmentData.regions[region.regionId] = serviceScopeObject;

@@ -30,7 +30,8 @@ export const getServiceResourcesPerScope = async (
   requestedScopes: string[],
   regionServicesObject: ScopeObject,
   initialPostLimitsCount: number,
-  token: Token
+  token: Token,
+  globalHash: StringHash<ResourceDataGlobal[]>
 ): Promise<void> => {
   const limitsClient = getLimitsClient();
   limitsClient.region = region;
@@ -195,6 +196,11 @@ export const getServiceResourcesPerScope = async (
     for (const service of Object.keys(serviceResourceHash)) {
       regionServicesObject.regionScopeHash[service] =
         serviceResourceHash[service]!;
+    }
+  }
+  if (requestedScopes.includes(Names.Global.toUpperCase())) {
+    for (const service of Object.keys(globalServiceResourceHash)) {
+      globalHash[service] = globalServiceResourceHash[service]!;
     }
   }
   outputToFile("test/getCompartmentsRegionResources.txt", logFormattedOutput);

@@ -1,4 +1,6 @@
+import { Names } from "common";
 import { useAppSelector } from "../../hooks/useAppSelector";
+import { CollapsableScope } from "../Scopes/CollapsableScope";
 import { CollapsableCompartment } from "./CollapsableCompartment";
 
 export const CompartmentAccordions = () => {
@@ -10,11 +12,19 @@ export const CompartmentAccordions = () => {
     <>
       {Object.entries(compartmentHash).map(([compartmentId, compartment]) => {
         return (
-          <CollapsableCompartment
-            compartmentName={compartment.compartmentName}
-            regions={compartment.regions}
-            key={compartmentId}
-          />
+          <>
+            {compartment.global && (
+              <CollapsableScope
+                scope={Names.Global}
+                resourceObjectList={compartment.global}
+              />
+            )}
+            <CollapsableCompartment
+              compartmentName={compartment.compartmentName}
+              regions={compartment.regions}
+              key={compartmentId}
+            />
+          </>
         );
       })}
     </>
