@@ -6,7 +6,11 @@ export const RegionsDropdown = () => {
   const regions = useAppSelector((state) => state.regions.regionsList);
 
   const options = regions.map((region) => {
-    return { label: region.regionName, id: region.regionName };
+    return {
+      primaryLabel: region.regionName,
+
+      secondaryLabel: region.regionName,
+    };
   });
   return <Dropdown name={Names.Region} options={options} />;
 };

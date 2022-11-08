@@ -209,7 +209,11 @@ import {
                 compartmentHash[tenancyId]!.global![service.name]!;
             }
           }
-          compartmentData.regions[region.regionId] = serviceScopeObject;
+          if (
+            Object.keys(serviceScopeObject.aDScopeHash).length > 0 ||
+            Object.keys(serviceScopeObject.regionScopeHash).length > 0
+          )
+            compartmentData.regions[region.regionId] = serviceScopeObject;
         }
         responseCompartmentHash[compartment.id] = compartmentData;
       }

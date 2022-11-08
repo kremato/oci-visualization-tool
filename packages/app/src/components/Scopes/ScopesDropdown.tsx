@@ -6,9 +6,9 @@ export const ScopesDropdown = () => {
   const regions = useAppSelector((state) => state.regions.regionsList);
 
   const options = [
-    { label: Names.AD, id: Names.AD },
-    { label: Names.Region, id: Names.Region },
-    { label: Names.Global, id: Names.Global },
+    { primaryLabel: Names.AD, secondaryLabel: Names.AD },
+    { primaryLabel: Names.Region, secondaryLabel: Names.Region },
+    { primaryLabel: Names.Global, secondaryLabel: Names.Global },
   ];
 
   return <Dropdown name={Names.Scope} options={options} />;

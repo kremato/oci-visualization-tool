@@ -4,8 +4,12 @@ import type { identity, limits } from "oci-sdk";
 export type IdentityCompartment = identity.models.Compartment;
 export type IdentityRegion = identity.models.Region; // IdentityRegion is not used anywhere
 export type RegionSubscription = identity.models.RegionSubscription;
-export type ServiceSummary = Omit<limits.models.ServiceSummary, "name"> & {
+export type ServiceSummary = Omit<
+  limits.models.ServiceSummary,
+  "name" | "description"
+> & {
   name: string;
+  description: string;
 };
 export interface HierarchyMap extends Map<string, IdentityCompartment[]> {}
 export interface StringHash<Value> {

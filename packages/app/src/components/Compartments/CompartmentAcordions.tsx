@@ -13,17 +13,20 @@ export const CompartmentAccordions = () => {
       {Object.entries(compartmentHash).map(([compartmentId, compartment]) => {
         return (
           <>
-            {compartment.global && (
-              <CollapsableScope
-                scope={Names.Global}
-                resourceObjectList={compartment.global}
+            {compartment.global &&
+              Object.keys(compartment.global).length > 0 && (
+                <CollapsableScope
+                  scope={Names.Global}
+                  resourceObjectList={compartment.global}
+                />
+              )}
+            {Object.keys(compartment.regions).length > 0 && (
+              <CollapsableCompartment
+                compartmentName={compartment.compartmentName}
+                regions={compartment.regions}
+                key={compartmentId}
               />
             )}
-            <CollapsableCompartment
-              compartmentName={compartment.compartmentName}
-              regions={compartment.regions}
-              key={compartmentId}
-            />
           </>
         );
       })}

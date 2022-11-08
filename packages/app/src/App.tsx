@@ -10,7 +10,7 @@ import { ModifiableButton } from "./layouts/ModifiableButton";
 import { Grid } from "@mui/material";
 import { CompartmentsDropdown } from "./components/Compartments/CompartmentsDropdown";
 import { RegionsDropdown } from "./components/Regions/RegionsDropdown";
-import { Services } from "./components/Services/Services";
+import { ServicesDropdown } from "./components/Services/ServicesDropdown";
 import { ScopesDropdown } from "./components/Scopes/ScopesDropdown";
 
 function App() {
@@ -49,7 +49,7 @@ function App() {
           <ScopesDropdown />
         </Grid>
         <Grid item xs={3}>
-          <Services />
+          <ServicesDropdown />
         </Grid>
         <Grid item xs={1}>
           <ModifiableButton text={"Send"} action={sendData} />

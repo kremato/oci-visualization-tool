@@ -8,7 +8,7 @@ export const CompartmentsDropdown = () => {
   );
 
   const options = compartments.map((compartment) => {
-    return { label: compartment.name, id: compartment.id };
+    return { primaryLabel: compartment.name, secondaryLabel: compartment.id };
   });
   return <Dropdown name={Names.Compartment} options={options} />;
 };
