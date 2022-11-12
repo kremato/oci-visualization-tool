@@ -1,9 +1,9 @@
-import type { LimitDefinitionsMap } from "../types/types";
+import type { LimitDefinitionsPerServiceName } from "../types/types";
 import { outputToFile } from "./outputToFile";
 
 export const outputServiceLimits = (
-  serviceLimitDefinitions: LimitDefinitionsMap,
-  filePath = '',
+  serviceLimitDefinitions: LimitDefinitionsPerServiceName,
+  filePath = "",
   details = true,
   deprecated = false
 ) => {
@@ -36,7 +36,7 @@ export const outputServiceLimits = (
     serviceLimitsOverview = serviceLimitsOverview.concat(`${"=".repeat(64)}\n`);
   }
   if (filePath) {
-    outputToFile(filePath , serviceLimitsOverview);
+    outputToFile(filePath, serviceLimitsOverview);
     return;
   }
   console.log(serviceLimitsOverview);

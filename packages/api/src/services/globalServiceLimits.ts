@@ -3,7 +3,7 @@ import { LimitsClient, requests, models } from "oci-limits";
 import { getLimitsClient } from "../clients/getLimitsClient";
 import { Provider } from "../clients/provider";
 import type {
-  LimitDefinitionsMap,
+  LimitDefinitionsPerServiceName,
   LimitDefinitionsPerScope,
 } from "../types/types";
 import { outputToFile } from "../utils/outputToFile";
@@ -23,7 +23,7 @@ const perScope = (
 };
 
 const perServiceName = (
-  servicesPerServiceName: LimitDefinitionsMap,
+  servicesPerServiceName: LimitDefinitionsPerServiceName,
   limitDefinitionSummary: models.LimitDefinitionSummary
 ) => {
   const serviceName =
@@ -36,18 +36,14 @@ const perServiceName = (
 };
 
 export const getServiceLimits = async (
-  region: CommonRegion,
   scoped = false
-): Promise<LimitDefinitionsPerScope | LimitDefinitionsMap> => {
+): Promise<LimitDefinitionsPerScope | LimitDefinitionsPerServiceName> => {
   const limitsClient = getLimitsClient();
-  // TODO: je tu potrebne nastavovat region, nie je to pre kazdy region rovnake?
-  // pise, ze must be tenancy, a asi na tom nieco je
-  limitsClient.region = region;
   const listLimitDefinitionsRequest: requests.ListLimitDefinitionsRequest = {
     compartmentId: Provider.getInstance().provider.getTenantId(),
   };
-  const servicesPerScope = new Map<string, LimitDefinitionsMap>();
-  const servicesPerServiceName: LimitDefinitionsMap = new Map<
+  const servicesPerScope = new Map<string, LimitDefinitionsPerServiceName>();
+  const servicesPerServiceName: LimitDefinitionsPerServiceName = new Map<
     string,
     models.LimitDefinitionSummary[]
   >();

@@ -5,7 +5,7 @@ import cors from "cors";
 import { listRegionSubscriptions } from "./services/listRegionSubscriptions";
 import { listServices } from "./services/listServices";
 import { common } from "oci-sdk";
-import { getServiceLimits } from "./services/getServiceLimits";
+import { getLimitDefinitions } from "./services/getLimitDefinitions";
 import { Provider } from "./clients/provider";
 import { getServiceResourcesPerScope } from "./services/getServiceResourcesPerScope";
 import { Names, ResourceDataGlobal } from "common";
@@ -17,6 +17,7 @@ import type {
   Token,
 } from "./types/types";
 import type {
+  LimitDefinitionsPerLimitName,
   IdentityCompartment,
   RegionSubscription,
   ServiceSummary,
@@ -29,6 +30,7 @@ import {
   createCompartmentDataObject,
   createServiceScopeObject,
 } from "./services/createCompartmentDataObject";
+import { listLimitValues } from "./services/listLimitValues";
 
 (async () => {
   try {
@@ -44,6 +46,8 @@ import {
     let regionSubscriptions: RegionSubscription[] = [];
     let regions: CommonRegion[] = [];
     let serviceSubscriptions: ServiceSummary[] = [];
+    let limitDefinitionsPerLimitName: LimitDefinitionsPerLimitName =
+      Object.create(null);
     const serviceLimits: ServiceLimits = new Map();
     const compartmentHash: CompartmentsHash = Object.create(null);
 
@@ -61,10 +65,17 @@ import {
       regions = common.Region.values().filter((region) =>
         regionSubscriptions.some((item) => item.regionName === region.regionId)
       );
+      limitDefinitionsPerLimitName = (await getLimitDefinitions(
+        "perLimitName"
+      )) as LimitDefinitionsPerLimitName;
+
       for (const region of regions) {
         serviceLimits.set(
           region,
-          (await getServiceLimits(region, true)) as LimitDefinitionsPerScope
+          (await getLimitDefinitions(
+            "perScope",
+            region
+          )) as LimitDefinitionsPerScope
         );
       }
       // fill compartmentHash with compartments and regions
@@ -96,6 +107,10 @@ import {
 
     app.get("/services", async (req: Request, res: Response) => {
       res.status(200).send(JSON.stringify(serviceSubscriptions));
+    });
+
+    app.get("/limits", async (req: Request, res: Response) => {
+      res.status(200).send(JSON.stringify(limitDefinitionsPerLimitName));
     });
 
     app.post("/limits", async (req: Request, res: Response) => {
