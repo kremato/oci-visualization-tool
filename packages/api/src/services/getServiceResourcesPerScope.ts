@@ -13,13 +13,9 @@ import type {
   Token,
 } from "../types/types";
 import { getAvailibilityDomainsPerRegion } from "./getAvailibilityDomainsPerRegion";
-import {
-  getResourceAvailabilityAD,
-  getResourceAvailabilityRegion,
-} from "./getResourceAvailibility";
+import { getResourceAvailability } from "./getResourceAvailibility";
 import { outputToFile } from "../utils/outputToFile";
 import path from "path";
-import { getResourceAvailability } from "./tmp";
 import { Provider } from "../clients/provider";
 
 export const getServiceResourcesPerScope = async (
