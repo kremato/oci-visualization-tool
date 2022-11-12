@@ -11,10 +11,15 @@ export type ServiceSummary = Omit<
   name: string;
   description: string;
 };
+
 export interface HierarchyMap extends Map<string, IdentityCompartment[]> {}
+
 export interface StringHash<Value> {
   [id: string]: Value;
 }
+
+export interface LimitDefinitionsPerLimitName
+  extends StringHash<limits.models.LimitDefinitionSummary[]> {}
 
 export interface ResourceDataAD {
   resourceName: string | undefined;
@@ -54,6 +59,7 @@ export enum Names {
   Compartment = "compartment",
   Service = "service",
   Scope = "scope",
+  Limit = "limit",
 }
 export interface InputData {
   compartments: string[];
