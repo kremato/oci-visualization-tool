@@ -12,6 +12,7 @@ import { CompartmentsDropdown } from "./components/Compartments/CompartmentsDrop
 import { RegionsDropdown } from "./components/Regions/RegionsDropdown";
 import { ServicesDropdown } from "./components/Services/ServicesDropdown";
 import { ScopesDropdown } from "./components/Scopes/ScopesDropdown";
+import { ModifiableCheckbox } from "./layouts/ModifiableCheckbox";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -53,6 +54,7 @@ function App() {
         </Grid>
         <Grid item xs={1}>
           <ModifiableButton text={"Send"} action={sendData} />
+          <ModifiableCheckbox />
         </Grid>
         <Grid item xs={12}>
           <CompartmentAccordions />

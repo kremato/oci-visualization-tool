@@ -1,26 +1,25 @@
 import { useState } from "react";
-import { Checkbox } from "@mui/material";
+import { Checkbox, FormControlLabel } from "@mui/material";
 import { useAppDispatch } from "../hooks/useAppDispatch";
-import { inputActions } from "../store/inputSlice";
+import { servicesActions } from "../store/servicesSlice";
 
-interface Props {
-  id: string;
-  type: string;
-}
-
-export const ModifiableCheckbox = (props: Props) => {
+export const ModifiableCheckbox = () => {
   const [checked, setChecked] = useState(false);
   const dispatch = useAppDispatch();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(event.target.checked);
-    /* dispatch(
-      inputActions.updateCheckboxHash({
-        idList: [props.id],
-        type: props.type,
-      })
-    ); */
+    dispatch(servicesActions.updateSumADResources(event.target.checked));
   };
 
-  return <Checkbox size="small" checked={checked} onChange={handleChange} />;
+  return (
+    <FormControlLabel
+      control={
+        <Checkbox size="small" checked={checked} onChange={handleChange} />
+      }
+      label="Sum AD resources"
+    />
+  );
+
+  // return <Checkbox size="small" checked={checked} onChange={handleChange} label="Label" />;
 };

@@ -5,10 +5,14 @@ const servicesSlice = createSlice({
   name: "services",
   initialState: {
     servicesList: [] as ServiceSummary[],
+    sumADResources: false,
   },
   reducers: {
     replaceServices(state, action: PayloadAction<ServiceSummary[]>) {
       state.servicesList = action.payload;
+    },
+    updateSumADResources(state, action: PayloadAction<boolean>) {
+      state.sumADResources = action.payload;
     },
   },
 });
