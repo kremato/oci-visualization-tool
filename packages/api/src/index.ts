@@ -30,7 +30,6 @@ import {
   createCompartmentDataObject,
   createServiceScopeObject,
 } from "./services/createCompartmentDataObject";
-import { listLimitValues } from "./services/listLimitValues";
 
 (async () => {
   try {
