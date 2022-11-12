@@ -4,6 +4,7 @@ import inputSlice from "./inputSlice";
 import compartmentsSlice from "./compartmentsSlice";
 import regionsSlice from "./regionsSlice";
 import servicesSlice from "./servicesSlice";
+import limitDefinitionSlice from "./limitDefinitionSlice";
 
 const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ const store = configureStore({
     regions: regionsSlice.reducer,
     services: servicesSlice.reducer,
     input: inputSlice.reducer,
+    limitDefinitions: limitDefinitionSlice.reducer,
   },
 });
 

@@ -35,6 +35,9 @@ export const Dropdown = ({ name, options }: Props) => {
     if (name === Names.Scope) {
       action = inputActions.replaceScopes;
     }
+    if (name === Names.Limit) {
+      action = inputActions.replaceLimits;
+    }
     dispatch(action(inputList));
   };
 

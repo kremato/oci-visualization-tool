@@ -2,8 +2,6 @@ import type { StringHash } from "common";
 import type { common, identity, limits } from "oci-sdk";
 
 export type CommonRegion = common.Region; // CommonRegion is not used in app
-export interface LimitDefinitionsPerLimitName
-  extends StringHash<limits.models.LimitDefinitionSummary[]> {}
 export interface LimitDefinitionsPerServiceName
   extends Map<string, limits.models.LimitDefinitionSummary[]> {}
 export interface LimitDefinitionsPerScope

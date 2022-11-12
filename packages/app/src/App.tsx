@@ -6,6 +6,7 @@ import "./App.css";
 import { fetchRegionsList } from "./store/regionsActionCreators";
 import { fetchServicesList } from "./store/servicesActionCreator";
 import { fetchLimitsData } from "./store/inputActionCreators";
+import { fetchLimitdefinitionsPerLimitName } from "./store/limitDefinitionsActionCreators";
 import { ModifiableButton } from "./layouts/ModifiableButton";
 import { Grid } from "@mui/material";
 import { CompartmentsDropdown } from "./components/Compartments/CompartmentsDropdown";
@@ -13,6 +14,7 @@ import { RegionsDropdown } from "./components/Regions/RegionsDropdown";
 import { ServicesDropdown } from "./components/Services/ServicesDropdown";
 import { ScopesDropdown } from "./components/Scopes/ScopesDropdown";
 import { ModifiableCheckbox } from "./layouts/ModifiableCheckbox";
+import { LimitsDropdown } from "./components/Limits/LimitsDropdown";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -21,6 +23,7 @@ function App() {
     dispatch(fetchCompartmentsList());
     dispatch(fetchRegionsList());
     dispatch(fetchServicesList());
+    dispatch(fetchLimitdefinitionsPerLimitName());
   }, [dispatch]);
 
   const sendData = () => {
@@ -46,11 +49,14 @@ function App() {
         <Grid item xs={3}>
           <RegionsDropdown />
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={1}>
           <ScopesDropdown />
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={2}>
           <ServicesDropdown />
+        </Grid>
+        <Grid item xs={3}>
+          <LimitsDropdown />
         </Grid>
         <Grid item xs={1}>
           <ModifiableButton text={"Send"} action={sendData} />
