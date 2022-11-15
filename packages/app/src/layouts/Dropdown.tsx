@@ -10,6 +10,7 @@ import { Names } from "common";
 interface DropdownItem {
   primaryLabel: string;
   secondaryLabel: string;
+  serviceName?: string;
 }
 
 interface Props {
@@ -22,10 +23,12 @@ export const Dropdown = ({ name, options }: Props) => {
 
   const handleChange = (selected: DropdownItem[]) => {
     let action = inputActions.replaceCompartmentsId;
-    // All dropdowns have primary label as primary label, except compartment
-    const inputList = selected.map((item) =>
-      name === Names.Compartment ? item.secondaryLabel : item.primaryLabel
-    );
+    const inputList = selected.map((item) => {
+      /* name === Names.Compartment ? item.secondaryLabel : item.primaryLabel */
+      if (name === Names.Compartment) return item.secondaryLabel;
+      if (name === Names.Limit) return item.serviceName!;
+      return item.primaryLabel;
+    });
     if (name === Names.Region) {
       action = inputActions.replaceRegionsId;
     }
@@ -55,12 +58,20 @@ export const Dropdown = ({ name, options }: Props) => {
       }}
       options={options}
       disableCloseOnSelect
-      getOptionLabel={(option) => option.primaryLabel}
+      getOptionLabel={(option) =>
+        name === Names.Limit
+          ? option.primaryLabel + option.serviceName
+          : option.primaryLabel
+      }
       renderOption={(props, option, { selected }) => (
         <li {...props} style={{ padding: 0 }}>
           <Checkbox size="small" checked={selected} />
           <ListItemText
-            primary={option.primaryLabel}
+            primary={
+              name === Names.Limit
+                ? `${option.primaryLabel} [${option.serviceName}]`
+                : option.primaryLabel
+            }
             secondary={
               option.primaryLabel != option.secondaryLabel &&
               option.secondaryLabel

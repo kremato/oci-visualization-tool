@@ -11,8 +11,9 @@ export const LimitsDropdown = () => {
     (limitDefintionSummaries) => {
       return limitDefintionSummaries.map((limitDefinition) => {
         return {
-          primaryLabel: `${limitDefinition.name} (${limitDefinition.serviceName})`,
-          secondaryLabel: `${limitDefinition.description} (${limitDefinition.serviceName})`,
+          primaryLabel: `${limitDefinition.name}`,
+          secondaryLabel: `${limitDefinition.description}`,
+          serviceName: limitDefinition.serviceName,
         };
       });
     }
