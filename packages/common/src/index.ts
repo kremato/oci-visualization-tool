@@ -66,4 +66,5 @@ export interface InputData {
   regions: string[];
   services: string[];
   scopes: string[];
+  limits: string[];
 }
