@@ -59,7 +59,16 @@ const perLimitName = (
     console.log(
       `[${path.basename(
         __filename
-      )}]: LimitDefinition is filtered out since name in LimitDefinition is 'undefined'`
+      )}]: LimitDefinition is filtered out since 'name' in LimitDefinition is 'undefined'`
+    );
+    return;
+  }
+
+  if (!limitDefinitionSummary.serviceName) {
+    console.log(
+      `[${path.basename(
+        __filename
+      )}]: LimitDefinition is filtered out since 'serviceName' in LimitDefinition is 'undefined'`
     );
     return;
   }
