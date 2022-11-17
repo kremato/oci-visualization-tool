@@ -8,6 +8,9 @@ const inputSlice = createSlice({
     services: [] as string[],
     scopes: [] as string[],
     limits: [] as string[],
+    sumADResources: false,
+    showAll: false,
+    emptyServiceLimits: false,
   },
   reducers: {
     replaceCompartmentsId(state, action: PayloadAction<string[]>) {
@@ -24,6 +27,15 @@ const inputSlice = createSlice({
     },
     replaceLimits(state, action: PayloadAction<string[]>) {
       state.limits = action.payload;
+    },
+    updateSumADResources(state, action: PayloadAction<boolean>) {
+      state.sumADResources = action.payload;
+    },
+    upadateShowAll(state, action: PayloadAction<boolean>) {
+      state.showAll = action.payload;
+    },
+    updateEmptyServiceLimits(state, action: PayloadAction<boolean>) {
+      state.emptyServiceLimits = action.payload;
     },
   },
 });

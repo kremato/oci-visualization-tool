@@ -4,6 +4,7 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { ReactNode } from "react";
+import { useAppSelector } from "../hooks/useAppSelector";
 
 interface Props {
   title: string;
@@ -11,8 +12,9 @@ interface Props {
 }
 
 export const AccordionWrapper = ({ title, children }: Props) => {
+  const showAll = useAppSelector((state) => state.input.showAll);
   return (
-    <Accordion>
+    <Accordion expanded={showAll}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls={`${title}-compartment-content`}

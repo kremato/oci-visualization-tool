@@ -46,21 +46,23 @@ function App() {
         <Grid item xs={3}>
           <CompartmentsDropdown />
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={2}>
           <RegionsDropdown />
-        </Grid>
-        <Grid item xs={1}>
-          <ScopesDropdown />
         </Grid>
         <Grid item xs={2}>
           <ServicesDropdown />
         </Grid>
+        <Grid item xs={2}>
+          <ScopesDropdown />
+        </Grid>
         <Grid item xs={3}>
           <LimitsDropdown />
         </Grid>
-        <Grid item xs={1}>
+        <Grid item xs={12}>
+          <ModifiableCheckbox label="Sum AD resources" />
+          <ModifiableCheckbox label="Show all" />
+          <ModifiableCheckbox label="Show empty service limits" />
           <ModifiableButton text={"Send"} action={sendData} />
-          <ModifiableCheckbox />
         </Grid>
         <Grid item xs={12}>
           <CompartmentAccordions />

@@ -207,12 +207,23 @@ import {
               compartmentHash[compartment.id]?.regions[region.regionId]
                 ?.aDScopeHash[service.name];
             if (data.scopes.includes(Names.AD) && aDScope) {
-              serviceScopeObject.aDScopeHash[service.name] = aDScope;
+              const modifiedADScope = aDScope.filter((resourceDataAD) =>
+                data.limits.includes(resourceDataAD.resourceName!)
+              );
+              serviceScopeObject.aDScopeHash[service.name] =
+                data.limits.length > 0 ? modifiedADScope : aDScope;
             }
             const regionScope =
               compartmentHash[compartment.id]?.regions[region.regionId]
                 ?.regionScopeHash[service.name];
             if (data.scopes.includes(Names.Region) && regionScope) {
+              const modifiedRegionScope = regionScope.filter(
+                (resourceDataRegion) =>
+                  data.limits.includes(resourceDataRegion.resourceName!)
+              );
+              serviceScopeObject.regionScopeHash[service.name] =
+                data.limits.length > 0 ? modifiedRegionScope : regionScope;
+
               serviceScopeObject.regionScopeHash[service.name] = regionScope;
             }
             if (
@@ -223,11 +234,13 @@ import {
                 compartmentHash[tenancyId]!.global![service.name]!;
             }
           }
+
           if (
             Object.keys(serviceScopeObject.aDScopeHash).length > 0 ||
             Object.keys(serviceScopeObject.regionScopeHash).length > 0
-          )
+          ) {
             compartmentData.regions[region.regionId] = serviceScopeObject;
+          }
         }
         responseCompartmentHash[compartment.id] = compartmentData;
       }

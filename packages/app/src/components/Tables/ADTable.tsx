@@ -20,8 +20,9 @@ export const CompartmentAccordions = () => {
 */
 
 export const ADTable = ({ serviceName, resourceObjectADList }: Props) => {
-  const sumADResources = useAppSelector(
-    (state) => state.services.sumADResources
+  const sumADResources = useAppSelector((state) => state.input.sumADResources);
+  const showEmptyServiceLimits = useAppSelector(
+    (state) => state.input.emptyServiceLimits
   );
 
   return (
@@ -68,8 +69,18 @@ export const ADTable = ({ serviceName, resourceObjectADList }: Props) => {
             })
           );
 
+          const hide =
+            !showEmptyServiceLimits &&
+            ((sumADResources && resSum.available === 0) ||
+              resourceObjectAD.availibilityDomainList[0].available === "0");
           return (
-            <tr key={resourceObjectAD.resourceName}>
+            <tr
+              key={resourceObjectAD.resourceName}
+              style={{
+                visibility: hide ? "hidden" : "visible",
+                display: hide ? "none" : "table-row",
+              }}
+            >
               <td
                 rowSpan={
                   sumADResources

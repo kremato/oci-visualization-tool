@@ -26,7 +26,6 @@ export const Dropdown = ({ name, options }: Props) => {
     const inputList = selected.map((item) => {
       /* name === Names.Compartment ? item.secondaryLabel : item.primaryLabel */
       if (name === Names.Compartment) return item.secondaryLabel;
-      if (name === Names.Limit) return item.serviceName!;
       return item.primaryLabel;
     });
     if (name === Names.Region) {

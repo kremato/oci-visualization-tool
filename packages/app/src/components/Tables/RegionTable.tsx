@@ -1,4 +1,5 @@
 import { ResourceDataRegion } from "common";
+import { useAppSelector } from "../../hooks/useAppSelector";
 
 interface Props {
   serviceName: string;
@@ -24,8 +25,21 @@ export const RegionTable = ({
       </thead>
       <tbody>
         {resourceObjectRegionList.map((resourceObjectRegion) => {
+          const showEmptyServiceLimits = useAppSelector(
+            (state) => state.input.emptyServiceLimits
+          );
+
+          const hide =
+            !showEmptyServiceLimits && resourceObjectRegion.available === "0";
+
           return (
-            <tr key={resourceObjectRegion.resourceName}>
+            <tr
+              key={resourceObjectRegion.resourceName}
+              style={{
+                visibility: hide ? "hidden" : "visible",
+                display: hide ? "none" : "table-row",
+              }}
+            >
               <td>{resourceObjectRegion.resourceName}</td>
               <td>{resourceObjectRegion.available}</td>
               <td>{resourceObjectRegion.used}</td>
