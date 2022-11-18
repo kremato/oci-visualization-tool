@@ -4,11 +4,11 @@ import { listCompartments } from "./services/listCompartments";
 import cors from "cors";
 import { listRegionSubscriptions } from "./services/listRegionSubscriptions";
 import { listServices } from "./services/listServices";
-import { common } from "oci-sdk";
+import { common, limits } from "oci-sdk";
 import { getLimitDefinitions } from "./services/getLimitDefinitions";
 import { Provider } from "./clients/provider";
 import { getServiceResourcesPerScope } from "./services/getServiceResourcesPerScope";
-import { Names, ResourceDataGlobal } from "common";
+import { Names, ResourceDataGlobal, StringHash } from "common";
 import path from "path";
 import type {
   CommonRegion,
@@ -30,6 +30,7 @@ import {
   createCompartmentDataObject,
   createServiceScopeObject,
 } from "./services/createCompartmentDataObject";
+import { loadLimit } from "./services/loadLimit";
 
 (async () => {
   try {
@@ -47,6 +48,10 @@ import {
     let serviceSubscriptions: ServiceSummary[] = [];
     let limitDefinitionsPerLimitName: LimitDefinitionsPerProperty =
       Object.create(null);
+    let limitDefinitionsPerService = new Map<
+      common.Region,
+      StringHash<limits.models.LimitDefinitionSummary[]>
+    >();
     const serviceLimits: ServiceLimits = new Map();
     const compartmentHash: CompartmentsHash = Object.create(null);
 
@@ -69,6 +74,13 @@ import {
       )) as LimitDefinitionsPerProperty;
 
       for (const region of regions) {
+        limitDefinitionsPerService.set(
+          region,
+          (await getLimitDefinitions(
+            "perServiceName",
+            region
+          )) as LimitDefinitionsPerProperty
+        );
         serviceLimits.set(
           region,
           (await getLimitDefinitions(
@@ -118,6 +130,7 @@ import {
 
       const initialPostLimitsCount = token.postLimitsCount;
       token.postLimitsCount += 1;
+      const newRequest = token.postLimitsCount != initialPostLimitsCount + 1;
 
       const filteredCompartments = compartments.filter((compartment) => {
         return data.compartments.includes(compartment.id);
@@ -130,6 +143,57 @@ import {
       });
 
       const promises: Promise<void>[] = [];
+      for (const compartment of filteredCompartments) {
+        for (const region of filteredRegions) {
+          for (const service of filteredServices) {
+            // TODO: maybe service limits would be better if they were a map where limit name is a key to service limits, so later we would not have to filter them with O(n)
+            let serviceLimits =
+              limitDefinitionsPerService.get(region)?.[service.name];
+            if (!serviceLimits) {
+              console.log(
+                `[${path.basename(
+                  __filename
+                )}]: limitDefinitionsPerService.get(region)?.[service.name] returned undefined`
+              );
+              continue;
+            }
+            if (data.limits.length > 0) {
+              serviceLimits = serviceLimits.filter((limit) =>
+                data.limits.includes(limit.name!)
+              );
+            }
+
+            for (const LimitDefinitionSummary of serviceLimits) {
+              promises.push(
+                loadLimit(
+                  compartment.compartmentId,
+                  region,
+                  LimitDefinitionSummary,
+                  initialPostLimitsCount,
+                  token
+                )
+              );
+            }
+          }
+        }
+      }
+
+      /*
+      if (data.seq) {
+        for (const promise of promises) {
+          await promise()
+        }
+      } else {
+        ...
+      }
+       */
+      await Promise.all(promises);
+
+      if (newRequest) {
+        res.status(409).send("");
+        return;
+      }
+
       const globalServiceResourceHash = compartmentHash[tenancyId]!.global!;
       for (const compartment of filteredCompartments) {
         for (const region of filteredRegions) {

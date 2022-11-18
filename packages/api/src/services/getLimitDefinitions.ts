@@ -8,7 +8,7 @@ import type {
 } from "../types/types";
 import { outputToFile } from "../utils/outputToFile";
 import path from "path";
-import type { LimitDefinitionsPerLimitName } from "common";
+import type { LimitDefinitionsPerProperty } from "common";
 
 const perScope = (
   limitDefinitionsPerScopePerServiceName: LimitDefinitionsPerScope,
@@ -50,7 +50,7 @@ const perServiceName = (
 };
 
 const perLimitName = (
-  limitDefinitionsPerLimitName: LimitDefinitionsPerLimitName,
+  limitDefinitionsPerLimitName: LimitDefinitionsPerProperty,
   limitDefinitionSummary: models.LimitDefinitionSummary
 ) => {
   const limitName = limitDefinitionSummary.name;
@@ -87,7 +87,7 @@ export const getLimitDefinitions = async (
 ): Promise<
   | LimitDefinitionsPerScope
   | LimitDefinitionsPerServiceName
-  | LimitDefinitionsPerLimitName
+  | LimitDefinitionsPerProperty
 > => {
   const limitsClient = getLimitsClient();
   // TODO: je tu potrebne nastavovat region, nie je to pre kazdy region rovnake?
@@ -102,7 +102,7 @@ export const getLimitDefinitions = async (
   >();
   const limitDefinitionsPerServiceName: LimitDefinitionsPerServiceName =
     new Map<string, models.LimitDefinitionSummary[]>();
-  const limitDefinitionsPerLimitName: LimitDefinitionsPerLimitName =
+  const limitDefinitionsPerLimitName: LimitDefinitionsPerProperty =
     Object.create(null);
 
   const scopeType = models.LimitDefinitionSummary.ScopeType;

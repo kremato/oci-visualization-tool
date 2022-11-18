@@ -18,7 +18,7 @@ export interface StringHash<Value> {
   [id: string]: Value;
 }
 
-export interface LimitDefinitionsPerLimitName
+export interface LimitDefinitionsPerProperty
   extends StringHash<limits.models.LimitDefinitionSummary[]> {}
 
 export interface ResourceDataAD {

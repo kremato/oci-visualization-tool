@@ -1,17 +1,17 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { LimitDefinitionsPerLimitName, ServiceSummary } from "common";
+import { LimitDefinitionsPerProperty, ServiceSummary } from "common";
 
 const limitDefinitionSlice = createSlice({
   name: "limitDefinitions",
   initialState: {
     limitDefinitionsPerLimitName: Object.create(
       null
-    ) as LimitDefinitionsPerLimitName,
+    ) as LimitDefinitionsPerProperty,
   },
   reducers: {
     replaceLimitDefinitionsPerLimitName(
       state,
-      action: PayloadAction<LimitDefinitionsPerLimitName>
+      action: PayloadAction<LimitDefinitionsPerProperty>
     ) {
       state.limitDefinitionsPerLimitName = action.payload;
     },
