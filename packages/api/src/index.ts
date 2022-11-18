@@ -4,11 +4,11 @@ import { listCompartments } from "./services/listCompartments";
 import cors from "cors";
 import { listRegionSubscriptions } from "./services/listRegionSubscriptions";
 import { listServices } from "./services/listServices";
-import { common } from "oci-sdk";
+import { common, limits } from "oci-sdk";
 import { getLimitDefinitions } from "./services/getLimitDefinitions";
 import { Provider } from "./clients/provider";
 import { getServiceResourcesPerScope } from "./services/getServiceResourcesPerScope";
-import { Names, ResourceDataGlobal } from "common";
+import type { Names, Nested, ResourceDataGlobal, StringHash } from "common";
 import path from "path";
 import type {
   CommonRegion,
@@ -30,6 +30,7 @@ import {
   createCompartmentDataObject,
   createServiceScopeObject,
 } from "./services/createCompartmentDataObject";
+import { loadLimit } from "./services/loadLimit";
 
 (async () => {
   try {
@@ -47,7 +48,11 @@ import {
     let serviceSubscriptions: ServiceSummary[] = [];
     let limitDefinitionsPerLimitName: LimitDefinitionsPerProperty =
       Object.create(null);
-    const serviceLimits: ServiceLimits = new Map();
+    let limitDefinitionsPerService = new Map<
+      common.Region,
+      StringHash<limits.models.LimitDefinitionSummary[]>
+    >();
+    // const serviceLimits: ServiceLimits = new Map();
     const compartmentHash: CompartmentsHash = Object.create(null);
 
     app.listen(port, async () => {
@@ -69,13 +74,20 @@ import {
       )) as LimitDefinitionsPerProperty;
 
       for (const region of regions) {
-        serviceLimits.set(
+        limitDefinitionsPerService.set(
+          region,
+          (await getLimitDefinitions(
+            "perServiceName",
+            region
+          )) as LimitDefinitionsPerProperty
+        );
+        /* serviceLimits.set(
           region,
           (await getLimitDefinitions(
             "perScope",
             region
           )) as LimitDefinitionsPerScope
-        );
+        ); */
       }
       // fill compartmentHash with compartments and regions
       for (const compartment of compartments) {
@@ -115,9 +127,12 @@ import {
     app.post("/limits", async (req: Request, res: Response) => {
       // TODO: validation
       const data = req.body as InputData;
+      console.log("[/limits]");
+      console.log(data);
 
       const initialPostLimitsCount = token.postLimitsCount;
       token.postLimitsCount += 1;
+      const newRequest = token.postLimitsCount != initialPostLimitsCount + 1;
 
       const filteredCompartments = compartments.filter((compartment) => {
         return data.compartments.includes(compartment.id);
@@ -130,147 +145,75 @@ import {
       });
 
       const promises: Promise<void>[] = [];
-      const globalServiceResourceHash = compartmentHash[tenancyId]!.global!;
+      const rootCompartments: Nested = Object.create(null);
+      rootCompartments["name"] = "root";
+      rootCompartments["children"] = [];
+      rootCompartments["isRoot"] = true;
+      const rootServices: Nested = Object.create(null);
+      rootServices["name"] = "root";
+      rootServices["children"] = [];
+      rootServices["isRoot"] = true;
       for (const compartment of filteredCompartments) {
         for (const region of filteredRegions) {
           for (const service of filteredServices) {
-            const cachedScopeObject =
-              compartmentHash[compartment.id]?.regions[region.regionId];
-            // if no compartment or region within that compartment has
-            // been found (which should not happen), continue
-            if (!cachedScopeObject) {
+            // TODO: maybe for service limits it would be better if they were a map where limit name is a key to service limits, so later we would not have to filter them with O(n)
+            let serviceLimits =
+              limitDefinitionsPerService.get(region)?.[service.name];
+            if (!serviceLimits) {
               console.log(
-                `[${path.basename(__filename)}]: No compartment with id: ${
-                  compartment.id
-                } or region with id: ${
-                  region.regionId
-                } within that compartment has been found`
+                `[${path.basename(
+                  __filename
+                )}]: limitDefinitionsPerService.get(region)?.[service.name] returned undefined`
               );
               continue;
             }
-            const filteredScopesForService = [];
-            if (
-              data.scopes.includes(Names.AD) &&
-              !cachedScopeObject.aDScopeHash[service.name]
-            )
-              filteredScopesForService.push(Names.AD);
-            if (
-              data.scopes.includes(Names.Region) &&
-              !cachedScopeObject.regionScopeHash[service.name]
-            )
-              filteredScopesForService.push(Names.Region.toUpperCase());
-            if (
-              data.scopes.includes(Names.Global) &&
-              !globalServiceResourceHash[service.name]
-            )
-              filteredScopesForService.push(Names.Global.toUpperCase());
+            if (data.limits.length > 0) {
+              serviceLimits = serviceLimits.filter((limit) =>
+                data.limits.includes(limit.name!)
+              );
+            }
 
-            const limits = serviceLimits.get(region);
-            promises.push(
-              getServiceResourcesPerScope(
-                compartment.id,
-                region,
-                limits!,
-                service.name,
-                filteredScopesForService,
-                cachedScopeObject,
-                initialPostLimitsCount,
-                token,
-                globalServiceResourceHash
-              )
-            );
+            for (const LimitDefinitionSummary of serviceLimits) {
+              promises.push(
+                loadLimit(
+                  compartment.compartmentId,
+                  region,
+                  LimitDefinitionSummary,
+                  initialPostLimitsCount,
+                  token,
+                  rootCompartments,
+                  rootServices
+                )
+              );
+            }
           }
         }
       }
+
+      // TODO:
+      /*
+      if (data.seq) {
+        for (const promise of promises) {
+          await promise()
+        }
+      } else {
+        ...
+      }
+       */
+
       await Promise.all(promises);
 
-      if (token.postLimitsCount != initialPostLimitsCount + 1) {
+      if (newRequest) {
         res.status(409).send("");
         return;
       }
 
-      const responseCompartmentHash: CompartmentsHash = Object.create(null);
-      for (const compartment of filteredCompartments) {
-        const compartmentData: CompartmentData = Object.create(null);
-        compartmentData["compartmentName"] = compartment.name;
-        compartmentData["regions"] = Object.create(null);
-        if (compartment.id === tenancyId) {
-          compartmentData["global"] = Object.create(null);
-        }
-        responseCompartmentHash[compartment.id] = compartmentData;
-        for (const region of filteredRegions) {
-          const serviceScopeObject: ScopeObject = Object.create(null);
-          serviceScopeObject["aDScopeHash"] = Object.create(null);
-          serviceScopeObject["regionScopeHash"] = Object.create(null);
-          for (const service of filteredServices) {
-            const aDScope =
-              compartmentHash[compartment.id]?.regions[region.regionId]
-                ?.aDScopeHash[service.name];
-            if (data.scopes.includes(Names.AD) && aDScope) {
-              const modifiedADScope = aDScope.filter((resourceDataAD) =>
-                data.limits.includes(resourceDataAD.resourceName!)
-              );
-              serviceScopeObject.aDScopeHash[service.name] =
-                data.limits.length > 0 ? modifiedADScope : aDScope;
-            }
-            const regionScope =
-              compartmentHash[compartment.id]?.regions[region.regionId]
-                ?.regionScopeHash[service.name];
-            if (data.scopes.includes(Names.Region) && regionScope) {
-              const modifiedRegionScope = regionScope.filter(
-                (resourceDataRegion) =>
-                  data.limits.includes(resourceDataRegion.resourceName!)
-              );
-              serviceScopeObject.regionScopeHash[service.name] =
-                data.limits.length > 0 ? modifiedRegionScope : regionScope;
-
-              serviceScopeObject.regionScopeHash[service.name] = regionScope;
-            }
-            if (
-              data.scopes.includes(Names.Global) &&
-              compartment.id === tenancyId
-            ) {
-              compartmentData.global![service.name] =
-                compartmentHash[tenancyId]!.global![service.name]!;
-            }
-          }
-
-          if (
-            Object.keys(serviceScopeObject.aDScopeHash).length > 0 ||
-            Object.keys(serviceScopeObject.regionScopeHash).length > 0
-          ) {
-            compartmentData.regions[region.regionId] = serviceScopeObject;
-          }
-        }
-        responseCompartmentHash[compartment.id] = compartmentData;
-      }
-
-      /* const compartmentToRegions: CompartmentsHash = Object.create(null);
-      for (const compartment of filteredCompartments) {
-        const myCompartment: CompartmentData = Object.create(null);
-        myCompartment.compartmentName = compartment.name;
-        myCompartment.regions = Object.create(null);
-        compartmentToRegions[compartment.id] = myCompartment;
-        for (const region of filterdRegions) {
-          const limits = serviceLimits.get(region);
-          const regionToScope = compartmentToRegions[compartment.id]!;
-          const regionServicesObject = await getCompartmentRegionResources(
-            compartment.id,
-            region,
-            limits!,
-            (scope: string) => {
-              return scope !== "AD";
-            },
-            (serviceName: string) => {
-              return serviceName !== "compute";
-            }
-          );
-          regionToScope.regions[region.regionId] = regionServicesObject;
-        }
-      } */
-
-      const responseData = JSON.stringify(responseCompartmentHash);
+      const responseData = JSON.stringify({ rootCompartments, rootServices });
       console.log(responseData);
+      if (newRequest) {
+        res.status(409).send("");
+        return;
+      }
       res.status(200).send(responseData);
     });
   } catch (error) {

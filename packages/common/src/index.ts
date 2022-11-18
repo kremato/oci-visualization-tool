@@ -68,3 +68,25 @@ export interface InputData {
   scopes: string[];
   limits: string[];
 }
+
+export interface Nested {
+  name: string;
+  isRoot: boolean;
+  children: Nested[];
+  limits?: UniqueLimit[];
+}
+
+export interface UniqueLimit {
+  serviceName: string;
+  compartmendId: string;
+  // scope: "AD" | "REGION" | "GLOBAL";
+  scope: limits.models.LimitDefinitionSummary.ScopeType;
+  regionId?: string;
+  limitName: string;
+  resourceAvailibility: {
+    available: string;
+    used: string;
+    quota: string;
+    availibilityDomain?: string;
+  }[];
+}

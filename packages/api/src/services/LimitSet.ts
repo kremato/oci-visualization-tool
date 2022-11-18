@@ -1,4 +1,5 @@
-import type { UniqueLimit } from "../types/types";
+import path from "path";
+import type { UniqueLimit } from "common";
 
 // no iterator available
 export class LimitSet {
@@ -30,12 +31,24 @@ export class LimitSet {
   add(item: UniqueLimit) {
     if (item.resourceAvailibility.length === 0) {
       console.log(
-        `Adding UniqueLimit with resourceAvailibility.length === 0
+        `[${path.basename(__filename)}]:
+        Adding UniqueLimit with resourceAvailibility.length === 0
         into LimitSet is not advised, operation refused`
       );
       return;
     }
+    const key = this.toLimitString(item);
+
+    if (key.includes(",")) {
+      console.log(
+        `[${path.basename(__filename)}]:
+        Key made out of UniqeLimit idnetifiers contains a ','.
+        Operation 'add' refused`
+      );
+    }
+
     if (this.has(item)) return;
+
     this.map.set(this.toLimitString(item), item);
   }
 

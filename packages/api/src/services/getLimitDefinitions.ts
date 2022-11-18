@@ -1,5 +1,5 @@
 import type { CommonRegion } from "../types/types";
-import { LimitsClient, requests, models } from "oci-limits";
+import { requests, models } from "oci-limits";
 import { getLimitsClient } from "../clients/getLimitsClient";
 import { Provider } from "../clients/provider";
 import type {
@@ -9,6 +9,44 @@ import type {
 import { outputToFile } from "../utils/outputToFile";
 import path from "path";
 import type { LimitDefinitionsPerProperty } from "common";
+
+const validateLimitDefinitionSummary = (
+  limitDefinitionSummary: models.LimitDefinitionSummary
+) => {
+  const log: string[] = [];
+  if (!limitDefinitionSummary.name) {
+    log.push("name");
+  }
+  if (!limitDefinitionSummary.serviceName) {
+    log.push("serviceName");
+  }
+  if (!limitDefinitionSummary.scopeType) {
+    log.push("scopeType");
+  }
+  if (
+    limitDefinitionSummary.scopeType &&
+    limitDefinitionSummary.scopeType ===
+      models.LimitDefinitionSummary.ScopeType.UnknownValue
+  ) {
+    console.log(
+      `[${path.basename(
+        __filename
+      )}]: LimitDefinition is filtered out since 'ScopeType' is set to '${
+        limitDefinitionSummary.scopeType
+      }'`
+    );
+    return false;
+  }
+  if (log.length !== 0) {
+    console.log(
+      `[${path.basename(
+        __filename
+      )}]: LimitDefinition is filtered out since ${log} is/are 'undefined'`
+    );
+    return false;
+  }
+  return true;
+};
 
 const perScope = (
   limitDefinitionsPerScopePerServiceName: LimitDefinitionsPerScope,
@@ -29,16 +67,16 @@ const perServiceName = (
   limitDefinitionsPerServiceName: LimitDefinitionsPerServiceName,
   limitDefinitionSummary: models.LimitDefinitionSummary
 ) => {
-  const serviceName = limitDefinitionSummary.serviceName;
+  const serviceName = limitDefinitionSummary.serviceName!;
 
-  if (!serviceName) {
+  /* if (!serviceName) {
     console.log(
       `[${path.basename(
         __filename
       )}]: LimitDefinition is filtered out since serviceName in LimitDefinition is 'undefined'`
     );
     return;
-  }
+  } */
 
   if (!limitDefinitionsPerServiceName.has(serviceName)) {
     limitDefinitionsPerServiceName.set(serviceName, [limitDefinitionSummary]);
@@ -53,25 +91,25 @@ const perLimitName = (
   limitDefinitionsPerLimitName: LimitDefinitionsPerProperty,
   limitDefinitionSummary: models.LimitDefinitionSummary
 ) => {
-  const limitName = limitDefinitionSummary.name;
+  const limitName = limitDefinitionSummary.name!;
 
-  if (!limitName) {
+  /* if (!limitName) {
     console.log(
       `[${path.basename(
         __filename
       )}]: LimitDefinition is filtered out since 'name' in LimitDefinition is 'undefined'`
     );
     return;
-  }
+  } */
 
-  if (!limitDefinitionSummary.serviceName) {
+  /* if (!limitDefinitionSummary.serviceName) {
     console.log(
       `[${path.basename(
         __filename
       )}]: LimitDefinition is filtered out since 'serviceName' in LimitDefinition is 'undefined'`
     );
     return;
-  }
+  } */
 
   const entry = limitDefinitionsPerLimitName[limitName];
   if (!entry) {
@@ -121,6 +159,7 @@ export const getLimitDefinitions = async (
       await limitsClient.listLimitDefinitions(listLimitDefinitionsRequest);
     logJSON += JSON.stringify(listLimitDefinitionsResponse.items, null, 4);
     for (const limitDefinitionSummary of listLimitDefinitionsResponse.items) {
+      if (!validateLimitDefinitionSummary(limitDefinitionSummary)) continue;
       if (type === "perScope") {
         perScope(
           limitDefinitionsPerScopePerServiceName,

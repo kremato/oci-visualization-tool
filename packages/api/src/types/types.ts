@@ -13,18 +13,3 @@ export interface IdentityADSet
 export interface Token {
   postLimitsCount: number;
 }
-
-export interface UniqueLimit {
-  serviceName: string;
-  compartmendId: string;
-  // scope: "AD" | "REGION" | "GLOBAL";
-  scope: limits.models.LimitDefinitionSummary.ScopeType;
-  regionId?: string;
-  limitName: string;
-  resourceAvailibility: {
-    available: string;
-    used: string;
-    quota: string;
-    availibilityDomain?: string;
-  }[];
-}

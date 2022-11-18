@@ -5,13 +5,14 @@ import {
   StringHash,
   Names,
   ResourceDataGlobal,
+  UniqueLimit,
+  Nested,
 } from "common";
 import { getLimitsClient } from "../clients/getLimitsClient";
 import type {
   CommonRegion,
   LimitDefinitionsPerScope,
   Token,
-  UniqueLimit,
 } from "../types/types";
 import { getAvailibilityDomainsPerRegion } from "./getAvailibilityDomainsPerRegion";
 import { getResourceAvailability } from "./getResourceAvailibility";
@@ -20,6 +21,37 @@ import path from "path";
 import { Provider } from "../clients/provider";
 import type { identity, limits } from "oci-sdk";
 import { LimitSet } from "./LimitSet";
+
+const loadResponseChain = (
+  path: string[],
+  uniqueLimit: UniqueLimit,
+  nested: Nested
+) => {
+  if (path.length === 0) {
+    if (!nested.limits) {
+      nested["limits"] = [uniqueLimit];
+    } else {
+      nested.limits.push(uniqueLimit);
+    }
+    return;
+  }
+
+  const currentStop = path.pop()!;
+
+  for (const child of nested.children) {
+    if (child.name === currentStop) {
+      loadResponseChain(path, uniqueLimit, child);
+      return;
+    }
+  }
+
+  const child = Object.create(null);
+  child["name"] = currentStop;
+  child.isRoot = false;
+  child.children = [];
+
+  loadResponseChain(path, uniqueLimit, child);
+};
 
 const getAvailibilityObject = async (
   compartmentId: string,
@@ -47,7 +79,9 @@ export const loadLimit = async (
   region: CommonRegion,
   limitDefinitionSummary: limits.models.LimitDefinitionSummary,
   initialPostLimitsCount: number,
-  token: Token
+  token: Token,
+  nestedChainCompartments: Nested,
+  nestedChainServices: Nested
 ): Promise<void> => {
   const limitsClient = getLimitsClient();
   limitsClient.region = region;
@@ -78,7 +112,7 @@ export const loadLimit = async (
         );
         return;
       }
-      let availibilityObject = await getAvailibilityObject(
+      const availibilityObject = await getAvailibilityObject(
         compartmentId,
         limitDefinitionSummary,
         limitsClient,
@@ -95,7 +129,7 @@ export const loadLimit = async (
       );
       return;
     }
-    let availibilityObject = await getAvailibilityObject(
+    const availibilityObject = await getAvailibilityObject(
       compartmentId,
       limitDefinitionSummary,
       limitsClient
@@ -104,5 +138,19 @@ export const loadLimit = async (
   }
 
   limitSet.add(uniqueLimit);
+  const pathCompartments = [
+    uniqueLimit.serviceName,
+    uniqueLimit.scope,
+    uniqueLimit.regionId!,
+    uniqueLimit.compartmendId,
+  ];
+  const pathServices = [
+    uniqueLimit.scope,
+    uniqueLimit.regionId!,
+    uniqueLimit.compartmendId,
+    uniqueLimit.serviceName,
+  ];
+  loadResponseChain(pathCompartments, uniqueLimit, nestedChainCompartments);
+  loadResponseChain(pathServices, uniqueLimit, nestedChainServices);
   // outputToFile("test/getCompartmentsRegionResources.txt", logFormattedOutput);
 };
