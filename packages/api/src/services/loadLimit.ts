@@ -1,34 +1,24 @@
-import {
-  ScopeObject,
-  ResourceDataAD,
-  ResourceDataRegion,
-  StringHash,
-  Names,
-  ResourceDataGlobal,
-  UniqueLimit,
-  Nested,
-  MyLimitDefinitionSummary,
-} from "common";
+import { Names, UniqueLimit, Nested, MyLimitDefinitionSummary } from "common";
 import { getLimitsClient } from "../clients/getLimitsClient";
-import type {
-  CommonRegion,
-  LimitDefinitionsPerScope,
-  Token,
-} from "../types/types";
+import type { CommonRegion, Token } from "../types/types";
 import { getAvailibilityDomainsPerRegion } from "./getAvailibilityDomainsPerRegion";
 import { getResourceAvailability } from "./getResourceAvailibility";
-import { outputToFile } from "../utils/outputToFile";
 import path from "path";
-import { Provider } from "../clients/provider";
 import type { identity, limits } from "oci-sdk";
 import { LimitSet } from "./LimitSet";
 
 const loadResponseChain = (
-  path: string[],
+  limitPath: string[],
   uniqueLimit: UniqueLimit,
   nested: Nested
 ) => {
-  if (path.length === 0) {
+  if (limitPath.length === 0) {
+    if (nested.children.length !== 0)
+      console.log(
+        `[${path.basename(__filename)}]:
+         Pushing UniqueLimits into nested.limits in a non leaf!`
+      );
+
     if (!nested.limits) {
       nested["limits"] = [uniqueLimit];
     } else {
@@ -37,11 +27,11 @@ const loadResponseChain = (
     return;
   }
 
-  const currentStop = path.pop()!;
+  const currentStop = limitPath.pop()!;
 
   for (const child of nested.children) {
     if (child.name === currentStop) {
-      loadResponseChain(path, uniqueLimit, child);
+      loadResponseChain(limitPath, uniqueLimit, child);
       return;
     }
   }
@@ -51,7 +41,7 @@ const loadResponseChain = (
   child.isRoot = false;
   child.children = [];
 
-  loadResponseChain(path, uniqueLimit, child);
+  loadResponseChain(limitPath, uniqueLimit, child);
 };
 
 const getAvailibilityObject = async (

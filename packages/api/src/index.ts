@@ -7,7 +7,6 @@ import { listServices } from "./services/listServices";
 import { common, limits } from "oci-sdk";
 import { getLimitDefinitions } from "./services/getLimitDefinitions";
 import { Provider } from "./clients/provider";
-import { getServiceResourcesPerScope } from "./services/getServiceResourcesPerScope";
 import type { Names, Nested, ResourceDataGlobal, StringHash } from "common";
 import path from "path";
 import type {
