@@ -119,10 +119,10 @@ import { outputToFile } from "./utils/outputToFile";
 
       const promises: Promise<void>[] = [];
       const rootCompartments: Nested = Object.create(null);
-      rootCompartments["name"] = "root";
+      rootCompartments["name"] = "rootCompartments";
       rootCompartments["children"] = [];
       const rootServices: Nested = Object.create(null);
-      rootServices["name"] = "root";
+      rootServices["name"] = "rootServices";
       rootServices["children"] = [];
       for (const compartment of filteredCompartments) {
         for (const region of filteredRegions) {
@@ -186,7 +186,7 @@ import { outputToFile } from "./utils/outputToFile";
         return;
       }
 
-      const responseData = JSON.stringify({ rootCompartments, rootServices });
+      const responseData = JSON.stringify([rootCompartments, rootServices]);
       outputToFile("test/postLimitsResponse.txt", responseData);
       if (newRequest) {
         res.status(409).send("");
