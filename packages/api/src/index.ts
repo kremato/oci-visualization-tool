@@ -1,36 +1,29 @@
-import express, { Express, Request, Response } from "express";
+import express, { Express, Request, response, Response } from "express";
 import dotenv from "dotenv";
 import { listCompartments } from "./services/listCompartments";
 import cors from "cors";
 import { listRegionSubscriptions } from "./services/listRegionSubscriptions";
 import { listServices } from "./services/listServices";
-import { common, limits } from "oci-sdk";
+import { common } from "oci-sdk";
 import { getLimitDefinitions } from "./services/getLimitDefinitions";
 import { Provider } from "./clients/provider";
-import type { Names, Nested, ResourceDataGlobal, StringHash } from "common";
+import type { Nested } from "common";
 import path from "path";
 import type {
   CommonRegion,
-  LimitDefinitionsPerScope,
-  ServiceLimits,
   Token,
+  LimitDefinitionsPerProperty,
 } from "./types/types";
 import type {
-  LimitDefinitionsPerProperty,
   IdentityCompartment,
   RegionSubscription,
   ServiceSummary,
-  CompartmentsHash,
-  CompartmentData,
-  ScopeObject,
   InputData,
   MyLimitDefinitionSummary,
 } from "common";
-import {
-  createCompartmentDataObject,
-  createServiceScopeObject,
-} from "./services/createCompartmentDataObject";
+
 import { loadLimit } from "./services/loadLimit";
+import { outputToFile } from "./utils/outputToFile";
 
 (async () => {
   try {
@@ -46,26 +39,17 @@ import { loadLimit } from "./services/loadLimit";
     let regionSubscriptions: RegionSubscription[] = [];
     let regions: CommonRegion[] = [];
     let serviceSubscriptions: ServiceSummary[] = [];
-    let limitDefinitionsPerLimitName: LimitDefinitionsPerProperty =
-      Object.create(null);
-    let limitDefinitionsPerService = new Map<
+    let limitDefinitionsPerLimitName: LimitDefinitionsPerProperty = new Map();
+    let limitDefinitionsPerService: Map<
       common.Region,
-      StringHash<MyLimitDefinitionSummary[]>
-    >();
-    // const serviceLimits: ServiceLimits = new Map();
-    const compartmentHash: CompartmentsHash = Object.create(null);
-
+      // StringHash<MyLimitDefinitionSummary[]>
+      Map<string, MyLimitDefinitionSummary[]>
+    > = new Map();
     app.listen(port, async () => {
       console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
-      compartments = compartments.concat(
-        await listCompartments(tenancyId, true)
-      );
-      regionSubscriptions = regionSubscriptions.concat(
-        await listRegionSubscriptions(tenancyId)
-      );
-      serviceSubscriptions = serviceSubscriptions.concat(
-        await listServices(tenancyId)
-      );
+      compartments = await listCompartments(tenancyId, true);
+      regionSubscriptions = await listRegionSubscriptions(tenancyId);
+      serviceSubscriptions = await listServices(tenancyId);
       serviceSubscriptions = serviceSubscriptions.filter(
         (service) =>
           !["cloud-shell", "cost-management", "dashboard", "regions"].includes(
@@ -87,29 +71,6 @@ import { loadLimit } from "./services/loadLimit";
             region
           )) as LimitDefinitionsPerProperty
         );
-        /* serviceLimits.set(
-          region,
-          (await getLimitDefinitions(
-            "perScope",
-            region
-          )) as LimitDefinitionsPerScope
-        ); */
-      }
-      // fill compartmentHash with compartments and regions
-      for (const compartment of compartments) {
-        const compartmentData: CompartmentData = Object.create(null);
-        compartmentData["compartmentName"] = compartment.name;
-        compartmentData["regions"] = Object.create(null);
-        if (compartment.id === tenancyId) {
-          compartmentData["global"] = Object.create(null);
-        }
-        compartmentHash[compartment.id] = compartmentData;
-        for (const region of regions) {
-          const regionServicesObject: ScopeObject = Object.create(null);
-          regionServicesObject["aDScopeHash"] = Object.create(null);
-          regionServicesObject["regionScopeHash"] = Object.create(null);
-          compartmentData.regions[region.regionId] = regionServicesObject;
-        }
       }
       console.log("[server]: App.use() finished");
     });
@@ -127,7 +88,13 @@ import { loadLimit } from "./services/loadLimit";
     });
 
     app.get("/limits", async (req: Request, res: Response) => {
-      res.status(200).send(JSON.stringify(limitDefinitionsPerLimitName));
+      const responseLimitDefinitionsPerLimitName = Object.create(null);
+      for (const [key, value] of limitDefinitionsPerLimitName.entries()) {
+        responseLimitDefinitionsPerLimitName[key] = value;
+      }
+      res
+        .status(200)
+        .send(JSON.stringify(responseLimitDefinitionsPerLimitName));
     });
 
     app.post("/limits", async (req: Request, res: Response) => {
@@ -154,25 +121,26 @@ import { loadLimit } from "./services/loadLimit";
       const rootCompartments: Nested = Object.create(null);
       rootCompartments["name"] = "root";
       rootCompartments["children"] = [];
-      rootCompartments["isRoot"] = true;
       const rootServices: Nested = Object.create(null);
       rootServices["name"] = "root";
       rootServices["children"] = [];
-      rootServices["isRoot"] = true;
       for (const compartment of filteredCompartments) {
         for (const region of filteredRegions) {
           for (const service of filteredServices) {
             // TODO: maybe for service limits it would be better if they were a map where limit name is a key to service limits, so later we would not have to filter them with O(n)
-            let serviceLimits =
-              limitDefinitionsPerService.get(region)?.[service.name];
+            let serviceLimits = limitDefinitionsPerService
+              .get(region)
+              ?.get(service.name);
+            //let tmp = limitDefinitionsPerService.get(region);
             if (!serviceLimits) {
               console.log(
                 `[${path.basename(
                   __filename
-                )}]: limitDefinitionsPerService.get(region)?.[service.name] returned undefined`
+                )}]: limitDefinitionsPerService.get(region)?.get(service.name) returned undefined`
               );
               continue;
             }
+
             if (data.limits.length > 0) {
               serviceLimits = serviceLimits.filter((limit) =>
                 data.limits.includes(limit.name)
@@ -182,7 +150,7 @@ import { loadLimit } from "./services/loadLimit";
             for (const LimitDefinitionSummary of serviceLimits) {
               promises.push(
                 loadLimit(
-                  compartment.compartmentId,
+                  compartment,
                   region,
                   LimitDefinitionSummary,
                   initialPostLimitsCount,
@@ -207,7 +175,11 @@ import { loadLimit } from "./services/loadLimit";
       }
        */
 
-      await Promise.all(promises);
+      for (const promise of promises) {
+        await promise;
+      }
+
+      // await Promise.all(promises);
 
       if (newRequest) {
         res.status(409).send("");
@@ -215,7 +187,7 @@ import { loadLimit } from "./services/loadLimit";
       }
 
       const responseData = JSON.stringify({ rootCompartments, rootServices });
-      console.log(responseData);
+      outputToFile("test/postLimitsResponse.txt", responseData);
       if (newRequest) {
         res.status(409).send("");
         return;

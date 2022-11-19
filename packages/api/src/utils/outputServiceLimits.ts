@@ -1,8 +1,8 @@
-import type { LimitDefinitionsPerServiceName } from "../types/types";
+import type { LimitDefinitionsPerProperty } from "../types/types";
 import { outputToFile } from "./outputToFile";
 
 export const outputServiceLimits = (
-  serviceLimitDefinitions: LimitDefinitionsPerServiceName,
+  serviceLimitDefinitions: LimitDefinitionsPerProperty,
   filePath = "",
   details = true,
   deprecated = false

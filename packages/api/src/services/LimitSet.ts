@@ -18,18 +18,36 @@ export class LimitSet {
     return this.instance;
   }
 
+  /* private validateUniqueLimitAsKey(uniqueLimit: UniqueLimit): boolean {
+    const validationList = [
+      uniqueLimit.compartmentId,
+      `${uniqueLimit.regionId}`,
+      uniqueLimit.scope,
+      uniqueLimit.serviceName,
+      uniqueLimit.limitName,
+    ];
+    console.log("ADDING TO LIMIT SET:");
+    console.log(uniqueLimit);
+
+    const validationResult = validationList.reduce(
+      (accumulator, currentValue) => accumulator && !currentValue.includes(","),
+      true
+    );
+    return validationResult;
+  } */
+
   toLimitString(uniqueLimit: UniqueLimit) {
     return `
-    ${uniqueLimit.compartmendId},
-    ${uniqueLimit.regionId},
-    ${uniqueLimit.scope},
-    ${uniqueLimit.serviceName},
+    ${uniqueLimit.compartmentId}
+    ${uniqueLimit.regionId}
+    ${uniqueLimit.scope}
+    ${uniqueLimit.serviceName}
     ${uniqueLimit.limitName}
     `;
   }
 
-  add(item: UniqueLimit) {
-    if (item.resourceAvailibility.length === 0) {
+  add(uniqueLimit: UniqueLimit) {
+    if (uniqueLimit.resourceAvailibility.length === 0) {
       console.log(
         `[${path.basename(__filename)}]:
         Adding UniqueLimit with resourceAvailibility.length === 0
@@ -37,30 +55,21 @@ export class LimitSet {
       );
       return;
     }
-    const key = this.toLimitString(item);
 
-    if (key.includes(",")) {
+    /* if (this.validateUniqueLimitAsKey(uniqueLimit)) {
       console.log(
         `[${path.basename(__filename)}]:
-        Key made out of UniqeLimit idnetifiers contains a ','.
+        One or more of UniqeLimit idnetifiers contains a ','.
         Operation 'add' refused`
       );
-    }
+    } */
 
-    if (this.has(item)) return;
+    if (this.has(uniqueLimit)) return;
 
-    this.map.set(this.toLimitString(item), item);
+    this.map.set(this.toLimitString(uniqueLimit), uniqueLimit);
   }
 
   has(item: UniqueLimit) {
     return this.map.get(this.toLimitString(item));
-  }
-
-  values() {
-    return this.map.values();
-  }
-
-  size() {
-    return this.map.size;
   }
 }

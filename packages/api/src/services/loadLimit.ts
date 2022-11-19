@@ -1,4 +1,10 @@
-import { Names, UniqueLimit, Nested, MyLimitDefinitionSummary } from "common";
+import {
+  Names,
+  UniqueLimit,
+  Nested,
+  MyLimitDefinitionSummary,
+  IdentityCompartment,
+} from "common";
 import { getLimitsClient } from "../clients/getLimitsClient";
 import type { CommonRegion, Token } from "../types/types";
 import { getAvailibilityDomainsPerRegion } from "./getAvailibilityDomainsPerRegion";
@@ -36,10 +42,10 @@ const loadResponseChain = (
     }
   }
 
-  const child = Object.create(null);
+  const child: Nested = Object.create(null);
   child["name"] = currentStop;
-  child.isRoot = false;
   child.children = [];
+  nested.children.push(child);
 
   loadResponseChain(limitPath, uniqueLimit, child);
 };
@@ -66,7 +72,7 @@ const getAvailibilityObject = async (
 };
 
 export const loadLimit = async (
-  compartmentId: string,
+  compartment: IdentityCompartment,
   region: CommonRegion,
   limitDefinitionSummary: MyLimitDefinitionSummary,
   initialPostLimitsCount: number,
@@ -85,18 +91,38 @@ export const loadLimit = async (
   }[] = [];
   const uniqueLimit: UniqueLimit = {
     serviceName: limitDefinitionSummary.serviceName,
-    compartmendId: compartmentId,
+    compartmentId: compartment.id,
     scope: limitDefinitionSummary.scopeType,
     limitName: limitDefinitionSummary.name,
     resourceAvailibility: resourceAvailabilityList,
+    regionId: region.regionId,
   };
   const limitSet = LimitSet.getInstance();
 
-  if (limitSet.has(uniqueLimit)) return;
+  // if limit is already present, skip fetching and just add the limit to the response
+  if (!limitSet.has(uniqueLimit)) {
+    console.log("FETCHING");
+    if (limitDefinitionSummary.scopeType === Names.AD.toString()) {
+      const availabilityDomains = await getAvailibilityDomainsPerRegion(region);
+      for (const availabilityDomain of availabilityDomains) {
+        if (newRequest) {
+          console.log(
+            `[${path.basename(__filename)}]: new request detected, aborting`
+          );
+          return;
+        }
+        const availibilityObject = await getAvailibilityObject(
+          compartment.id,
+          limitDefinitionSummary,
+          limitsClient,
+          availabilityDomain
+        );
+        if (availibilityObject)
+          resourceAvailabilityList.push(availibilityObject);
+      }
+    }
 
-  if (limitDefinitionSummary.scopeType === Names.AD.toString()) {
-    const availabilityDomains = await getAvailibilityDomainsPerRegion(region);
-    for (const availabilityDomain of availabilityDomains) {
+    if (limitDefinitionSummary.scopeType === Names.Region.toUpperCase()) {
       if (newRequest) {
         console.log(
           `[${path.basename(__filename)}]: new request detected, aborting`
@@ -104,28 +130,12 @@ export const loadLimit = async (
         return;
       }
       const availibilityObject = await getAvailibilityObject(
-        compartmentId,
+        compartment.id,
         limitDefinitionSummary,
-        limitsClient,
-        availabilityDomain
+        limitsClient
       );
       if (availibilityObject) resourceAvailabilityList.push(availibilityObject);
     }
-  }
-
-  if (limitDefinitionSummary.scopeType === Names.Region.toUpperCase()) {
-    if (newRequest) {
-      console.log(
-        `[${path.basename(__filename)}]: new request detected, aborting`
-      );
-      return;
-    }
-    const availibilityObject = await getAvailibilityObject(
-      compartmentId,
-      limitDefinitionSummary,
-      limitsClient
-    );
-    if (availibilityObject) resourceAvailabilityList.push(availibilityObject);
   }
 
   // TODO: in case of global, remove '!'
@@ -134,12 +144,12 @@ export const loadLimit = async (
     uniqueLimit.serviceName,
     uniqueLimit.scope,
     uniqueLimit.regionId!,
-    uniqueLimit.compartmendId,
+    compartment.name,
   ];
   const pathServices = [
     uniqueLimit.scope,
     uniqueLimit.regionId!,
-    uniqueLimit.compartmendId,
+    compartment.name,
     uniqueLimit.serviceName,
   ];
   loadResponseChain(pathCompartments, uniqueLimit, nestedChainCompartments);

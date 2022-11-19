@@ -3,15 +3,12 @@ import { requests, models } from "oci-limits";
 import { getLimitsClient } from "../clients/getLimitsClient";
 import { Provider } from "../clients/provider";
 import type {
-  LimitDefinitionsPerServiceName,
+  LimitDefinitionsPerProperty,
   LimitDefinitionsPerScope,
 } from "../types/types";
 import { outputToFile } from "../utils/outputToFile";
 import path from "path";
-import type {
-  LimitDefinitionsPerProperty,
-  MyLimitDefinitionSummary,
-} from "common";
+import type { MyLimitDefinitionSummary } from "common";
 
 const validateLimitDefinitionSummary = (
   limitDefinitionSummary: models.LimitDefinitionSummary
@@ -65,7 +62,7 @@ const perScope = (
 };
 
 const perServiceName = (
-  limitDefinitionsPerServiceName: LimitDefinitionsPerServiceName,
+  limitDefinitionsPerServiceName: LimitDefinitionsPerProperty,
   limitDefinitionSummary: MyLimitDefinitionSummary
 ) => {
   const serviceName = limitDefinitionSummary.serviceName;
@@ -112,9 +109,9 @@ const perLimitName = (
     return;
   } */
 
-  const entry = limitDefinitionsPerLimitName[limitName];
+  const entry = limitDefinitionsPerLimitName.get(limitName);
   if (!entry) {
-    limitDefinitionsPerLimitName[limitName] = [limitDefinitionSummary];
+    limitDefinitionsPerLimitName.set(limitName, [limitDefinitionSummary]);
   } else {
     entry.push(limitDefinitionSummary);
   }
@@ -123,11 +120,7 @@ const perLimitName = (
 export const getLimitDefinitions = async (
   type: "perScope" | "perServiceName" | "perLimitName",
   region?: CommonRegion
-): Promise<
-  | LimitDefinitionsPerScope
-  | LimitDefinitionsPerServiceName
-  | LimitDefinitionsPerProperty
-> => {
+): Promise<LimitDefinitionsPerScope | LimitDefinitionsPerProperty> => {
   const limitsClient = getLimitsClient();
   // TODO: je tu potrebne nastavovat region, nie je to pre kazdy region rovnake?
   // pise, ze must be tenancy, a asi na tom nieco je
@@ -137,12 +130,10 @@ export const getLimitDefinitions = async (
   };
   const limitDefinitionsPerScopePerServiceName = new Map<
     string,
-    LimitDefinitionsPerServiceName
+    LimitDefinitionsPerProperty
   >();
-  const limitDefinitionsPerServiceName: LimitDefinitionsPerServiceName =
-    new Map<string, MyLimitDefinitionSummary[]>();
-  const limitDefinitionsPerLimitName: LimitDefinitionsPerProperty =
-    Object.create(null);
+  const limitDefinitionsPerServiceName: LimitDefinitionsPerProperty = new Map();
+  const limitDefinitionsPerLimitName: LimitDefinitionsPerProperty = new Map();
 
   const scopeType = models.LimitDefinitionSummary.ScopeType;
   for (const scope of [scopeType.Global, scopeType.Region, scopeType.Ad]) {

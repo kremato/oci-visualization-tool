@@ -84,14 +84,13 @@ export interface InputData {
 
 export interface Nested {
   name: string;
-  isRoot: boolean;
   children: Nested[];
   limits?: UniqueLimit[];
 }
 
 export interface UniqueLimit {
   serviceName: string;
-  compartmendId: string;
+  compartmentId: string;
   // scope: "AD" | "REGION" | "GLOBAL";
   scope: limits.models.LimitDefinitionSummary.ScopeType;
   regionId?: string;
