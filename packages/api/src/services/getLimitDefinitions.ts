@@ -8,7 +8,10 @@ import type {
 } from "../types/types";
 import { outputToFile } from "../utils/outputToFile";
 import path from "path";
-import type { LimitDefinitionsPerProperty } from "common";
+import type {
+  LimitDefinitionsPerProperty,
+  MyLimitDefinitionSummary,
+} from "common";
 
 const validateLimitDefinitionSummary = (
   limitDefinitionSummary: models.LimitDefinitionSummary
@@ -50,11 +53,9 @@ const validateLimitDefinitionSummary = (
 
 const perScope = (
   limitDefinitionsPerScopePerServiceName: LimitDefinitionsPerScope,
-  limitDefinitionSummary: models.LimitDefinitionSummary
+  limitDefinitionSummary: MyLimitDefinitionSummary
 ) => {
-  const itemScope =
-    limitDefinitionSummary.scopeType ||
-    models.LimitDefinitionSummary.ScopeType.UnknownValue;
+  const itemScope = limitDefinitionSummary.scopeType;
   const serviceLimitDefinitions =
     limitDefinitionsPerScopePerServiceName.get(itemScope);
   /* serviceLimitDefinitions should not ever be undefined, because limitDefinitionsPerScopePerServiceName was set
@@ -65,9 +66,9 @@ const perScope = (
 
 const perServiceName = (
   limitDefinitionsPerServiceName: LimitDefinitionsPerServiceName,
-  limitDefinitionSummary: models.LimitDefinitionSummary
+  limitDefinitionSummary: MyLimitDefinitionSummary
 ) => {
-  const serviceName = limitDefinitionSummary.serviceName!;
+  const serviceName = limitDefinitionSummary.serviceName;
 
   /* if (!serviceName) {
     console.log(
@@ -89,9 +90,9 @@ const perServiceName = (
 
 const perLimitName = (
   limitDefinitionsPerLimitName: LimitDefinitionsPerProperty,
-  limitDefinitionSummary: models.LimitDefinitionSummary
+  limitDefinitionSummary: MyLimitDefinitionSummary
 ) => {
-  const limitName = limitDefinitionSummary.name!;
+  const limitName = limitDefinitionSummary.name;
 
   /* if (!limitName) {
     console.log(
@@ -139,7 +140,7 @@ export const getLimitDefinitions = async (
     LimitDefinitionsPerServiceName
   >();
   const limitDefinitionsPerServiceName: LimitDefinitionsPerServiceName =
-    new Map<string, models.LimitDefinitionSummary[]>();
+    new Map<string, MyLimitDefinitionSummary[]>();
   const limitDefinitionsPerLimitName: LimitDefinitionsPerProperty =
     Object.create(null);
 
@@ -147,7 +148,7 @@ export const getLimitDefinitions = async (
   for (const scope of [scopeType.Global, scopeType.Region, scopeType.Ad]) {
     limitDefinitionsPerScopePerServiceName.set(
       scope,
-      new Map<string, models.LimitDefinitionSummary[]>()
+      new Map<string, MyLimitDefinitionSummary[]>()
     );
   }
 
@@ -160,15 +161,23 @@ export const getLimitDefinitions = async (
     logJSON += JSON.stringify(listLimitDefinitionsResponse.items, null, 4);
     for (const limitDefinitionSummary of listLimitDefinitionsResponse.items) {
       if (!validateLimitDefinitionSummary(limitDefinitionSummary)) continue;
+      // TODO: filter global scope, in case of return to the global scope, delete
+      if (limitDefinitionSummary.scopeType === "GLOBAL") continue;
       if (type === "perScope") {
         perScope(
           limitDefinitionsPerScopePerServiceName,
-          limitDefinitionSummary
+          limitDefinitionSummary as MyLimitDefinitionSummary
         );
       } else if (type === "perServiceName") {
-        perServiceName(limitDefinitionsPerServiceName, limitDefinitionSummary);
+        perServiceName(
+          limitDefinitionsPerServiceName,
+          limitDefinitionSummary as MyLimitDefinitionSummary
+        );
       } else {
-        perLimitName(limitDefinitionsPerLimitName, limitDefinitionSummary);
+        perLimitName(
+          limitDefinitionsPerLimitName,
+          limitDefinitionSummary as MyLimitDefinitionSummary
+        );
       }
     }
     opc = listLimitDefinitionsResponse.opcNextPage;

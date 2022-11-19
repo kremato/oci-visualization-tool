@@ -18,8 +18,21 @@ export interface StringHash<Value> {
   [id: string]: Value;
 }
 
+export interface MyLimitDefinitionSummary
+  extends Omit<
+    limits.models.LimitDefinitionSummary,
+    "name" | "serviceName" | "scopeType"
+  > {
+  name: string;
+  serviceName: string;
+  scopeType:
+    | limits.models.LimitDefinitionSummary.ScopeType.Ad
+    | limits.models.LimitDefinitionSummary.ScopeType.Region
+    | limits.models.LimitDefinitionSummary.ScopeType.Global;
+}
+
 export interface LimitDefinitionsPerProperty
-  extends StringHash<limits.models.LimitDefinitionSummary[]> {}
+  extends StringHash<MyLimitDefinitionSummary[]> {}
 
 export interface ResourceDataAD {
   resourceName: string | undefined;

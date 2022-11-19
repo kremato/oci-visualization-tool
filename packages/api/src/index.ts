@@ -25,6 +25,7 @@ import type {
   CompartmentData,
   ScopeObject,
   InputData,
+  MyLimitDefinitionSummary,
 } from "common";
 import {
   createCompartmentDataObject,
@@ -50,7 +51,7 @@ import { loadLimit } from "./services/loadLimit";
       Object.create(null);
     let limitDefinitionsPerService = new Map<
       common.Region,
-      StringHash<limits.models.LimitDefinitionSummary[]>
+      StringHash<MyLimitDefinitionSummary[]>
     >();
     // const serviceLimits: ServiceLimits = new Map();
     const compartmentHash: CompartmentsHash = Object.create(null);
@@ -65,6 +66,12 @@ import { loadLimit } from "./services/loadLimit";
       );
       serviceSubscriptions = serviceSubscriptions.concat(
         await listServices(tenancyId)
+      );
+      serviceSubscriptions = serviceSubscriptions.filter(
+        (service) =>
+          !["cloud-shell", "cost-management", "dashboard", "regions"].includes(
+            service.name
+          )
       );
       regions = common.Region.values().filter((region) =>
         regionSubscriptions.some((item) => item.regionName === region.regionId)
@@ -169,7 +176,7 @@ import { loadLimit } from "./services/loadLimit";
             }
             if (data.limits.length > 0) {
               serviceLimits = serviceLimits.filter((limit) =>
-                data.limits.includes(limit.name!)
+                data.limits.includes(limit.name)
               );
             }
 

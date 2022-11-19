@@ -7,6 +7,7 @@ import {
   ResourceDataGlobal,
   UniqueLimit,
   Nested,
+  MyLimitDefinitionSummary,
 } from "common";
 import { getLimitsClient } from "../clients/getLimitsClient";
 import type {
@@ -77,7 +78,7 @@ const getAvailibilityObject = async (
 export const loadLimit = async (
   compartmentId: string,
   region: CommonRegion,
-  limitDefinitionSummary: limits.models.LimitDefinitionSummary,
+  limitDefinitionSummary: MyLimitDefinitionSummary,
   initialPostLimitsCount: number,
   token: Token,
   nestedChainCompartments: Nested,
@@ -93,10 +94,10 @@ export const loadLimit = async (
     availibilityDomain?: string;
   }[] = [];
   const uniqueLimit: UniqueLimit = {
-    serviceName: limitDefinitionSummary.serviceName!,
+    serviceName: limitDefinitionSummary.serviceName,
     compartmendId: compartmentId,
-    scope: limitDefinitionSummary.scopeType!,
-    limitName: limitDefinitionSummary.name!,
+    scope: limitDefinitionSummary.scopeType,
+    limitName: limitDefinitionSummary.name,
     resourceAvailibility: resourceAvailabilityList,
   };
   const limitSet = LimitSet.getInstance();
@@ -137,6 +138,7 @@ export const loadLimit = async (
     if (availibilityObject) resourceAvailabilityList.push(availibilityObject);
   }
 
+  // TODO: in case of global, remove '!'
   limitSet.add(uniqueLimit);
   const pathCompartments = [
     uniqueLimit.serviceName,
