@@ -1,7 +1,7 @@
 import {
   Names,
   UniqueLimit,
-  Nested,
+  ResponseTree,
   MyLimitDefinitionSummary,
   IdentityCompartment,
 } from "common";
@@ -16,36 +16,36 @@ import { LimitSet } from "./LimitSet";
 const loadResponseChain = (
   limitPath: string[],
   uniqueLimit: UniqueLimit,
-  nested: Nested
+  node: ResponseTree
 ) => {
   if (limitPath.length === 0) {
-    if (nested.children.length !== 0)
+    if (node.children.length !== 0)
       console.log(
         `[${path.basename(__filename)}]:
-         Pushing UniqueLimits into nested.limits in a non leaf!`
+         Pushing UniqueLimits into node.limits in a non leaf!`
       );
 
-    if (!nested.limits) {
-      nested["limits"] = [uniqueLimit];
+    if (!node.limits) {
+      node["limits"] = [uniqueLimit];
     } else {
-      nested.limits.push(uniqueLimit);
+      node.limits.push(uniqueLimit);
     }
     return;
   }
 
   const currentStop = limitPath.pop()!;
 
-  for (const child of nested.children) {
+  for (const child of node.children) {
     if (child.name === currentStop) {
       loadResponseChain(limitPath, uniqueLimit, child);
       return;
     }
   }
 
-  const child: Nested = Object.create(null);
+  const child: ResponseTree = Object.create(null);
   child["name"] = currentStop;
   child.children = [];
-  nested.children.push(child);
+  node.children.push(child);
 
   loadResponseChain(limitPath, uniqueLimit, child);
 };
@@ -77,8 +77,8 @@ export const loadLimit = async (
   limitDefinitionSummary: MyLimitDefinitionSummary,
   initialPostLimitsCount: number,
   token: Token,
-  nestedChainCompartments: Nested,
-  nestedChainServices: Nested
+  rootCompartments: ResponseTree,
+  rootServices: ResponseTree
 ): Promise<void> => {
   const limitsClient = getLimitsClient();
   limitsClient.region = region;
@@ -152,7 +152,7 @@ export const loadLimit = async (
     compartment.name,
     uniqueLimit.serviceName,
   ];
-  loadResponseChain(pathCompartments, uniqueLimit, nestedChainCompartments);
-  loadResponseChain(pathServices, uniqueLimit, nestedChainServices);
+  loadResponseChain(pathCompartments, uniqueLimit, rootCompartments);
+  loadResponseChain(pathServices, uniqueLimit, rootServices);
   // outputToFile("test/getCompartmentsRegionResources.txt", logFormattedOutput);
 };

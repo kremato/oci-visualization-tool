@@ -7,7 +7,7 @@ import { listServices } from "./services/listServices";
 import { common } from "oci-sdk";
 import { getLimitDefinitions } from "./services/getLimitDefinitions";
 import { Provider } from "./clients/provider";
-import type { Nested } from "common";
+import type { ResponseTree } from "common";
 import path from "path";
 import type {
   CommonRegion,
@@ -118,12 +118,12 @@ import { outputToFile } from "./utils/outputToFile";
       });
 
       const promises: Promise<void>[] = [];
-      const rootCompartments: Nested = Object.create(null);
-      rootCompartments["name"] = "rootCompartments";
-      rootCompartments["children"] = [];
-      const rootServices: Nested = Object.create(null);
-      rootServices["name"] = "rootServices";
-      rootServices["children"] = [];
+      const rootCompartmentTree: ResponseTree = Object.create(null);
+      rootCompartmentTree["name"] = "rootCompartments";
+      rootCompartmentTree["children"] = [];
+      const rootServiceTree: ResponseTree = Object.create(null);
+      rootServiceTree["name"] = "rootServices";
+      rootServiceTree["children"] = [];
       for (const compartment of filteredCompartments) {
         for (const region of filteredRegions) {
           for (const service of filteredServices) {
@@ -155,8 +155,8 @@ import { outputToFile } from "./utils/outputToFile";
                   LimitDefinitionSummary,
                   initialPostLimitsCount,
                   token,
-                  rootCompartments,
-                  rootServices
+                  rootCompartmentTree,
+                  rootServiceTree
                 )
               );
             }
@@ -186,10 +186,13 @@ import { outputToFile } from "./utils/outputToFile";
         return;
       }
 
-      const responseData = JSON.stringify([rootCompartments, rootServices]);
+      const responseData = JSON.stringify([
+        rootCompartmentTree,
+        rootServiceTree,
+      ]);
       outputToFile("test/postLimitsResponse.txt", responseData);
       if (newRequest) {
-        res.status(409).send("");
+        res.status(409).send([]);
         return;
       }
       res.status(200).send(responseData);
