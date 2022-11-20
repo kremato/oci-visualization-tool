@@ -1,31 +1,44 @@
-import { ResourceDataAD } from "common";
 import React from "react";
 import { useAppSelector } from "../../hooks/useAppSelector";
+import { Typography } from "@mui/material";
+import { UniqueLimit } from "common";
 
 interface Props {
-  serviceName: string;
-  resourceObjectADList: ResourceDataAD[];
+  limits: UniqueLimit[];
 }
 
-/*
-import { Names } from "common";
-import { useAppSelector } from "../../hooks/useAppSelector";
-import { CollapsableScope } from "../Scopes/CollapsableScope";
-import { CollapsableCompartment } from "./CollapsableCompartment";
+export const ADTable = ({ limits }: Props) => {
+  if (limits.length === 0)
+    return <Typography>No table cause no limits provided</Typography>;
 
-export const CompartmentAccordions = () => {
-  const compartmentHash = useAppSelector(
-    (state) => state.compartments.compartmentHash
-  );
-*/
-
-export const ADTable = ({ serviceName, resourceObjectADList }: Props) => {
   const sumADResources = useAppSelector((state) => state.input.sumADResources);
   const showEmptyServiceLimits = useAppSelector(
     (state) => state.input.emptyServiceLimits
   );
 
   return (
+    <table>
+      <thead>
+        {/* <tr>
+          <th>{serviceName}</th>
+        </tr> */}
+        <tr>
+          <th>Limit Name</th>
+          <th>Availibility Domain</th>
+          <th>Available</th>
+          <th>Used</th>
+          <th>Quota</th>
+        </tr>
+      </thead>
+      <tbody>
+        {limits.map((uniqueLimit) => {
+          return <div></div>;
+        })}
+      </tbody>
+    </table>
+  );
+
+  /* return (
     <table>
       <thead>
         <tr>
@@ -40,7 +53,7 @@ export const ADTable = ({ serviceName, resourceObjectADList }: Props) => {
         </tr>
       </thead>
       <tbody>
-        {resourceObjectADList.map((resourceObjectAD) => {
+        {limits.map((resourceObjectAD) => {
           let resSum = { available: 0, used: 0 };
           if (sumADResources) {
             for (const limit of resourceObjectAD.availibilityDomainList) {
@@ -90,7 +103,7 @@ export const ADTable = ({ serviceName, resourceObjectADList }: Props) => {
               >
                 {resourceObjectAD.resourceName}
               </td>
-              {/* {resourceObjectAD.availibilityDomainList.map((limits) => {
+              {resourceObjectAD.availibilityDomainList.map((limits) => {
                 return (
                   <React.Fragment key={limits.aDName}>
                     <td>{limits.aDName}</td>
@@ -99,12 +112,12 @@ export const ADTable = ({ serviceName, resourceObjectADList }: Props) => {
                     <td>{limits.quota}</td>
                   </React.Fragment>
                 );
-              })} */}
+              })}
               {ADCells}
             </tr>
           );
         })}
       </tbody>
     </table>
-  );
+  ); */
 };

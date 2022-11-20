@@ -13,7 +13,7 @@ import path from "path";
 import type { identity, limits } from "oci-sdk";
 import { LimitSet } from "./LimitSet";
 
-const loadResponseChain = (
+const addNode = (
   limitPath: string[],
   uniqueLimit: UniqueLimit,
   node: ResponseTree
@@ -37,7 +37,7 @@ const loadResponseChain = (
 
   for (const child of node.children) {
     if (child.name === currentStop) {
-      loadResponseChain(limitPath, uniqueLimit, child);
+      addNode(limitPath, uniqueLimit, child);
       return;
     }
   }
@@ -47,7 +47,31 @@ const loadResponseChain = (
   child.children = [];
   node.children.push(child);
 
-  loadResponseChain(limitPath, uniqueLimit, child);
+  addNode(limitPath, uniqueLimit, child);
+};
+
+const loadResponseTree = (
+  uniqueLimit: UniqueLimit,
+  root: ResponseTree,
+  type: "compartment" | "service"
+) => {
+  // TODO: in case of global, remove '!'
+  let limitPath =
+    type === "compartment"
+      ? [
+          uniqueLimit.serviceName,
+          uniqueLimit.scope,
+          uniqueLimit.regionId!,
+          uniqueLimit.compartmentName,
+        ]
+      : [
+          uniqueLimit.scope,
+          uniqueLimit.regionId!,
+          uniqueLimit.compartmentName,
+          uniqueLimit.serviceName,
+        ];
+
+  addNode(limitPath, uniqueLimit, root);
 };
 
 const getAvailibilityObject = async (
@@ -93,36 +117,26 @@ export const loadLimit = async (
     serviceName: limitDefinitionSummary.serviceName,
     compartmentId: compartment.id,
     scope: limitDefinitionSummary.scopeType,
-    limitName: limitDefinitionSummary.name,
-    resourceAvailibility: resourceAvailabilityList,
     regionId: region.regionId,
+    limitName: limitDefinitionSummary.name,
+    compartmentName: compartment.name,
+    resourceAvailibility: resourceAvailabilityList,
   };
   const limitSet = LimitSet.getInstance();
 
   // if limit is already present, skip fetching and just add the limit to the response
-  if (!limitSet.has(uniqueLimit)) {
-    console.log("FETCHING");
-    if (limitDefinitionSummary.scopeType === Names.AD.toString()) {
-      const availabilityDomains = await getAvailibilityDomainsPerRegion(region);
-      for (const availabilityDomain of availabilityDomains) {
-        if (newRequest) {
-          console.log(
-            `[${path.basename(__filename)}]: new request detected, aborting`
-          );
-          return;
-        }
-        const availibilityObject = await getAvailibilityObject(
-          compartment.id,
-          limitDefinitionSummary,
-          limitsClient,
-          availabilityDomain
-        );
-        if (availibilityObject)
-          resourceAvailabilityList.push(availibilityObject);
-      }
-    }
+  if (limitSet.has(uniqueLimit)) {
+    console.log("LOADED");
+    loadResponseTree(uniqueLimit, rootCompartments, "compartment");
+    loadResponseTree(uniqueLimit, rootServices, "service");
+    return;
+  }
 
-    if (limitDefinitionSummary.scopeType === Names.Region.toUpperCase()) {
+  console.log("FETCHING");
+
+  if (limitDefinitionSummary.scopeType === Names.AD.toString()) {
+    const availabilityDomains = await getAvailibilityDomainsPerRegion(region);
+    for (const availabilityDomain of availabilityDomains) {
       if (newRequest) {
         console.log(
           `[${path.basename(__filename)}]: new request detected, aborting`
@@ -132,27 +146,31 @@ export const loadLimit = async (
       const availibilityObject = await getAvailibilityObject(
         compartment.id,
         limitDefinitionSummary,
-        limitsClient
+        limitsClient,
+        availabilityDomain
       );
       if (availibilityObject) resourceAvailabilityList.push(availibilityObject);
     }
   }
 
-  // TODO: in case of global, remove '!'
+  if (limitDefinitionSummary.scopeType === Names.Region.toUpperCase()) {
+    if (newRequest) {
+      console.log(
+        `[${path.basename(__filename)}]: new request detected, aborting`
+      );
+      return;
+    }
+    const availibilityObject = await getAvailibilityObject(
+      compartment.id,
+      limitDefinitionSummary,
+      limitsClient
+    );
+    if (availibilityObject) resourceAvailabilityList.push(availibilityObject);
+  }
+
   limitSet.add(uniqueLimit);
-  const pathCompartments = [
-    uniqueLimit.serviceName,
-    uniqueLimit.scope,
-    uniqueLimit.regionId!,
-    compartment.name,
-  ];
-  const pathServices = [
-    uniqueLimit.scope,
-    uniqueLimit.regionId!,
-    compartment.name,
-    uniqueLimit.serviceName,
-  ];
-  loadResponseChain(pathCompartments, uniqueLimit, rootCompartments);
-  loadResponseChain(pathServices, uniqueLimit, rootServices);
+  loadResponseTree(uniqueLimit, rootCompartments, "compartment");
+  loadResponseTree(uniqueLimit, rootServices, "service");
+
   // outputToFile("test/getCompartmentsRegionResources.txt", logFormattedOutput);
 };

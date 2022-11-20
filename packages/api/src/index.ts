@@ -21,6 +21,7 @@ import type {
   InputData,
   MyLimitDefinitionSummary,
 } from "common";
+import { Promise as BlueBirdPromise } from "bluebird";
 
 import { loadLimit } from "./services/loadLimit";
 import { outputToFile } from "./utils/outputToFile";
@@ -117,6 +118,8 @@ import { outputToFile } from "./utils/outputToFile";
         return data.services.includes(service.name);
       });
 
+      const regionPromises: Promise<void>[] = [];
+      const aDPromises: Promise<void>[] = [];
       const promises: Promise<void>[] = [];
       const rootCompartmentTree: ResponseTree = Object.create(null);
       rootCompartmentTree["name"] = "rootCompartments";
@@ -147,18 +150,28 @@ import { outputToFile } from "./utils/outputToFile";
               );
             }
 
-            for (const LimitDefinitionSummary of serviceLimits) {
-              promises.push(
-                loadLimit(
-                  compartment,
-                  region,
-                  LimitDefinitionSummary,
-                  initialPostLimitsCount,
-                  token,
-                  rootCompartmentTree,
-                  rootServiceTree
-                )
+            let cache = [];
+            for (const LimitDefinitionSummary of serviceLimits.reverse()) {
+              const promise = loadLimit(
+                compartment,
+                region,
+                LimitDefinitionSummary,
+                initialPostLimitsCount,
+                token,
+                rootCompartmentTree,
+                rootServiceTree
               );
+
+              /* if (LimitDefinitionSummary.scopeType === "AD") {
+                aDPromises.push(promise);
+              } else {
+                regionPromises.push(promise);
+              } */
+              await promise;
+              /* cache.push(promise);
+              if (cache.length === 10) {
+                Promise.all()
+              } */
             }
           }
         }
@@ -175,16 +188,7 @@ import { outputToFile } from "./utils/outputToFile";
       }
        */
 
-      for (const promise of promises) {
-        await promise;
-      }
-
-      // await Promise.all(promises);
-
-      if (newRequest) {
-        res.status(409).send("");
-        return;
-      }
+      /* await Promise.all(promises); */
 
       const responseData = JSON.stringify([
         rootCompartmentTree,

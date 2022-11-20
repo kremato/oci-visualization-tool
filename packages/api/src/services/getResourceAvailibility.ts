@@ -24,7 +24,7 @@ export const getResourceAvailability = async (
       limitName: limitDefinitionSummary.name,
       compartmentId,
       /* availabilityDomain: availabilityDomain.name parameter is only added to the
-       request object in case availabilityDomain in defined */
+       request object in case availabilityDomain is defined */
       ...(availabilityDomain && {
         availabilityDomain: availabilityDomain.name!,
       }),

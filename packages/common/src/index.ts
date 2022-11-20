@@ -88,13 +88,29 @@ export interface ResponseTree {
   limits?: UniqueLimit[];
 }
 
+/* export interface ScopeType extends Omit<
+limits.models.LimitDefinitionSummary.ScopeType,
+"name" | "serviceName" | "scopeType"
+> {
+name: string;
+serviceName: string;
+scopeType:
+| limits.models.LimitDefinitionSummary.ScopeType.Ad
+| limits.models.LimitDefinitionSummary.ScopeType.Region
+| limits.models.LimitDefinitionSummary.ScopeType.Global;
+} */
+
 export interface UniqueLimit {
   serviceName: string;
   compartmentId: string;
   // scope: "AD" | "REGION" | "GLOBAL";
-  scope: limits.models.LimitDefinitionSummary.ScopeType;
+  scope:
+    | limits.models.LimitDefinitionSummary.ScopeType.Ad
+    | limits.models.LimitDefinitionSummary.ScopeType.Region
+    | limits.models.LimitDefinitionSummary.ScopeType.Global;
   regionId?: string;
   limitName: string;
+  compartmentName: string;
   resourceAvailibility: {
     available: string;
     used: string;
