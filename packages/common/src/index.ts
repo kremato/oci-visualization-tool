@@ -82,9 +82,9 @@ export interface InputData {
   limits: string[];
 }
 
-export interface Nested {
+export interface ResponseTree {
   name: string;
-  children: Nested[];
+  children: ResponseTree[];
   limits?: UniqueLimit[];
 }
 
