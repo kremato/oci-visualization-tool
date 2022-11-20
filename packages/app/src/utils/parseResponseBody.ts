@@ -10,7 +10,6 @@ export const parseResponseBody = async (response: Response) => {
       line = (await reader.read()).value;
     }
   }
-  const result =
-    fullText.length === 0 ? Object.create(null) : JSON.parse(fullText, reviver);
+  const result = fullText.length === 0 ? [] : JSON.parse(fullText, reviver);
   return result;
 };

@@ -1,14 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { createCompartmentHierarchy } from "../utils/createCompartmentHierarchy";
 import { HierarchyHash } from "../types/types";
-import { CompartmentsHash, IdentityCompartment } from "common";
+import { CompartmentsHash, IdentityCompartment, ResponseTree } from "common";
 
 const compartmentsSlice = createSlice({
   name: "compartments",
   initialState: {
     compartmentList: [] as IdentityCompartment[],
     hierarchyHash: {} as HierarchyHash,
-    compartmentHash: Object.create(null) as CompartmentsHash,
+    compartmentNodes: [] as ResponseTree[],
   },
   reducers: {
     replaceCompartmentList(
@@ -21,8 +21,8 @@ const compartmentsSlice = createSlice({
         action.payload
       );
     },
-    replaceCompartmentHash(state, action: PayloadAction<CompartmentsHash>) {
-      state.compartmentHash = action.payload;
+    replaceCompartmentNodes(state, action: PayloadAction<ResponseTree[]>) {
+      state.compartmentNodes = action.payload;
     },
   },
 });

@@ -14,7 +14,7 @@ interface Props {
 export const AccordionWrapper = ({ title, children }: Props) => {
   const showAll = useAppSelector((state) => state.input.showAll);
   return (
-    <Accordion expanded={showAll}>
+    <Accordion expanded={true}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls={`${title}-compartment-content`}

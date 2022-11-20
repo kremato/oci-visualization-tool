@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { CompartmentAccordions } from "./components/Compartments/CompartmentAcordions";
 import { useAppDispatch } from "./hooks/useAppDispatch";
 import { fetchCompartmentsList } from "./store/compartmentsActionCreators";
 import "./App.css";
@@ -15,6 +14,7 @@ import { ServicesDropdown } from "./components/Services/ServicesDropdown";
 import { ScopesDropdown } from "./components/Scopes/ScopesDropdown";
 import { ModifiableCheckbox } from "./layouts/ModifiableCheckbox";
 import { LimitsDropdown } from "./components/Limits/LimitsDropdown";
+import { Accordions } from "./layouts/Accordions";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -65,7 +65,7 @@ function App() {
           <ModifiableButton text={"Send"} action={sendData} />
         </Grid>
         <Grid item xs={12}>
-          <CompartmentAccordions />
+          <Accordions />
         </Grid>
       </Grid>
       ;
