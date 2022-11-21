@@ -14,10 +14,9 @@ export const Table = ({ uniqueLimits }: Table) => {
     return <Typography>No limits found</Typography>;
   }
 
-  return uniqueLimits[0].scope ===
-    limits.models.LimitDefinitionSummary.ScopeType.Ad ? (
+  return uniqueLimits[0].scope === "AD" ? (
     <ADTable limits={uniqueLimits} />
   ) : (
-    <RegionTable serviceName={""} resourceDataRegionList={[]} />
+    <Typography>REGION TABLE GOES HERE</Typography>
   );
 };

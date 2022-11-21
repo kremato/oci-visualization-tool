@@ -1,6 +1,7 @@
 import { ResponseTree } from "common";
 import { Typography } from "@mui/material";
 import { AccordionWrapper } from "./AccordionWrapper";
+import { Table } from "../components/Tables/Table";
 
 interface Props {
   node: ResponseTree;
@@ -12,7 +13,7 @@ export const Collapsable = ({ node }: Props) => {
       {node.limits === undefined ? (
         node.children.map((childNode) => <Collapsable node={childNode} />)
       ) : (
-        <Typography>TABLE GOES HERE</Typography>
+        <Table uniqueLimits={node.limits} />
       )}
     </AccordionWrapper>
   );

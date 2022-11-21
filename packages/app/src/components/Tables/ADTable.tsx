@@ -16,6 +16,13 @@ export const ADTable = ({ limits }: Props) => {
     (state) => state.input.emptyServiceLimits
   );
 
+  const Body = (
+    <tbody>
+      {limits.map((uniqueLimit) => {
+        return <div></div>;
+      })}
+    </tbody>
+  );
   return (
     <table>
       <thead>
@@ -32,7 +39,30 @@ export const ADTable = ({ limits }: Props) => {
       </thead>
       <tbody>
         {limits.map((uniqueLimit) => {
-          return <div></div>;
+          // if no resource availibility for this
+          if (uniqueLimit.resourceAvailability.length === 0)
+            return (
+              <td>
+                <Typography>No data for {uniqueLimit.limitName}</Typography>
+              </td>
+            );
+          return (
+            <tr>
+              <td rowSpan={uniqueLimit.resourceAvailability.length}>
+                <Typography>{uniqueLimit.limitName}</Typography>
+              </td>
+              {uniqueLimit.resourceAvailability.map((resourceAvailibility) => {
+                return (
+                  <React.Fragment key={resourceAvailibility.availabilityDomain}>
+                    <td>{resourceAvailibility.availabilityDomain}</td>
+                    <td>{resourceAvailibility.available}</td>
+                    <td>{resourceAvailibility.used}</td>
+                    <td>{resourceAvailibility.quota}</td>
+                  </React.Fragment>
+                );
+              })}
+            </tr>
+          );
         })}
       </tbody>
     </table>
