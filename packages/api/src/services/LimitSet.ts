@@ -47,7 +47,7 @@ export class LimitSet {
   }
 
   add(uniqueLimit: UniqueLimit) {
-    if (uniqueLimit.resourceAvailibility.length === 0) {
+    if (uniqueLimit.resourceAvailability.length === 0) {
       console.log(
         `[${path.basename(__filename)}]:
         Adding UniqueLimit with resourceAvailibility.length === 0

@@ -7,8 +7,8 @@ import {
 } from "common";
 import { getLimitsClient } from "../clients/getLimitsClient";
 import type { CommonRegion, Token } from "../types/types";
-import { getAvailibilityDomainsPerRegion } from "./getAvailibilityDomainsPerRegion";
-import { getResourceAvailability } from "./getResourceAvailibility";
+import { getAvailabilityDomainsPerRegion } from "./getAvailabilityDomainsPerRegion";
+import { getResourceAvailability } from "./getResourceAvailability ";
 import path from "path";
 import type { identity, limits } from "oci-sdk";
 import { LimitSet } from "./LimitSet";
@@ -74,7 +74,7 @@ const loadResponseTree = (
   addNode(limitPath, uniqueLimit, root);
 };
 
-const getAvailibilityObject = async (
+const getAvailabilityObject = async (
   compartmentId: string,
   limitDefinitionSummary: limits.models.LimitDefinitionSummary,
   limitsClient: limits.LimitsClient,
@@ -92,7 +92,17 @@ const getAvailibilityObject = async (
   const available = resourceAvailability.available?.toString() || "n/a";
   const used = resourceAvailability.used?.toString() || "n/a";
   const quota = resourceAvailability.effectiveQuotaValue?.toString() || "n/a";
-  return { available, used, quota };
+
+  return {
+    available,
+    used,
+    quota,
+    /* availabilityDomain: availabilityDomain.name parameter is only added to the
+      request object in case availabilityDomain is defined */
+    ...(availabilityDomain && {
+      availabilityDomain: availabilityDomain.name,
+    }),
+  };
 };
 
 export const loadLimit = async (
@@ -111,7 +121,7 @@ export const loadLimit = async (
     available: string;
     used: string;
     quota: string;
-    availibilityDomain?: string;
+    availabilityDomain?: string;
   }[] = [];
   const newUniqueLimit: UniqueLimit = {
     serviceName: limitDefinitionSummary.serviceName,
@@ -120,7 +130,7 @@ export const loadLimit = async (
     regionId: region.regionId,
     limitName: limitDefinitionSummary.name,
     compartmentName: compartment.name,
-    resourceAvailibility: resourceAvailabilityList,
+    resourceAvailability: resourceAvailabilityList,
   };
   const limitSet = LimitSet.getInstance();
 
@@ -136,7 +146,7 @@ export const loadLimit = async (
   console.log("FETCHING");
 
   if (limitDefinitionSummary.scopeType === Names.AD.toString()) {
-    const availabilityDomains = await getAvailibilityDomainsPerRegion(region);
+    const availabilityDomains = await getAvailabilityDomainsPerRegion(region);
     for (const availabilityDomain of availabilityDomains) {
       if (newRequest) {
         console.log(
@@ -144,13 +154,13 @@ export const loadLimit = async (
         );
         return;
       }
-      const availibilityObject = await getAvailibilityObject(
+      const availabilityObject = await getAvailabilityObject(
         compartment.id,
         limitDefinitionSummary,
         limitsClient,
         availabilityDomain
       );
-      if (availibilityObject) resourceAvailabilityList.push(availibilityObject);
+      if (availabilityObject) resourceAvailabilityList.push(availabilityObject);
     }
   }
 
@@ -161,12 +171,12 @@ export const loadLimit = async (
       );
       return;
     }
-    const availibilityObject = await getAvailibilityObject(
+    const availabilityObject = await getAvailabilityObject(
       compartment.id,
       limitDefinitionSummary,
       limitsClient
     );
-    if (availibilityObject) resourceAvailabilityList.push(availibilityObject);
+    if (availabilityObject) resourceAvailabilityList.push(availabilityObject);
   }
 
   limitSet.add(newUniqueLimit);
