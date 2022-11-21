@@ -118,8 +118,6 @@ import { outputToFile } from "./utils/outputToFile";
         return data.services.includes(service.name);
       });
 
-      const regionPromises: Promise<void>[] = [];
-      const aDPromises: Promise<void>[] = [];
       const promises: Promise<void>[] = [];
       const rootCompartmentTree: ResponseTree = Object.create(null);
       rootCompartmentTree["name"] = "rootCompartments";
@@ -150,8 +148,7 @@ import { outputToFile } from "./utils/outputToFile";
               );
             }
 
-            let cache = [];
-            for (const LimitDefinitionSummary of serviceLimits.reverse()) {
+            for (const LimitDefinitionSummary of serviceLimits) {
               const promise = loadLimit(
                 compartment,
                 region,
@@ -162,33 +159,37 @@ import { outputToFile } from "./utils/outputToFile";
                 rootServiceTree
               );
 
-              /* if (LimitDefinitionSummary.scopeType === "AD") {
-                aDPromises.push(promise);
-              } else {
-                regionPromises.push(promise);
-              } */
-              await promise;
-              /* cache.push(promise);
-              if (cache.length === 10) {
-                Promise.all()
-              } */
+              promises.push(promise);
             }
           }
         }
       }
 
-      // TODO:
-      /*
-      if (data.seq) {
-        for (const promise of promises) {
-          await promise()
+      const rotate = (node: ResponseTree) => {
+        if (node.children.length === 0) {
+          return;
         }
-      } else {
-        ...
-      }
-       */
 
-      /* await Promise.all(promises); */
+        const childrenAreScope = node.children.reduce(
+          (accumulator, child) =>
+            accumulator || ["AD", "REGION"].includes(child.name),
+          false
+        );
+
+        if (childrenAreScope && node.children[0]?.name === "REGION") {
+          node.children = node.children.reverse();
+          return;
+        }
+
+        for (const child of node.children) {
+          rotate(child);
+        }
+      };
+
+      await Promise.all(promises);
+
+      rotate(rootCompartmentTree);
+      rotate(rootServiceTree);
 
       const responseData = JSON.stringify([
         rootCompartmentTree,
