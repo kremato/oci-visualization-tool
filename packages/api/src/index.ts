@@ -128,7 +128,7 @@ import { outputToFile } from "./utils/outputToFile";
       for (const compartment of filteredCompartments) {
         for (const region of filteredRegions) {
           for (const service of filteredServices) {
-            // TODO: maybe for service limits it would be better if they were a map where limit name is a key to service limits, so later we would not have to filter them with O(n)
+            // TODO: maybe for service limits it would be better if they were a map, where limit name is a key to service limits, so later we would not have to filter them with O(n)
             let serviceLimits = limitDefinitionsPerService
               .get(region)
               ?.get(service.name);
