@@ -30,11 +30,21 @@ export const ADTable = ({ limits }: Props) => {
           <th>{serviceName}</th>
         </tr> */}
         <tr>
-          <th>Limit Name</th>
-          <th>Availibility Domain</th>
-          <th>Available</th>
-          <th>Used</th>
-          <th>Quota</th>
+          <th>
+            <Typography>Limit Name</Typography>
+          </th>
+          <th>
+            <Typography>Availibility Domain</Typography>
+          </th>
+          <th>
+            <Typography>Available</Typography>
+          </th>
+          <th>
+            <Typography>Used</Typography>
+          </th>
+          <th>
+            <Typography>Quota</Typography>
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -54,10 +64,20 @@ export const ADTable = ({ limits }: Props) => {
               {uniqueLimit.resourceAvailability.map((resourceAvailibility) => {
                 return (
                   <React.Fragment key={resourceAvailibility.availabilityDomain}>
-                    <td>{resourceAvailibility.availabilityDomain}</td>
-                    <td>{resourceAvailibility.available}</td>
-                    <td>{resourceAvailibility.used}</td>
-                    <td>{resourceAvailibility.quota}</td>
+                    <td>
+                      <Typography>
+                        {resourceAvailibility.availabilityDomain}
+                      </Typography>
+                    </td>
+                    <td>
+                      <Typography>{resourceAvailibility.available}</Typography>
+                    </td>
+                    <td>
+                      <Typography>{resourceAvailibility.used}</Typography>
+                    </td>
+                    <td>
+                      <Typography>{resourceAvailibility.quota}</Typography>
+                    </td>
                   </React.Fragment>
                 );
               })}
