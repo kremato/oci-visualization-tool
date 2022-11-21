@@ -3,7 +3,7 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useAppSelector } from "../hooks/useAppSelector";
 
 interface Props {
@@ -12,9 +12,20 @@ interface Props {
 }
 
 export const AccordionWrapper = ({ title, children }: Props) => {
+  const [expanded, setExpanded] = useState(false);
   const showAll = useAppSelector((state) => state.input.showAll);
+
+  useEffect(() => {
+    setExpanded((_) => showAll);
+  }, [showAll]);
+
+  const handleChange =
+    () => (_event: React.SyntheticEvent, isExpanded: boolean) => {
+      setExpanded((_) => isExpanded);
+    };
+
   return (
-    <Accordion expanded={true}>
+    <Accordion expanded={expanded} onChange={handleChange()}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls={`${title}-compartment-content`}
