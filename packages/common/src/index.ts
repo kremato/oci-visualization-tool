@@ -100,6 +100,13 @@ scopeType:
 | limits.models.LimitDefinitionSummary.ScopeType.Global;
 } */
 
+export interface ResourceAvailabilityObject {
+  available: string;
+  used: string;
+  quota: string;
+  availabilityDomain?: string;
+}
+
 export interface UniqueLimit {
   serviceName: string;
   compartmentId: string;
@@ -111,10 +118,5 @@ export interface UniqueLimit {
   regionId?: string;
   limitName: string;
   compartmentName: string;
-  resourceAvailibility: {
-    available: string;
-    used: string;
-    quota: string;
-    availibilityDomain?: string;
-  }[];
+  resourceAvailability: ResourceAvailabilityObject[];
 }
