@@ -62,6 +62,8 @@ function App() {
           <ModifiableCheckbox label="Sum AD resources" />
           <ModifiableCheckbox label="Show all" />
           <ModifiableCheckbox label="Show empty service limits" />
+          <ModifiableCheckbox label="Show limits per service" />
+          <ModifiableCheckbox label="Show limits per compartment" />
           <ModifiableButton text={"Send"} action={sendData} />
         </Grid>
         <Grid item xs={12}>

@@ -1,6 +1,6 @@
-import { ResponseTree } from "common";
 import { useAppSelector } from "../hooks/useAppSelector";
 import { Collapsable } from "./Collapsable";
+import { Typography, Divider, Stack } from "@mui/material";
 
 export const Accordions = () => {
   // TODO: render accordions based on user choice
@@ -8,16 +8,37 @@ export const Accordions = () => {
     (state) => state.compartments.compartmentNodes
   );
   const serviceNodes = useAppSelector((state) => state.services.serviceNodes);
+  const showByCompartment = useAppSelector(
+    (state) => state.input.showByCompartment
+  );
+
+  const Compartments = compartmentNodes.map((childNode) => {
+    return <Collapsable node={childNode} />;
+  });
+  const Services = serviceNodes.map((childNode) => {
+    return <Collapsable node={childNode} />;
+  });
+  const showByService = useAppSelector((state) => state.input.showByService);
+  const showDevider =
+    serviceNodes.length > 0 && showByCompartment && showByService;
 
   return (
     <>
-      {compartmentNodes.map((childNode) => {
-        return <Collapsable node={childNode} />;
-      })}
-      <div>----------------------------------------</div>
-      {serviceNodes.map((childNode) => {
-        return <Collapsable node={childNode} />;
-      })}
+      <hr />
+      <Stack spacing={2}>
+        {showByCompartment && (
+          <div>
+            <Typography variant="h5">Limits Per Compartment</Typography>
+            {Compartments}
+          </div>
+        )}
+        {showByService && (
+          <div>
+            <Typography variant="h5">Limits Per Service</Typography>
+            {Services}
+          </div>
+        )}
+      </Stack>
     </>
   );
 };

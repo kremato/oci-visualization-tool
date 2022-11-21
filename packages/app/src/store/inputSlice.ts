@@ -11,6 +11,8 @@ const inputSlice = createSlice({
     sumADResources: false,
     showAll: false,
     emptyServiceLimits: false,
+    showByCompartment: false,
+    showByService: false,
   },
   reducers: {
     replaceCompartmentsId(state, action: PayloadAction<string[]>) {
@@ -36,6 +38,12 @@ const inputSlice = createSlice({
     },
     updateEmptyServiceLimits(state, action: PayloadAction<boolean>) {
       state.emptyServiceLimits = action.payload;
+    },
+    updateShowByCompartment(state, action: PayloadAction<boolean>) {
+      state.showByCompartment = action.payload;
+    },
+    updateShowByService(state, action: PayloadAction<boolean>) {
+      state.showByService = action.payload;
     },
   },
 });
