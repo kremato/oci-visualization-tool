@@ -113,7 +113,7 @@ export const loadLimit = async (
     quota: string;
     availibilityDomain?: string;
   }[] = [];
-  const uniqueLimit: UniqueLimit = {
+  const newUniqueLimit: UniqueLimit = {
     serviceName: limitDefinitionSummary.serviceName,
     compartmentId: compartment.id,
     scope: limitDefinitionSummary.scopeType,
@@ -124,11 +124,12 @@ export const loadLimit = async (
   };
   const limitSet = LimitSet.getInstance();
 
+  const limitSetUniqueLimit = limitSet.has(newUniqueLimit);
   // if limit is already present, skip fetching and just add the limit to the response
-  if (limitSet.has(uniqueLimit)) {
+  if (limitSetUniqueLimit) {
     console.log("LOADED");
-    loadResponseTree(uniqueLimit, rootCompartments, "compartment");
-    loadResponseTree(uniqueLimit, rootServices, "service");
+    loadResponseTree(limitSetUniqueLimit, rootCompartments, "compartment");
+    loadResponseTree(limitSetUniqueLimit, rootServices, "service");
     return;
   }
 
@@ -168,9 +169,9 @@ export const loadLimit = async (
     if (availibilityObject) resourceAvailabilityList.push(availibilityObject);
   }
 
-  limitSet.add(uniqueLimit);
-  loadResponseTree(uniqueLimit, rootCompartments, "compartment");
-  loadResponseTree(uniqueLimit, rootServices, "service");
+  limitSet.add(newUniqueLimit);
+  loadResponseTree(newUniqueLimit, rootCompartments, "compartment");
+  loadResponseTree(newUniqueLimit, rootServices, "service");
 
   // outputToFile("test/getCompartmentsRegionResources.txt", logFormattedOutput);
 };

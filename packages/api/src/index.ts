@@ -165,7 +165,7 @@ import { outputToFile } from "./utils/outputToFile";
         }
       }
 
-      const rotate = (node: ResponseTree) => {
+      const rotateScopes = (node: ResponseTree) => {
         if (node.children.length === 0) {
           return;
         }
@@ -182,14 +182,14 @@ import { outputToFile } from "./utils/outputToFile";
         }
 
         for (const child of node.children) {
-          rotate(child);
+          rotateScopes(child);
         }
       };
 
       await Promise.all(promises);
 
-      rotate(rootCompartmentTree);
-      rotate(rootServiceTree);
+      rotateScopes(rootCompartmentTree);
+      rotateScopes(rootServiceTree);
 
       const responseData = JSON.stringify([
         rootCompartmentTree,
