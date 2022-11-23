@@ -1,7 +1,7 @@
 import path from "path";
 import type { UniqueLimit } from "common";
 
-// no iterator available
+// Singelton
 export class LimitSet {
   private static instance: LimitSet;
   private map: Map<string, UniqueLimit>;

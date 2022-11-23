@@ -10,7 +10,9 @@ const inputSlice = createSlice({
     limits: [] as string[],
     sumADResources: false,
     showAll: false,
-    emptyServiceLimits: false,
+    showNoAvailability: false,
+    showNoUsed: false,
+    showNoQuota: false,
     showByCompartment: false,
     showByService: false,
   },
@@ -36,8 +38,14 @@ const inputSlice = createSlice({
     upadateShowAll(state, action: PayloadAction<boolean>) {
       state.showAll = action.payload;
     },
-    updateEmptyServiceLimits(state, action: PayloadAction<boolean>) {
-      state.emptyServiceLimits = action.payload;
+    updateNoAvailability(state, action: PayloadAction<boolean>) {
+      state.showNoAvailability = action.payload;
+    },
+    updateNoUsed(state, action: PayloadAction<boolean>) {
+      state.showNoUsed = action.payload;
+    },
+    updateNoQuota(state, action: PayloadAction<boolean>) {
+      state.showNoQuota = action.payload;
     },
     updateShowByCompartment(state, action: PayloadAction<boolean>) {
       state.showByCompartment = action.payload;

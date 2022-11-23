@@ -1,7 +1,6 @@
-import React from "react";
-import { useAppSelector } from "../../hooks/useAppSelector";
 import { Typography } from "@mui/material";
 import { UniqueLimit } from "common";
+import { ADRow } from "./ADRow";
 
 interface Props {
   limits: UniqueLimit[];
@@ -11,18 +10,6 @@ export const ADTable = ({ limits }: Props) => {
   if (limits.length === 0)
     return <Typography>No table cause no limits provided</Typography>;
 
-  const sumADResources = useAppSelector((state) => state.input.sumADResources);
-  const showEmptyServiceLimits = useAppSelector(
-    (state) => state.input.emptyServiceLimits
-  );
-
-  const Body = (
-    <tbody>
-      {limits.map((uniqueLimit) => {
-        return <div></div>;
-      })}
-    </tbody>
-  );
   return (
     <table>
       <thead>
@@ -49,40 +36,7 @@ export const ADTable = ({ limits }: Props) => {
       </thead>
       <tbody>
         {limits.map((uniqueLimit) => {
-          // if no resource availibility for this
-          if (uniqueLimit.resourceAvailability.length === 0)
-            return (
-              <td>
-                <Typography>No data for {uniqueLimit.limitName}</Typography>
-              </td>
-            );
-          return (
-            <tr>
-              <td rowSpan={uniqueLimit.resourceAvailability.length}>
-                <Typography>{uniqueLimit.limitName}</Typography>
-              </td>
-              {uniqueLimit.resourceAvailability.map((resourceAvailibility) => {
-                return (
-                  <React.Fragment key={resourceAvailibility.availabilityDomain}>
-                    <td>
-                      <Typography>
-                        {resourceAvailibility.availabilityDomain}
-                      </Typography>
-                    </td>
-                    <td>
-                      <Typography>{resourceAvailibility.available}</Typography>
-                    </td>
-                    <td>
-                      <Typography>{resourceAvailibility.used}</Typography>
-                    </td>
-                    <td>
-                      <Typography>{resourceAvailibility.quota}</Typography>
-                    </td>
-                  </React.Fragment>
-                );
-              })}
-            </tr>
-          );
+          return <ADRow uniqueLimit={uniqueLimit} />;
         })}
       </tbody>
     </table>

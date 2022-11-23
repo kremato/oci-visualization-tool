@@ -15,8 +15,12 @@ export const ModifiableCheckbox = ({ label }: Props) => {
     setChecked(event.target.checked);
     let action = inputActions.updateSumADResources;
     if (label === "Show all") action = inputActions.upadateShowAll;
-    if (label === "Show empty service limits")
-      action = inputActions.updateEmptyServiceLimits;
+    if (label === "Show limits with no availability")
+      action = inputActions.updateNoAvailability;
+    if (label === "Show limits with no used")
+      action = inputActions.updateNoUsed;
+    if (label === "Show limits with no quota")
+      action = inputActions.updateNoQuota;
     if (label === "Show limits per service")
       action = inputActions.updateShowByService;
     if (label === "Show limits per compartment")

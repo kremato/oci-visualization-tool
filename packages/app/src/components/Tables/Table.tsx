@@ -17,6 +17,6 @@ export const Table = ({ uniqueLimits }: Table) => {
   return uniqueLimits[0].scope === "AD" ? (
     <ADTable limits={uniqueLimits} />
   ) : (
-    <Typography>REGION TABLE GOES HERE</Typography>
+    <RegionTable limits={uniqueLimits} />
   );
 };
