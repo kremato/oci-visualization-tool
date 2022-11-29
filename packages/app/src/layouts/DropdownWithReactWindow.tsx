@@ -11,6 +11,7 @@ import { Names } from "common";
 import { ListItemText, Checkbox } from "@mui/material";
 import { capitalizeFirstLetter } from "../utils/capitalizeFirstLetter";
 import { useRef } from "react";
+import { createFilterOptions } from "@mui/material/Autocomplete";
 
 const LISTBOX_PADDING = 8; // px
 
@@ -78,7 +79,7 @@ const ListboxComponent = React.forwardRef<
     noSsr: true,
   });
   const itemCount = itemData.length;
-  const itemSize = smUp ? 80 : 48;
+  const itemSize = smUp ? 48 : 48;
 
   const getChildSize = (child: React.ReactChild) => {
     console.log("REFFFFFFFF");
@@ -145,19 +146,22 @@ export default function Virtualize({ name, options }: Props) {
   });
 
   const namePlural = name + "s";
+
+  const filterOptions = createFilterOptions({
+    stringify: (option: DropdownItem) =>
+      `${option.primaryLabel} ${option.serviceName}`,
+  });
+
   return (
     <Autocomplete
       multiple
       disableCloseOnSelect
       PopperComponent={StyledPopper}
       ListboxComponent={ListboxComponent}
-      options={options}
+      options={sortedOptions}
+      filterOptions={filterOptions}
       groupBy={(option) => `${option.serviceName}`}
-      getOptionLabel={(option) =>
-        name === Names.Limit
-          ? option.primaryLabel + option.serviceName
-          : option.primaryLabel
-      }
+      getOptionLabel={(option) => option.primaryLabel}
       //renderOption={(props, option) => [props, option] as React.ReactNode}
       renderOption={(props, option, { selected }) => (
         <li {...props} style={{ padding: 0, height: "100%" }}>
