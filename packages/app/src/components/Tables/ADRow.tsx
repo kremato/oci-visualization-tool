@@ -10,10 +10,10 @@ interface Props {
 export const ADRow = ({ uniqueLimit }: Props) => {
   const sumADResources = useAppSelector((state) => state.input.sumADResources);
   const showNoAvailability = useAppSelector(
-    (state) => state.input.showNoAvailability
+    (state) => state.input.hideNoAvailability
   );
-  const showNoUsed = useAppSelector((state) => state.input.showNoUsed);
-  const showNoQuota = useAppSelector((state) => state.input.showNoQuota);
+  const showNoUsed = useAppSelector((state) => state.input.hideNoUsed);
+  const showNoQuota = useAppSelector((state) => state.input.hideNoQuota);
 
   if (uniqueLimit.resourceAvailability.length === 0) {
     console.log("uniqueLimit.resourceAvailability.length === 0");

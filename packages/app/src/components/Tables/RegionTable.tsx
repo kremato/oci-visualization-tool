@@ -31,7 +31,7 @@ export const RegionTable = ({ limits }: Props) => {
       <tbody>
         {limits.map((uniqueLimit) => {
           const showEmptyServiceLimits = useAppSelector(
-            (state) => state.input.showNoAvailability
+            (state) => state.input.hideNoAvailability
           );
 
           /* const hide =

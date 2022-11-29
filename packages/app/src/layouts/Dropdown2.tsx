@@ -17,8 +17,12 @@ interface Props {
   options: DropdownItem[];
 }
 
-export const Dropdown = ({ name, options }: Props) => {
+export const Dropdown2 = ({ name, options }: Props) => {
   const dispatch = useAppDispatch();
+
+  const sortedOptions = options.sort(function (a, b) {
+    return `${a.serviceName}`.localeCompare(`${b.serviceName}`);
+  });
 
   const handleChange = (selected: DropdownItem[]) => {
     let action = inputActions.replaceCompartmentsId;
@@ -46,8 +50,7 @@ export const Dropdown = ({ name, options }: Props) => {
   return (
     <Autocomplete
       multiple
-      disableCloseOnSelect
-      options={options}
+      id={namePlural}
       isOptionEqualToValue={(option, value) =>
         option.primaryLabel === value.primaryLabel &&
         option.secondaryLabel === value.secondaryLabel
@@ -55,6 +58,9 @@ export const Dropdown = ({ name, options }: Props) => {
       onChange={(_event, newValue) => {
         handleChange(newValue);
       }}
+      options={sortedOptions}
+      groupBy={(option) => `${option.serviceName}`}
+      disableCloseOnSelect
       getOptionLabel={(option) =>
         name === Names.Limit
           ? option.primaryLabel + option.serviceName
@@ -64,21 +70,17 @@ export const Dropdown = ({ name, options }: Props) => {
         <li {...props} style={{ padding: 0 }}>
           <Checkbox size="small" checked={selected} />
           <ListItemText
-            primary={
-              name === Names.Limit
-                ? `${option.primaryLabel} [${option.serviceName}]`
-                : option.primaryLabel
-            }
+            primary={option.primaryLabel}
             secondary={
               option.primaryLabel != option.secondaryLabel &&
               option.secondaryLabel
             }
             sx={{ mt: 0, mb: 0 }}
             primaryTypographyProps={{
-              sx: { wordBreak: "break-word", lineHeight: 1.25 },
+              sx: { wordBreak: "break-all", lineHeight: 1.25 },
             }}
             secondaryTypographyProps={{
-              sx: { wordBreak: "break-word", lineHeight: 1.25 },
+              sx: { wordBreak: "break-all", lineHeight: 1.25 },
             }}
           />
         </li>
