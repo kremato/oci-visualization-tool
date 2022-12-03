@@ -2,7 +2,7 @@ import { useAppSelector } from "../../hooks/useAppSelector";
 import { Dropdown } from "../../layouts/Dropdown";
 import { Dropdown2 } from "../../layouts/Dropdown2";
 import { Names } from "common";
-import Virtualize from "../../layouts/DropdownWithReactWindow";
+import Virtualize from "../../layouts/DropdownWithReactWindow2";
 
 export const LimitsDropdown = () => {
   const limitDefinitionsPerLimitName = useAppSelector(

@@ -16,34 +16,6 @@ import AutoSizer from "react-virtualized-auto-sizer";
 
 const LISTBOX_PADDING = 8; // px
 
-function renderRow(props: ListChildComponentProps) {
-  const { data, index, style } = props;
-  const dataSet = data[index];
-  const inlineStyle = {
-    ...style,
-    top: (style.top as number) + LISTBOX_PADDING,
-  };
-
-  if (dataSet.hasOwnProperty("group")) {
-    return (
-      <ListSubheader key={dataSet.key} component="div" style={inlineStyle}>
-        {dataSet.group}
-      </ListSubheader>
-    );
-  }
-
-  /* <Typography component="li" {...dataSet[0]} noWrap style={inlineStyle}>
-      {dataSet}
-    </Typography> */
-
-  /* style={{ padding: 0, height: "100%" }} */
-  return (
-    <Typography component="div" {...dataSet[0]} noWrap style={inlineStyle}>
-      {dataSet}
-    </Typography>
-  );
-}
-
 const OuterElementContext = React.createContext({});
 
 const OuterElementType = React.forwardRef<HTMLDivElement>((props, ref) => {
@@ -66,7 +38,7 @@ const ListboxComponent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLElement>
 >(function ListboxComponent(props, ref) {
-  const blaRef = useRef<HTMLLIElement>(null);
+  const rowHeights = useRef({});
   const { children, ...other } = props;
   const itemData: React.ReactChild[] = [];
   (children as React.ReactChild[]).forEach(
@@ -87,23 +59,6 @@ const ListboxComponent = React.forwardRef<
     if (child.hasOwnProperty("group")) {
       return 48;
     }
-    child;
-    let tmp = 48;
-    (child as ReactElement).props.ref;
-    interface foo extends React.ReactElement<any, string> {
-      ref?: any;
-    }
-    const clonedElement = React.cloneElement(
-      child as ReactElement<any, string>,
-      { ref: blaRef }
-    );
-    console.log(blaRef.current?.clientHeight);
-    /* if (
-      (child as ReactElement).props?.children[1]?.props?.primary &&
-      (child as ReactElement).props?.children[1]?.props?.primary?.length > 50
-    ) {
-      (child as ReactElement).props?.children[1]?.props?.primary;
-    } */
 
     return itemSize;
   };
@@ -115,25 +70,99 @@ const ListboxComponent = React.forwardRef<
     return itemData.map(getChildSize).reduce((a, b) => a + b, 0);
   };
 
-  const gridRef = useResetCache(itemCount);
+  const listRef = useResetCache(itemCount);
+
+  function setRowHeight(index: number, size: number) {
+    listRef?.current?.resetAfterIndex(0);
+    rowHeights.current = { ...rowHeights.current, [index]: size };
+  }
+
+  function scrollToBottom() {
+    listRef?.current?.scrollToItem(itemData.length - 1, "end");
+  }
+
+  function getRowHeight(index: number) {
+    return rowHeights.current[index] + 8 || 82;
+  }
+
+  function renderRow(props: ListChildComponentProps) {
+    // TODO: useRef<HTMLDivElement>(Object.create(null))
+    const rowRef = useRef<HTMLDivElement>(null);
+    const { data, index, style } = props;
+    const dataSet = data[index];
+    const inlineStyle = {
+      ...style,
+      top: (style.top as number) + LISTBOX_PADDING,
+    };
+
+    React.useEffect(() => {
+      if (rowRef.current) {
+        setRowHeight(index, rowRef.current?.clientHeight);
+      }
+      // eslint-disable-next-line
+    }, [rowRef]);
+
+    if (dataSet.hasOwnProperty("group")) {
+      return (
+        <ListSubheader
+          ref={rowRef}
+          key={dataSet.key}
+          component="div"
+          style={inlineStyle}
+        >
+          {dataSet.group}
+        </ListSubheader>
+      );
+    }
+
+    return (
+      <Typography
+        ref={rowRef}
+        component="div"
+        {...dataSet[0]}
+        noWrap
+        style={inlineStyle}
+      >
+        {dataSet}
+      </Typography>
+    );
+  }
 
   return (
-    <div ref={ref}>
+    <div
+      ref={ref}
+      className="KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKk"
+      style={{ flex: "1 1 auto", height: "40vh" }}
+    >
       <OuterElementContext.Provider value={other}>
-        <VariableSizeList
-          itemData={itemData}
-          height={getHeight() + 2 * LISTBOX_PADDING}
-          width="100%"
-          ref={gridRef}
-          // ref={listRef}
-          outerElementType={OuterElementType}
-          innerElementType="ul"
-          itemSize={(index) => getChildSize(itemData[index])}
-          overscanCount={5}
-          itemCount={itemCount}
+        <AutoSizer
+          style={{
+            height: "100%",
+            width: "100%",
+          }}
         >
-          {renderRow}
-        </VariableSizeList>
+          {({ height, width }) => {
+            console.log("FIRED");
+            return (
+              <VariableSizeList
+                itemData={itemData}
+                //height={getHeight() + 2 * LISTBOX_PADDING}
+                height={height}
+                width="100%"
+                //ref={gridRef}
+                ref={listRef}
+                outerElementType={OuterElementType}
+                innerElementType="ul"
+                //itemSize={(index) => getChildSize(itemData[index])}
+                itemSize={getRowHeight}
+                overscanCount={5}
+                itemCount={itemCount}
+              >
+                {renderRow}
+              </VariableSizeList>
+            );
+          }}
+        </AutoSizer>
       </OuterElementContext.Provider>
     </div>
   );
