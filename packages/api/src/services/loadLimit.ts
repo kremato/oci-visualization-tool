@@ -131,6 +131,7 @@ export const loadLimit = async (
     limitName: limitDefinitionSummary.name,
     compartmentName: compartment.name,
     resourceAvailability: resourceAvailabilityList,
+    resourceAvailabilitySum: Object.create(null),
   };
   const limitSet = LimitSet.getInstance();
 
@@ -178,6 +179,19 @@ export const loadLimit = async (
     );
     if (availabilityObject) resourceAvailabilityList.push(availabilityObject);
   }
+
+  let totalAvailable = 0;
+  let totalUsed = 0;
+  let totalQuota = 0;
+  for (const limit of newUniqueLimit.resourceAvailability) {
+    totalAvailable += limit.available === "n/a" ? 0 : Number(limit.available);
+    totalUsed += limit.used === "n/a" ? 0 : Number(limit.used);
+    totalQuota += limit.quota === "n/a" ? 0 : Number(limit.quota);
+  }
+
+  newUniqueLimit.resourceAvailabilitySum.available = totalAvailable.toString();
+  newUniqueLimit.resourceAvailabilitySum.used = totalUsed.toString();
+  newUniqueLimit.resourceAvailabilitySum.quota = totalQuota.toString();
 
   limitSet.add(newUniqueLimit);
   loadResponseTree(newUniqueLimit, rootCompartments, "compartment");

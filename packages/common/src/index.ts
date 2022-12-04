@@ -119,4 +119,5 @@ export interface UniqueLimit {
   limitName: string;
   compartmentName: string;
   resourceAvailability: ResourceAvailabilityObject[];
+  resourceAvailabilitySum: ResourceAvailabilityObject;
 }
