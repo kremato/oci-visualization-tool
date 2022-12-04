@@ -19,8 +19,6 @@ export const Accordions = () => {
     return <Collapsable node={childNode} />;
   });
   const showByService = useAppSelector((state) => state.input.showByService);
-  const showDevider =
-    serviceNodes.length > 0 && showByCompartment && showByService;
 
   return (
     <>

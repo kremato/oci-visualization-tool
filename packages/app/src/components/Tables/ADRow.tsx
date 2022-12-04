@@ -1,7 +1,38 @@
 import { useAppSelector } from "../../hooks/useAppSelector";
-import { UniqueLimit } from "common";
+import { UniqueLimit, ResourceAvailabilityObject } from "common";
 import { Typography } from "@mui/material";
 import React from "react";
+import { Height } from "@mui/icons-material";
+
+const hide = (
+  resourceAvailabilityObject: ResourceAvailabilityObject,
+  hideNoAvailability: boolean,
+  hideNoUsed: boolean,
+  hideNoQuota: boolean
+) => {
+  const emptySymbols = ["0", "n/a"];
+  const truthList = [
+    emptySymbols.includes(resourceAvailabilityObject.available),
+    emptySymbols.includes(resourceAvailabilityObject.used),
+    emptySymbols.includes(resourceAvailabilityObject.quota),
+  ];
+
+  // if all three checkboxes are checked
+  if (hideNoAvailability && hideNoUsed && hideNoQuota)
+    return truthList[0] && truthList[1] && truthList[2];
+
+  // if two checkboxes are checked
+  if (hideNoAvailability && hideNoUsed) return truthList[0] && truthList[1];
+  if (hideNoAvailability && hideNoQuota) return truthList[0] && truthList[2];
+  if (hideNoUsed && hideNoQuota) return truthList[1] && truthList[2];
+
+  // if one checkbox is checked
+  if (hideNoAvailability) return truthList[0];
+  if (hideNoUsed) return truthList[1];
+  if (hideNoQuota) return truthList[2];
+
+  return false;
+};
 
 interface Props {
   uniqueLimit: UniqueLimit;
@@ -9,11 +40,11 @@ interface Props {
 
 export const ADRow = ({ uniqueLimit }: Props) => {
   const sumADResources = useAppSelector((state) => state.input.sumADResources);
-  const showNoAvailability = useAppSelector(
+  const hideNoAvailability = useAppSelector(
     (state) => state.input.hideNoAvailability
   );
-  const showNoUsed = useAppSelector((state) => state.input.hideNoUsed);
-  const showNoQuota = useAppSelector((state) => state.input.hideNoQuota);
+  const hideNoUsed = useAppSelector((state) => state.input.hideNoUsed);
+  const hideNoQuota = useAppSelector((state) => state.input.hideNoQuota);
 
   if (uniqueLimit.resourceAvailability.length === 0) {
     console.log("uniqueLimit.resourceAvailability.length === 0");
@@ -24,53 +55,69 @@ export const ADRow = ({ uniqueLimit }: Props) => {
     );
   }
 
-  const rows = [];
-  const emptySymbols = ["0", "n/a"];
-  for (const resourceAvailability of uniqueLimit.resourceAvailability) {
-    const row = (
-      <React.Fragment key={resourceAvailability.availabilityDomain}>
-        <td>
-          <Typography>{resourceAvailability.availabilityDomain}</Typography>
-        </td>
-        <td>
-          <Typography>{resourceAvailability.available}</Typography>
-        </td>
-        <td>
-          <Typography>{resourceAvailability.used}</Typography>
-        </td>
-        <td>
-          <Typography>{resourceAvailability.quota}</Typography>
-        </td>
-      </React.Fragment>
-    );
-
+  const aDRows = [];
+  if (sumADResources) {
     if (
-      (showNoAvailability &&
-        emptySymbols.includes(resourceAvailability.available)) ||
-      (showNoUsed && emptySymbols.includes(resourceAvailability.used)) ||
-      (showNoQuota && emptySymbols.includes(resourceAvailability.quota))
+      !hide(
+        uniqueLimit.resourceAvailabilitySum,
+        hideNoAvailability,
+        hideNoUsed,
+        hideNoQuota
+      )
     )
-      rows.push(row);
-    if (
-      !emptySymbols.includes(resourceAvailability.available) &&
-      !emptySymbols.includes(resourceAvailability.used) &&
-      !emptySymbols.includes(resourceAvailability.quota)
-    )
-      rows.push(row);
-  }
+      aDRows.push(
+        <React.Fragment key={"SUM"}>
+          <td>
+            <Typography>{"SUM"}</Typography>
+          </td>
+          <td>
+            <Typography>
+              {uniqueLimit.resourceAvailabilitySum.available}
+            </Typography>
+          </td>
+          <td>
+            <Typography>{uniqueLimit.resourceAvailabilitySum.used}</Typography>
+          </td>
+          <td>
+            <Typography>{uniqueLimit.resourceAvailabilitySum.quota}</Typography>
+          </td>
+        </React.Fragment>
+      );
+  } else
+    for (const resourceAvailability of uniqueLimit.resourceAvailability) {
+      if (
+        hide(resourceAvailability, hideNoAvailability, hideNoUsed, hideNoQuota)
+      )
+        continue;
+      const row = (
+        <React.Fragment key={resourceAvailability.availabilityDomain}>
+          <td>
+            <Typography>{resourceAvailability.availabilityDomain}</Typography>
+          </td>
+          <td>
+            <Typography>{resourceAvailability.available}</Typography>
+          </td>
+          <td>
+            <Typography>{resourceAvailability.used}</Typography>
+          </td>
+          <td>
+            <Typography>{resourceAvailability.quota}</Typography>
+          </td>
+        </React.Fragment>
+      );
+      aDRows.push(row);
+    }
 
-  if (rows.length === 0) {
-    console.log("rows.length === 0");
+  if (aDRows.length === 0) {
     return <></>;
   }
 
-  console.log("FINAL RETURN");
   return (
     <tr>
-      <td rowSpan={rows.length}>
+      <td rowSpan={aDRows.length}>
         <Typography>{uniqueLimit.limitName}</Typography>
       </td>
-      {rows}
+      {aDRows}
     </tr>
   );
 };

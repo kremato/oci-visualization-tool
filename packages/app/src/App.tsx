@@ -15,6 +15,8 @@ import { ScopesDropdown } from "./components/Scopes/ScopesDropdown";
 import { ModifiableCheckbox } from "./layouts/ModifiableCheckbox";
 import { LimitsDropdown } from "./components/Limits/LimitsDropdown";
 import { Accordions } from "./layouts/Accordions";
+import { inputActions } from "./store/inputSlice";
+import { useAppSelector } from "./hooks/useAppSelector";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -59,13 +61,43 @@ function App() {
           <LimitsDropdown />
         </Grid>
         <Grid item xs={12}>
-          <ModifiableCheckbox label="Sum AD resources" />
-          <ModifiableCheckbox label="Show all" />
-          <ModifiableCheckbox label="Show limits with no availability" />
-          <ModifiableCheckbox label="Show limits with no used" />
-          <ModifiableCheckbox label="Show limits with no quota" />
-          <ModifiableCheckbox label="Show limits per compartment" />
-          <ModifiableCheckbox label="Show limits per service" />
+          <ModifiableCheckbox
+            label="Sum AD resources"
+            action={inputActions.updateSumADResources}
+          />
+          <div>
+            <ModifiableCheckbox
+              label="Expand all"
+              action={inputActions.upadateExpandAll}
+            />
+          </div>
+          <div>
+            <ModifiableCheckbox
+              label="Hide limits with no availability"
+              action={inputActions.updateHideNoAvailability}
+              isChecked={true}
+            />
+            <ModifiableCheckbox
+              label="Hide limits with no used"
+              action={inputActions.updateHideNoUsed}
+              isChecked={true}
+            />
+            <ModifiableCheckbox
+              label="Hide limits with no quota"
+              action={inputActions.updateNoQuota}
+              isChecked={true}
+            />
+          </div>
+          <div>
+            <ModifiableCheckbox
+              label="Show limits per compartment"
+              action={inputActions.updateShowByCompartment}
+            />
+            <ModifiableCheckbox
+              label="Show limits per service"
+              action={inputActions.updateShowByService}
+            />
+          </div>
           <ModifiableButton text={"Send"} action={sendData} />
         </Grid>
         <Grid item xs={12}>

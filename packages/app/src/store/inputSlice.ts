@@ -9,7 +9,7 @@ const inputSlice = createSlice({
     scopes: [] as string[],
     limits: [] as string[],
     sumADResources: false,
-    showAll: false,
+    expandAll: false,
     hideNoAvailability: true,
     hideNoUsed: true,
     hideNoQuota: true,
@@ -35,8 +35,8 @@ const inputSlice = createSlice({
     updateSumADResources(state, action: PayloadAction<boolean>) {
       state.sumADResources = action.payload;
     },
-    upadateShowAll(state, action: PayloadAction<boolean>) {
-      state.showAll = action.payload;
+    upadateExpandAll(state, action: PayloadAction<boolean>) {
+      state.expandAll = action.payload;
     },
     updateHideNoAvailability(state, action: PayloadAction<boolean>) {
       state.hideNoAvailability = action.payload;

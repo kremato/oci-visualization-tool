@@ -13,7 +13,7 @@ interface Props {
 
 export const AccordionWrapper = ({ title, children }: Props) => {
   const [expanded, setExpanded] = useState(false);
-  const showAll = useAppSelector((state) => state.input.showAll);
+  const showAll = useAppSelector((state) => state.input.expandAll);
 
   useEffect(() => {
     setExpanded((_) => showAll);
@@ -25,7 +25,11 @@ export const AccordionWrapper = ({ title, children }: Props) => {
     };
 
   return (
-    <Accordion expanded={expanded} onChange={handleChange()}>
+    <Accordion
+      expanded={expanded}
+      onChange={handleChange()}
+      TransitionProps={{ unmountOnExit: true }}
+    >
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls={`${title}-compartment-content`}

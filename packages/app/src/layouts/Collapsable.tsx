@@ -10,6 +10,11 @@ interface Props {
 export const Collapsable = ({ node }: Props) => {
   return (
     <AccordionWrapper title={node.name}>
+      {/* {node.limits === undefined ? (
+        node.children.map((childNode) => <Collapsable node={childNode} />)
+      ) : (
+        <Table uniqueLimits={node.limits} />
+      )} */}
       {node.limits === undefined ? (
         node.children.map((childNode) => <Collapsable node={childNode} />)
       ) : (
