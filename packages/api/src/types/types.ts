@@ -11,5 +11,5 @@ export interface ServiceLimits
 export interface IdentityADSet
   extends Set<identity.models.AvailabilityDomain> {}
 export interface Token {
-  postLimitsCount: number;
+  count: number;
 }

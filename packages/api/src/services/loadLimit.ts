@@ -11,7 +11,7 @@ import { getAvailabilityDomainsPerRegion } from "./getAvailabilityDomainsPerRegi
 import { getResourceAvailability } from "./getResourceAvailability ";
 import path from "path";
 import type { identity, limits } from "oci-sdk";
-import { LimitSet } from "./LimitSet";
+import { Cache } from "./cache";
 
 const addNode = (
   limitPath: string[],
@@ -116,7 +116,7 @@ export const loadLimit = async (
 ): Promise<void> => {
   const limitsClient = getLimitsClient();
   limitsClient.region = region;
-  const newRequest = token.postLimitsCount != initialPostLimitsCount + 1;
+  const newRequest = token.count != initialPostLimitsCount + 1;
   const resourceAvailabilityList: {
     available: string;
     used: string;
@@ -136,7 +136,7 @@ export const loadLimit = async (
   if (limitDefinitionSummary.isDeprecated !== undefined)
     newUniqueLimit.isDeprecated = limitDefinitionSummary.isDeprecated;
 
-  const limitSet = LimitSet.getInstance();
+  const limitSet = Cache.getInstance();
 
   const limitSetUniqueLimit = limitSet.has(newUniqueLimit);
   // if limit is already present, skip fetching and just add the limit to the response

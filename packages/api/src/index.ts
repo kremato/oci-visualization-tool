@@ -21,10 +21,10 @@ import type {
   InputData,
   MyLimitDefinitionSummary,
 } from "common";
-import { Promise as BlueBirdPromise } from "bluebird";
 
 import { loadLimit } from "./services/loadLimit";
 import { outputToFile } from "./utils/outputToFile";
+import { Cache } from "./services/cache";
 
 (async () => {
   try {
@@ -34,7 +34,7 @@ import { outputToFile } from "./utils/outputToFile";
     app.use(express.json());
     const port = process.env["PORT"];
     const tenancyId = Provider.getInstance().provider.getTenantId();
-    let token: Token = { postLimitsCount: 0 };
+    let token: Token = { count: 0 };
 
     let compartments: IdentityCompartment[] = [];
     let regionSubscriptions: RegionSubscription[] = [];
@@ -43,7 +43,6 @@ import { outputToFile } from "./utils/outputToFile";
     let limitDefinitionsPerLimitName: LimitDefinitionsPerProperty = new Map();
     let limitDefinitionsPerService: Map<
       common.Region,
-      // StringHash<MyLimitDefinitionSummary[]>
       Map<string, MyLimitDefinitionSummary[]>
     > = new Map();
     app.listen(port, async () => {
@@ -98,15 +97,22 @@ import { outputToFile } from "./utils/outputToFile";
         .send(JSON.stringify(responseLimitDefinitionsPerLimitName));
     });
 
+    app.delete("/cache", async (req: Request, res: Response) => {
+      token.count += 1;
+      const bla = Cache.getInstance();
+      Cache.getInstance().clear();
+      res.status(200).send();
+    });
+
     app.post("/limits", async (req: Request, res: Response) => {
       // TODO: validation
       const data = req.body as InputData;
       console.log("[/limits]");
       console.log(data);
 
-      const initialPostLimitsCount = token.postLimitsCount;
-      token.postLimitsCount += 1;
-      const newRequest = token.postLimitsCount != initialPostLimitsCount + 1;
+      const initialPostLimitsCount = token.count;
+      token.count += 1;
+      const newRequest = token.count != initialPostLimitsCount + 1;
 
       const filteredCompartments = compartments.filter((compartment) => {
         return data.compartments.includes(compartment.id);

@@ -2,8 +2,8 @@ import path from "path";
 import type { UniqueLimit } from "common";
 
 // Singelton
-export class LimitSet {
-  private static instance: LimitSet;
+export class Cache {
+  private static instance: Cache;
   private map: Map<string, UniqueLimit>;
   constructor() {
     this.map = new Map();
@@ -14,7 +14,7 @@ export class LimitSet {
     if (this.instance) {
       return this.instance;
     }
-    this.instance = new LimitSet();
+    this.instance = new Cache();
     return this.instance;
   }
 
@@ -71,5 +71,9 @@ export class LimitSet {
 
   has(item: UniqueLimit) {
     return this.map.get(this.toLimitString(item));
+  }
+
+  clear() {
+    this.map.clear();
   }
 }
