@@ -144,7 +144,12 @@ import { outputToFile } from "./utils/outputToFile";
 
             if (data.limits.length > 0) {
               serviceLimits = serviceLimits.filter((limit) =>
-                data.limits.includes(limit.name)
+                /* data.limits.includes(limit.name) */
+                data.limits.some(
+                  (item) =>
+                    item.limitName === limit.name &&
+                    item.serviceName === limit.serviceName
+                )
               );
             }
 

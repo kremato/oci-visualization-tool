@@ -133,6 +133,9 @@ export const loadLimit = async (
     resourceAvailability: resourceAvailabilityList,
     resourceAvailabilitySum: Object.create(null),
   };
+  if (limitDefinitionSummary.isDeprecated !== undefined)
+    newUniqueLimit.isDeprecated = limitDefinitionSummary.isDeprecated;
+
   const limitSet = LimitSet.getInstance();
 
   const limitSetUniqueLimit = limitSet.has(newUniqueLimit);
