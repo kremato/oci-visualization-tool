@@ -1,6 +1,6 @@
-import { ResourceDataRegion, UniqueLimit } from "common";
-import { useAppSelector } from "../../hooks/useAppSelector";
+import { UniqueLimit } from "common";
 import { Typography } from "@mui/material";
+import { RegionRow } from "./RegionRow";
 
 interface Props {
   limits: UniqueLimit[];
@@ -30,40 +30,54 @@ export const RegionTable = ({ limits }: Props) => {
       </thead>
       <tbody>
         {limits.map((uniqueLimit) => {
-          /* const hide =
-            !showEmptyServiceLimits && resourceObjectRegion.available === "0"; */
-          if (uniqueLimit.resourceAvailability.length === 0) {
-            return (
-              <tr>
-                <Typography>No data for {uniqueLimit.limitName}</Typography>
-              </tr>
-            );
-          }
-
           return (
-            <tr
-              key={uniqueLimit.limitName}
-              /* style={{
-                visibility: hide ? "hidden" : "visible",
-                display: hide ? "none" : "table-row",
-              }} */
-            >
+            <RegionRow
+              uniqueLimit={uniqueLimit}
+              key={uniqueLimit.limitName + uniqueLimit.serviceName}
+            />
+          );
+        })}
+      </tbody>
+    </table>
+  );
+  /* return (
+    <table>
+      <thead>
+        <tr>
+          <th>
+            <Typography>Limit Name</Typography>
+          </th>
+          <th>
+            <Typography>Available</Typography>
+          </th>
+          <th>
+            <Typography>Used</Typography>
+          </th>
+          <th>
+            <Typography>Quota</Typography>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {limits.map((uniqueLimit) => {
+          return (
+            <tr key={uniqueLimit.limitName}>
               <td>
                 <Typography>{uniqueLimit.limitName}</Typography>
               </td>
               <td>
                 <Typography>
-                  {uniqueLimit.resourceAvailability[0].available}
+                  {uniqueLimit.resourceAvailabilitySum.available}
                 </Typography>
               </td>
               <td>
                 <Typography>
-                  {uniqueLimit.resourceAvailability[0].used}
+                  {uniqueLimit.resourceAvailabilitySum.used}
                 </Typography>
               </td>
               <td>
                 <Typography>
-                  {uniqueLimit.resourceAvailability[0].quota}
+                  {uniqueLimit.resourceAvailabilitySum.quota}
                 </Typography>
               </td>
             </tr>
@@ -71,5 +85,5 @@ export const RegionTable = ({ limits }: Props) => {
         })}
       </tbody>
     </table>
-  );
+  ); */
 };
