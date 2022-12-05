@@ -16,6 +16,7 @@ const inputSlice = createSlice({
     showByCompartment: false,
     showByService: false,
     showDeprecated: false,
+    invalidateCache: false,
   },
   reducers: {
     replaceCompartmentsId(state, action: PayloadAction<string[]>) {
@@ -59,6 +60,9 @@ const inputSlice = createSlice({
     },
     updateShowDeprecated(state, action: PayloadAction<boolean>) {
       state.showDeprecated = action.payload;
+    },
+    updateInvalidateCache(state, action: PayloadAction<boolean>) {
+      state.invalidateCache = action.payload;
     },
   },
 });

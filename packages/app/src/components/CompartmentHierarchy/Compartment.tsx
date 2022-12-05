@@ -4,7 +4,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { IconButton, ListItem, ListItemText } from "@mui/material";
 import { CollapsableWrapper } from "./CollapsableWrapper";
 import { useState } from "react";
-import { ModifiableCheckbox } from "../../layouts/ModifiableCheckbox";
+import { ReduxCheckbox } from "../../layouts/ReduxCheckbox";
 
 interface Props {
   id: string;
@@ -26,7 +26,7 @@ export const Compartment = ({ depth, id, name }: Props) => {
   const primary = (
     <div>
       <span>{name}</span>
-      <ModifiableCheckbox id={id} type={"compartment"} />
+      <ReduxCheckbox id={id} type={"compartment"} />
     </div>
   );
 

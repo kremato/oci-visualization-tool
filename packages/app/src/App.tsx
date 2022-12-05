@@ -11,12 +11,10 @@ import { Grid } from "@mui/material";
 import { CompartmentsDropdown } from "./components/Compartments/CompartmentsDropdown";
 import { RegionsDropdown } from "./components/Regions/RegionsDropdown";
 import { ServicesDropdown } from "./components/Services/ServicesDropdown";
-import { ScopesDropdown } from "./components/Scopes/ScopesDropdown";
-import { ModifiableCheckbox } from "./layouts/ModifiableCheckbox";
+import { ReduxCheckbox } from "./layouts/ReduxCheckbox";
 import { LimitsDropdown } from "./components/Limits/LimitsDropdown";
 import { Accordions } from "./layouts/Accordions";
 import { inputActions } from "./store/inputSlice";
-import { useAppSelector } from "./hooks/useAppSelector";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -44,65 +42,87 @@ function App() {
 
   return (
     <div className="App">
-      <Grid container spacing={2} sx={{ p: "1rem" }}>
-        <Grid item xs={3}>
-          <CompartmentsDropdown />
-        </Grid>
-        <Grid item xs={3}>
-          <RegionsDropdown />
-        </Grid>
-        <Grid item xs={3}>
-          <ServicesDropdown />
-        </Grid>
-        {/* <Grid item xs={2}>
-          <ScopesDropdown />
-        </Grid> */}
-        <Grid item xs={3}>
-          <LimitsDropdown />
+      <Grid container p={"1rem"}>
+        <Grid container item>
+          <Grid item xs={3}>
+            <CompartmentsDropdown />
+          </Grid>
+          <Grid item xs={3}>
+            <RegionsDropdown />
+          </Grid>
+          <Grid item xs={3}>
+            <ServicesDropdown />
+          </Grid>
+          <Grid item xs={3}>
+            <LimitsDropdown />
+          </Grid>
+          <Grid
+            item
+            xs={12}
+            p={"0.5rem 0rem 0.5rem 0rem"}
+            display={"flex"}
+            justifyContent={"space-between"}
+          >
+            <ReduxCheckbox
+              label="Invalidate cache"
+              action={inputActions.updateInvalidateCache}
+              stateCallback={(state) => state.input.invalidateCache}
+            />
+            <ModifiableButton text={"Send"} action={sendData} />
+          </Grid>
         </Grid>
         <Grid item xs={12}>
-          <ModifiableCheckbox
-            label="Sum AD resources"
-            action={inputActions.updateSumADResources}
-          />
-          <ModifiableCheckbox
-            label="Show deprecated limits"
-            action={inputActions.updateShowDeprecated}
-          />
+          <hr />
+        </Grid>
+        <Grid item xs={12}>
           <div>
-            <ModifiableCheckbox
+            <ReduxCheckbox
               label="Expand all"
               action={inputActions.upadateExpandAll}
+              stateCallback={(state) => state.input.expandAll}
             />
           </div>
           <div>
-            <ModifiableCheckbox
+            <ReduxCheckbox
+              label="Sum AD resources"
+              action={inputActions.updateSumADResources}
+              stateCallback={(state) => state.input.sumADResources}
+            />
+            <ReduxCheckbox
+              label="Show deprecated limits"
+              action={inputActions.updateShowDeprecated}
+              stateCallback={(state) => state.input.showDeprecated}
+            />
+          </div>
+          <div>
+            <ReduxCheckbox
               label="Hide limits with no availability"
               action={inputActions.updateHideNoAvailability}
-              isChecked={true}
+              stateCallback={(state) => state.input.hideNoAvailability}
             />
-            <ModifiableCheckbox
+            <ReduxCheckbox
               label="Hide limits with no used"
               action={inputActions.updateHideNoUsed}
-              isChecked={true}
+              stateCallback={(state) => state.input.hideNoUsed}
             />
-            <ModifiableCheckbox
+            <ReduxCheckbox
               label="Hide limits with no quota"
               action={inputActions.updateNoQuota}
-              isChecked={true}
+              stateCallback={(state) => state.input.hideNoQuota}
             />
           </div>
           <div>
-            <ModifiableCheckbox
+            <ReduxCheckbox
               label="Show limits per compartment"
               action={inputActions.updateShowByCompartment}
+              stateCallback={(state) => state.input.showByCompartment}
             />
-            <ModifiableCheckbox
+            <ReduxCheckbox
               label="Show limits per service"
               action={inputActions.updateShowByService}
+              stateCallback={(state) => state.input.showByService}
             />
           </div>
-          <ModifiableButton text={"Send"} action={sendData} />
         </Grid>
         <Grid item xs={12}>
           <Accordions />
