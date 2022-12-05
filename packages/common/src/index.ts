@@ -80,6 +80,7 @@ export interface InputData {
   services: string[];
   scopes: string[];
   limits: { limitName: string; serviceName: string }[];
+  invalidateCache: boolean;
 }
 
 export interface ResponseTree {
