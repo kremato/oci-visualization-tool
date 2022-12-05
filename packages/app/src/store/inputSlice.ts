@@ -13,7 +13,7 @@ const inputSlice = createSlice({
     hideNoAvailability: true,
     hideNoUsed: true,
     hideNoQuota: true,
-    showByCompartment: false,
+    showByCompartment: true,
     showByService: false,
     showDeprecated: false,
     invalidateCache: false,
