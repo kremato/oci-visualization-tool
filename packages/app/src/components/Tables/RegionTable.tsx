@@ -30,10 +30,6 @@ export const RegionTable = ({ limits }: Props) => {
       </thead>
       <tbody>
         {limits.map((uniqueLimit) => {
-          const showEmptyServiceLimits = useAppSelector(
-            (state) => state.input.hideNoAvailability
-          );
-
           /* const hide =
             !showEmptyServiceLimits && resourceObjectRegion.available === "0"; */
           if (uniqueLimit.resourceAvailability.length === 0) {

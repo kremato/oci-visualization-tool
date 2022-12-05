@@ -11,6 +11,7 @@ export const Accordions = () => {
   const showByCompartment = useAppSelector(
     (state) => state.input.showByCompartment
   );
+  const showByService = useAppSelector((state) => state.input.showByService);
 
   const Compartments = compartmentNodes.map((childNode) => {
     return <Collapsable node={childNode} />;
@@ -18,7 +19,6 @@ export const Accordions = () => {
   const Services = serviceNodes.map((childNode) => {
     return <Collapsable node={childNode} />;
   });
-  const showByService = useAppSelector((state) => state.input.showByService);
 
   return (
     <>

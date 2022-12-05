@@ -2,7 +2,6 @@ import { useAppSelector } from "../../hooks/useAppSelector";
 import { UniqueLimit, ResourceAvailabilityObject } from "common";
 import { Typography } from "@mui/material";
 import React from "react";
-import { Height } from "@mui/icons-material";
 
 const hide = (
   resourceAvailabilityObject: ResourceAvailabilityObject,
@@ -45,6 +44,11 @@ export const ADRow = ({ uniqueLimit }: Props) => {
   );
   const hideNoUsed = useAppSelector((state) => state.input.hideNoUsed);
   const hideNoQuota = useAppSelector((state) => state.input.hideNoQuota);
+  const showDeprecated = useAppSelector((state) => state.input.showDeprecated);
+
+  if (uniqueLimit.isDeprecated && !showDeprecated) {
+    return <></>;
+  }
 
   if (uniqueLimit.resourceAvailability.length === 0) {
     console.log("uniqueLimit.resourceAvailability.length === 0");

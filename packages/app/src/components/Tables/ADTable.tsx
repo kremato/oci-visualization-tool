@@ -36,7 +36,12 @@ export const ADTable = ({ limits }: Props) => {
       </thead>
       <tbody>
         {limits.map((uniqueLimit) => {
-          return <ADRow uniqueLimit={uniqueLimit} />;
+          return (
+            <ADRow
+              uniqueLimit={uniqueLimit}
+              key={uniqueLimit.limitName + uniqueLimit.serviceName}
+            />
+          );
         })}
       </tbody>
     </table>

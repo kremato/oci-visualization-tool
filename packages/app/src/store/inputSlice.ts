@@ -7,7 +7,7 @@ const inputSlice = createSlice({
     regions: [] as string[],
     services: [] as string[],
     scopes: [] as string[],
-    limits: [] as string[],
+    limits: [] as { limitName: string; serviceName: string }[],
     sumADResources: false,
     expandAll: false,
     hideNoAvailability: true,
@@ -15,6 +15,7 @@ const inputSlice = createSlice({
     hideNoQuota: true,
     showByCompartment: false,
     showByService: false,
+    showDeprecated: false,
   },
   reducers: {
     replaceCompartmentsId(state, action: PayloadAction<string[]>) {
@@ -29,7 +30,10 @@ const inputSlice = createSlice({
     replaceScopes(state, action: PayloadAction<string[]>) {
       state.scopes = action.payload;
     },
-    replaceLimits(state, action: PayloadAction<string[]>) {
+    replaceLimits(
+      state,
+      action: PayloadAction<{ limitName: string; serviceName: string }[]>
+    ) {
       state.limits = action.payload;
     },
     updateSumADResources(state, action: PayloadAction<boolean>) {
@@ -52,6 +56,9 @@ const inputSlice = createSlice({
     },
     updateShowByService(state, action: PayloadAction<boolean>) {
       state.showByService = action.payload;
+    },
+    updateShowDeprecated(state, action: PayloadAction<boolean>) {
+      state.showDeprecated = action.payload;
     },
   },
 });

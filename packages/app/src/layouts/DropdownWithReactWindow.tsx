@@ -12,6 +12,8 @@ import { ListItemText, Checkbox } from "@mui/material";
 import { capitalizeFirstLetter } from "../utils/capitalizeFirstLetter";
 import { useRef } from "react";
 import { createFilterOptions } from "@mui/material/Autocomplete";
+import { useAppDispatch } from "../hooks/useAppDispatch";
+import { inputActions } from "../store/inputSlice";
 
 const LISTBOX_PADDING = 8; // px
 
@@ -82,7 +84,6 @@ const ListboxComponent = React.forwardRef<
   const itemSize = smUp ? 48 : 48;
 
   const getChildSize = (child: React.ReactChild) => {
-    console.log("REFFFFFFFF");
     if (child.hasOwnProperty("group")) {
       return 48;
     }
@@ -141,6 +142,7 @@ interface Props {
 }
 
 export default function Virtualize({ name, options }: Props) {
+  const dispatch = useAppDispatch();
   const sortedOptions = options.sort(function (a, b) {
     return `${a.serviceName}`.localeCompare(`${b.serviceName}`);
   });
@@ -151,6 +153,14 @@ export default function Virtualize({ name, options }: Props) {
     stringify: (option: DropdownItem) =>
       `${option.primaryLabel} ${option.serviceName}`,
   });
+
+  const handleChange = (selected: DropdownItem[]) => {
+    const inputList = selected.map((item: DropdownItem) => {
+      return { limitName: item.primaryLabel, serviceName: item.serviceName! };
+    });
+
+    dispatch(inputActions.replaceLimits(inputList));
+  };
 
   return (
     <Autocomplete
@@ -163,6 +173,9 @@ export default function Virtualize({ name, options }: Props) {
       groupBy={(option) => `${option.serviceName}`}
       getOptionLabel={(option) => option.primaryLabel}
       //renderOption={(props, option) => [props, option] as React.ReactNode}
+      onChange={(_event, newValue) => {
+        handleChange(newValue);
+      }}
       renderOption={(props, option, { selected }) => (
         <li {...props} style={{ padding: 0, height: "100%" }}>
           <Checkbox size="small" checked={selected} />

@@ -65,6 +65,10 @@ function App() {
             label="Sum AD resources"
             action={inputActions.updateSumADResources}
           />
+          <ModifiableCheckbox
+            label="Show deprecated limits"
+            action={inputActions.updateShowDeprecated}
+          />
           <div>
             <ModifiableCheckbox
               label="Expand all"
