@@ -79,7 +79,7 @@ export interface InputData {
   regions: string[];
   services: string[];
   scopes: string[];
-  limits: string[];
+  limits: { limitName: string; serviceName: string }[];
 }
 
 export interface ResponseTree {
@@ -110,12 +110,12 @@ export interface ResourceAvailabilityObject {
 export interface UniqueLimit {
   serviceName: string;
   compartmentId: string;
-  // scope: "AD" | "REGION" | "GLOBAL";
   scope:
     | limits.models.LimitDefinitionSummary.ScopeType.Ad
     | limits.models.LimitDefinitionSummary.ScopeType.Region
     | limits.models.LimitDefinitionSummary.ScopeType.Global;
   regionId?: string;
+  isDeprecated?: boolean;
   limitName: string;
   compartmentName: string;
   resourceAvailability: ResourceAvailabilityObject[];
