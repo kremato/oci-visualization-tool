@@ -97,13 +97,6 @@ import { Cache } from "./services/cache";
         .send(JSON.stringify(responseLimitDefinitionsPerLimitName));
     });
 
-    app.delete("/cache", async (req: Request, res: Response) => {
-      token.count += 1;
-      const bla = Cache.getInstance();
-      Cache.getInstance().clear();
-      res.status(200).send();
-    });
-
     app.post("/limits", async (req: Request, res: Response) => {
       // TODO: validation
       const data = req.body as InputData;
@@ -113,6 +106,10 @@ import { Cache } from "./services/cache";
       const initialPostLimitsCount = token.count;
       token.count += 1;
       const newRequest = token.count != initialPostLimitsCount + 1;
+
+      if (data.invalidateCache) {
+        Cache.getInstance().clear();
+      }
 
       const filteredCompartments = compartments.filter((compartment) => {
         return data.compartments.includes(compartment.id);
