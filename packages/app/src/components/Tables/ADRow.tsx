@@ -63,7 +63,7 @@ export const ADRow = ({ uniqueLimit }: Props) => {
     for (const resourceAvailability of uniqueLimit.resourceAvailability) {
       if (hide(resourceAvailability, hideParams)) continue;
       const row = (
-        <React.Fragment key={resourceAvailability.availabilityDomain}>
+        <tr key={resourceAvailability.availabilityDomain}>
           <td>
             <Typography>{resourceAvailability.availabilityDomain}</Typography>
           </td>
@@ -79,7 +79,7 @@ export const ADRow = ({ uniqueLimit }: Props) => {
           <td>
             <Typography>{resourceAvailability.quota}</Typography>
           </td>
-        </React.Fragment>
+        </tr>
       );
       aDRows.push(row);
     }
@@ -89,11 +89,13 @@ export const ADRow = ({ uniqueLimit }: Props) => {
   }
 
   return (
-    <tr>
-      <td rowSpan={aDRows.length}>
-        <Typography>{uniqueLimit.limitName}</Typography>
-      </td>
+    <>
+      <tr>
+        <td rowSpan={aDRows.length + 1}>
+          <Typography>{uniqueLimit.limitName}</Typography>
+        </td>
+      </tr>
       {aDRows}
-    </tr>
+    </>
   );
 };
