@@ -13,6 +13,7 @@ const inputSlice = createSlice({
     hideNoAvailability: true,
     hideNoUsed: true,
     hideNoQuota: true,
+    hideNoServiceLimits: true,
     showByCompartment: true,
     showByService: false,
     showDeprecated: false,
@@ -49,8 +50,11 @@ const inputSlice = createSlice({
     updateHideNoUsed(state, action: PayloadAction<boolean>) {
       state.hideNoUsed = action.payload;
     },
-    updateNoQuota(state, action: PayloadAction<boolean>) {
+    updateHideNoQuota(state, action: PayloadAction<boolean>) {
       state.hideNoQuota = action.payload;
+    },
+    updateHideNoServiceLimits(state, action: PayloadAction<boolean>) {
+      state.hideNoServiceLimits = action.payload;
     },
     updateShowByCompartment(state, action: PayloadAction<boolean>) {
       state.showByCompartment = action.payload;

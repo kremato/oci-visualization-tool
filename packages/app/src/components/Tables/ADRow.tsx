@@ -10,11 +10,14 @@ interface Props {
 
 export const ADRow = ({ uniqueLimit }: Props) => {
   const sumADResources = useAppSelector((state) => state.input.sumADResources);
-  const hideNoAvailability = useAppSelector(
-    (state) => state.input.hideNoAvailability
+  const hideParams = useAppSelector<[boolean, boolean, boolean, boolean]>(
+    (state) => [
+      state.input.hideNoServiceLimits,
+      state.input.hideNoAvailability,
+      state.input.hideNoUsed,
+      state.input.hideNoQuota,
+    ]
   );
-  const hideNoUsed = useAppSelector((state) => state.input.hideNoUsed);
-  const hideNoQuota = useAppSelector((state) => state.input.hideNoQuota);
   const showDeprecated = useAppSelector((state) => state.input.showDeprecated);
 
   if (uniqueLimit.isDeprecated && !showDeprecated) {
@@ -32,18 +35,16 @@ export const ADRow = ({ uniqueLimit }: Props) => {
 
   const aDRows = [];
   if (sumADResources) {
-    if (
-      !hide(
-        uniqueLimit.resourceAvailabilitySum,
-        hideNoAvailability,
-        hideNoUsed,
-        hideNoQuota
-      )
-    )
+    if (!hide(uniqueLimit.resourceAvailabilitySum, hideParams))
       aDRows.push(
         <React.Fragment key={"SUM"}>
           <td>
-            <Typography>{"SUM"}</Typography>
+            <Typography>SUM</Typography>
+          </td>
+          <td>
+            <Typography>
+              {uniqueLimit.resourceAvailabilitySum.serviceLimit}
+            </Typography>
           </td>
           <td>
             <Typography>
@@ -60,14 +61,14 @@ export const ADRow = ({ uniqueLimit }: Props) => {
       );
   } else
     for (const resourceAvailability of uniqueLimit.resourceAvailability) {
-      if (
-        hide(resourceAvailability, hideNoAvailability, hideNoUsed, hideNoQuota)
-      )
-        continue;
+      if (hide(resourceAvailability, hideParams)) continue;
       const row = (
         <React.Fragment key={resourceAvailability.availabilityDomain}>
           <td>
             <Typography>{resourceAvailability.availabilityDomain}</Typography>
+          </td>
+          <td>
+            <Typography>{resourceAvailability.serviceLimit}</Typography>
           </td>
           <td>
             <Typography>{resourceAvailability.available}</Typography>

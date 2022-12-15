@@ -8,21 +8,20 @@ interface Props {
 }
 
 export const RegionRow = ({ uniqueLimit }: Props) => {
-  const hideNoAvailability = useAppSelector(
-    (state) => state.input.hideNoAvailability
+  const hideParams = useAppSelector<[boolean, boolean, boolean, boolean]>(
+    (state) => [
+      state.input.hideNoServiceLimits,
+      state.input.hideNoAvailability,
+      state.input.hideNoUsed,
+      state.input.hideNoQuota,
+    ]
   );
-  const hideNoUsed = useAppSelector((state) => state.input.hideNoUsed);
-  const hideNoQuota = useAppSelector((state) => state.input.hideNoQuota);
+
   const showDeprecated = useAppSelector((state) => state.input.showDeprecated);
 
   if (
     (uniqueLimit.isDeprecated && !showDeprecated) ||
-    hide(
-      uniqueLimit.resourceAvailabilitySum,
-      hideNoAvailability,
-      hideNoUsed,
-      hideNoQuota
-    )
+    hide(uniqueLimit.resourceAvailabilitySum, hideParams)
   ) {
     return <></>;
   }
@@ -31,6 +30,11 @@ export const RegionRow = ({ uniqueLimit }: Props) => {
     <tr>
       <td>
         <Typography>{uniqueLimit.limitName}</Typography>
+      </td>
+      <td>
+        <Typography>
+          {uniqueLimit.resourceAvailabilitySum.serviceLimit}
+        </Typography>
       </td>
       <td>
         <Typography>{uniqueLimit.resourceAvailabilitySum.available}</Typography>

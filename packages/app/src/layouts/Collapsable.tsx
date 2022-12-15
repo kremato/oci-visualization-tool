@@ -16,7 +16,9 @@ export const Collapsable = ({ node }: Props) => {
         <Table uniqueLimits={node.limits} />
       )} */}
       {node.limits === undefined ? (
-        node.children.map((childNode) => <Collapsable node={childNode} />)
+        node.children.map((childNode, index) => (
+          <Collapsable node={childNode} key={index} />
+        ))
       ) : (
         <Table uniqueLimits={node.limits} />
       )}

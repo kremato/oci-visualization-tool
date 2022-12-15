@@ -24,6 +24,9 @@ export const ADTable = ({ limits }: Props) => {
             <Typography>Availibility Domain</Typography>
           </th>
           <th>
+            <Typography>Service Limit</Typography>
+          </th>
+          <th>
             <Typography>Available</Typography>
           </th>
           <th>

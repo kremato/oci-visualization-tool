@@ -13,11 +13,11 @@ export const Accordions = () => {
   );
   const showByService = useAppSelector((state) => state.input.showByService);
 
-  const Compartments = compartmentNodes.map((childNode) => {
-    return <Collapsable node={childNode} />;
+  const Compartments = compartmentNodes.map((childNode, index) => {
+    return <Collapsable node={childNode} key={index} />;
   });
-  const Services = serviceNodes.map((childNode) => {
-    return <Collapsable node={childNode} />;
+  const Services = serviceNodes.map((childNode, index) => {
+    return <Collapsable node={childNode} key={index} />;
   });
 
   return (

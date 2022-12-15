@@ -96,6 +96,11 @@ function App() {
           </div>
           <div>
             <ReduxCheckbox
+              label="Hide limits with no service limit"
+              action={inputActions.updateHideNoServiceLimits}
+              stateCallback={(state) => state.input.hideNoServiceLimits}
+            />
+            <ReduxCheckbox
               label="Hide limits with no availability"
               action={inputActions.updateHideNoAvailability}
               stateCallback={(state) => state.input.hideNoAvailability}
@@ -107,7 +112,7 @@ function App() {
             />
             <ReduxCheckbox
               label="Hide limits with no quota"
-              action={inputActions.updateNoQuota}
+              action={inputActions.updateHideNoQuota}
               stateCallback={(state) => state.input.hideNoQuota}
             />
           </div>

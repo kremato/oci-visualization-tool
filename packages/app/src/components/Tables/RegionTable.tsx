@@ -18,6 +18,9 @@ export const RegionTable = ({ limits }: Props) => {
             <Typography>Limit Name</Typography>
           </th>
           <th>
+            <Typography>Service limit</Typography>
+          </th>
+          <th>
             <Typography>Available</Typography>
           </th>
           <th>
