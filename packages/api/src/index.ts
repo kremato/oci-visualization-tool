@@ -13,6 +13,7 @@ import type {
   CommonRegion,
   Token,
   LimitDefinitionsPerProperty,
+  ServiceLimitMap,
 } from "./types/types";
 import type {
   IdentityCompartment,
@@ -25,6 +26,8 @@ import type {
 import { loadLimit } from "./services/loadLimit";
 import { outputToFile } from "./utils/outputToFile";
 import { Cache } from "./services/cache";
+import { listServiceLimitsPerService } from "./services/listServiceLimitsPerService";
+import { rotateScopes } from "./utils/rotateScopes";
 
 (async () => {
   try {
@@ -41,10 +44,12 @@ import { Cache } from "./services/cache";
     let regions: CommonRegion[] = [];
     let serviceSubscriptions: ServiceSummary[] = [];
     let limitDefinitionsPerLimitName: LimitDefinitionsPerProperty = new Map();
-    let limitDefinitionsPerService: Map<
+    const limitDefinitionsPerRegionPerService: Map<
       common.Region,
       Map<string, MyLimitDefinitionSummary[]>
     > = new Map();
+    const serviceLimitMap: ServiceLimitMap = new Map();
+
     app.listen(port, async () => {
       console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
       compartments = await listCompartments(tenancyId, true);
@@ -64,7 +69,7 @@ import { Cache } from "./services/cache";
       )) as LimitDefinitionsPerProperty;
 
       for (const region of regions) {
-        limitDefinitionsPerService.set(
+        limitDefinitionsPerRegionPerService.set(
           region,
           (await getLimitDefinitions(
             "perServiceName",
@@ -75,19 +80,19 @@ import { Cache } from "./services/cache";
       console.log("[server]: App.use() finished");
     });
 
-    app.get("/compartments", async (req: Request, res: Response) => {
+    app.get("/compartments", async (_req: Request, res: Response) => {
       res.status(200).send(JSON.stringify(compartments));
     });
 
-    app.get("/regions", async (req: Request, res: Response) => {
+    app.get("/regions", async (_req: Request, res: Response) => {
       res.status(200).send(JSON.stringify(regionSubscriptions));
     });
 
-    app.get("/services", async (req: Request, res: Response) => {
+    app.get("/services", async (_req: Request, res: Response) => {
       res.status(200).send(JSON.stringify(serviceSubscriptions));
     });
 
-    app.get("/limits", async (req: Request, res: Response) => {
+    app.get("/limits", async (_req: Request, res: Response) => {
       const responseLimitDefinitionsPerLimitName = Object.create(null);
       for (const [key, value] of limitDefinitionsPerLimitName.entries()) {
         responseLimitDefinitionsPerLimitName[key] = value;
@@ -122,6 +127,7 @@ import { Cache } from "./services/cache";
       });
 
       const promises: Promise<void>[] = [];
+      const limitValuePromises: Promise<void>[] = [];
       const rootCompartmentTree: ResponseTree = Object.create(null);
       rootCompartmentTree["name"] = "rootCompartments";
       rootCompartmentTree["children"] = [];
@@ -132,11 +138,11 @@ import { Cache } from "./services/cache";
         for (const region of filteredRegions) {
           for (const service of filteredServices) {
             // TODO: maybe for service limits it would be better if they were a map, where limit name is a key to service limits, so later we would not have to filter them with O(n)
-            let serviceLimits = limitDefinitionsPerService
+            let limitDefinitionSummaries = limitDefinitionsPerRegionPerService
               .get(region)
               ?.get(service.name);
             //let tmp = limitDefinitionsPerService.get(region);
-            if (!serviceLimits) {
+            if (!limitDefinitionSummaries) {
               console.log(
                 `[${path.basename(
                   __filename
@@ -146,17 +152,24 @@ import { Cache } from "./services/cache";
             }
 
             if (data.limits.length > 0) {
-              serviceLimits = serviceLimits.filter((limit) =>
-                /* data.limits.includes(limit.name) */
-                data.limits.some(
-                  (item) =>
-                    item.limitName === limit.name &&
-                    item.serviceName === limit.serviceName
-                )
+              limitDefinitionSummaries = limitDefinitionSummaries.filter(
+                (limit) =>
+                  /* data.limits.includes(limit.name) */
+                  data.limits.some(
+                    (item) =>
+                      item.limitName === limit.name &&
+                      item.serviceName === limit.serviceName
+                  )
               );
             }
 
-            for (const LimitDefinitionSummary of serviceLimits) {
+            if (!serviceLimitMap.has(service.name))
+              serviceLimitMap.set(
+                service.name,
+                await listServiceLimitsPerService(service.name)
+              );
+
+            for (const LimitDefinitionSummary of limitDefinitionSummaries) {
               const promise = loadLimit(
                 compartment,
                 region,
@@ -164,37 +177,21 @@ import { Cache } from "./services/cache";
                 initialPostLimitsCount,
                 token,
                 rootCompartmentTree,
-                rootServiceTree
+                rootServiceTree,
+                serviceLimitMap.get(service.name)!
               );
 
               promises.push(promise);
             }
+            /* limitValuePromises.push(
+              getServiceLimitValues(compartment.id, service.name)
+            ); */
           }
         }
       }
 
-      const rotateScopes = (node: ResponseTree) => {
-        if (node.children.length === 0) {
-          return;
-        }
-
-        const childrenAreScope = node.children.reduce(
-          (accumulator, child) =>
-            accumulator || ["AD", "REGION"].includes(child.name),
-          false
-        );
-
-        if (childrenAreScope && node.children[0]?.name === "REGION") {
-          node.children = node.children.reverse();
-          return;
-        }
-
-        for (const child of node.children) {
-          rotateScopes(child);
-        }
-      };
-
       await Promise.all(promises);
+      //await Promise.all(limitValuePromises);
 
       rotateScopes(rootCompartmentTree);
       rotateScopes(rootServiceTree);

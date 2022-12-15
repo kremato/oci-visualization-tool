@@ -102,6 +102,7 @@ scopeType:
 } */
 
 export interface ResourceAvailabilityObject {
+  serviceLimit: string;
   available: string;
   used: string;
   quota: string;

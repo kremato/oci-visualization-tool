@@ -4,6 +4,7 @@ import {
   ResponseTree,
   MyLimitDefinitionSummary,
   IdentityCompartment,
+  ResourceAvailabilityObject,
 } from "common";
 import { getLimitsClient } from "../clients/getLimitsClient";
 import type { CommonRegion, Token } from "../types/types";
@@ -76,10 +77,11 @@ const loadResponseTree = (
 
 const getAvailabilityObject = async (
   compartmentId: string,
-  limitDefinitionSummary: limits.models.LimitDefinitionSummary,
+  limitDefinitionSummary: MyLimitDefinitionSummary,
   limitsClient: limits.LimitsClient,
+  serviceLimits: limits.models.LimitValueSummary[],
   availabilityDomain?: identity.models.AvailabilityDomain
-) => {
+): Promise<ResourceAvailabilityObject | undefined> => {
   const resourceAvailability = await getResourceAvailability(
     limitsClient,
     compartmentId,
@@ -92,8 +94,13 @@ const getAvailabilityObject = async (
   const available = resourceAvailability.available?.toString() || "n/a";
   const used = resourceAvailability.used?.toString() || "n/a";
   const quota = resourceAvailability.effectiveQuotaValue?.toString() || "n/a";
-
+  const serviceLimit = serviceLimits.find(
+    (limit) =>
+      limit.availabilityDomain === availabilityDomain?.name &&
+      limit.name === limitDefinitionSummary.name
+  );
   return {
+    serviceLimit: serviceLimit?.value ? serviceLimit.value.toString() : "n/a",
     available,
     used,
     quota,
@@ -112,12 +119,14 @@ export const loadLimit = async (
   initialPostLimitsCount: number,
   token: Token,
   rootCompartments: ResponseTree,
-  rootServices: ResponseTree
+  rootServices: ResponseTree,
+  serviceLimits: limits.models.LimitValueSummary[]
 ): Promise<void> => {
   const limitsClient = getLimitsClient();
   limitsClient.region = region;
   const newRequest = token.count != initialPostLimitsCount + 1;
   const resourceAvailabilityList: {
+    serviceLimit: string;
     available: string;
     used: string;
     quota: string;
@@ -162,8 +171,10 @@ export const loadLimit = async (
         compartment.id,
         limitDefinitionSummary,
         limitsClient,
+        serviceLimits,
         availabilityDomain
       );
+
       if (availabilityObject) resourceAvailabilityList.push(availabilityObject);
     }
   }
@@ -178,20 +189,26 @@ export const loadLimit = async (
     const availabilityObject = await getAvailabilityObject(
       compartment.id,
       limitDefinitionSummary,
-      limitsClient
+      limitsClient,
+      serviceLimits
     );
     if (availabilityObject) resourceAvailabilityList.push(availabilityObject);
   }
 
+  let totalServiceLimit = 0;
   let totalAvailable = 0;
   let totalUsed = 0;
   let totalQuota = 0;
   for (const limit of newUniqueLimit.resourceAvailability) {
+    totalServiceLimit +=
+      limit.serviceLimit === "n/a" ? 0 : Number(limit.available);
     totalAvailable += limit.available === "n/a" ? 0 : Number(limit.available);
     totalUsed += limit.used === "n/a" ? 0 : Number(limit.used);
     totalQuota += limit.quota === "n/a" ? 0 : Number(limit.quota);
   }
 
+  newUniqueLimit.resourceAvailabilitySum.serviceLimit =
+    totalServiceLimit.toString();
   newUniqueLimit.resourceAvailabilitySum.available = totalAvailable.toString();
   newUniqueLimit.resourceAvailabilitySum.used = totalUsed.toString();
   newUniqueLimit.resourceAvailabilitySum.quota = totalQuota.toString();
