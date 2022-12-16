@@ -27,7 +27,7 @@ import { loadLimit } from "./services/loadLimit";
 import { outputToFile } from "./utils/outputToFile";
 import { Cache } from "./services/cache";
 import { listServiceLimitsPerService } from "./services/listServiceLimitsPerService";
-import { rotateScopes } from "./utils/rotateScopes";
+import { sortLimitsRotateScopes } from "./utils/sortLimitsRotateScopes";
 
 (async () => {
   try {
@@ -193,8 +193,8 @@ import { rotateScopes } from "./utils/rotateScopes";
       await Promise.all(promises);
       //await Promise.all(limitValuePromises);
 
-      rotateScopes(rootCompartmentTree);
-      rotateScopes(rootServiceTree);
+      sortLimitsRotateScopes(rootCompartmentTree);
+      sortLimitsRotateScopes(rootServiceTree);
 
       const responseData = JSON.stringify([
         rootCompartmentTree,
