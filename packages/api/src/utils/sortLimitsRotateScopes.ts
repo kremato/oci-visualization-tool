@@ -18,8 +18,4 @@ export const sortLimitsRotateScopes = (node: ResponseTree) => {
     node.children = node.children.reverse();
     return;
   }
-
-  /* for (const child of node.children) {
-    sortLimitsRotateScopes(child);
-  } */
 };
