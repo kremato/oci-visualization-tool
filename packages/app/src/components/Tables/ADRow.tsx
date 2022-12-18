@@ -37,7 +37,7 @@ export const ADRow = ({ uniqueLimit }: Props) => {
   if (sumADResources) {
     if (!hide(uniqueLimit.resourceAvailabilitySum, hideParams))
       aDRows.push(
-        <React.Fragment key={"SUM"}>
+        <tr key={"SUM"}>
           <td>
             <Typography>SUM</Typography>
           </td>
@@ -57,7 +57,7 @@ export const ADRow = ({ uniqueLimit }: Props) => {
           <td>
             <Typography>{uniqueLimit.resourceAvailabilitySum.quota}</Typography>
           </td>
-        </React.Fragment>
+        </tr>
       );
   } else
     for (const resourceAvailability of uniqueLimit.resourceAvailability) {
