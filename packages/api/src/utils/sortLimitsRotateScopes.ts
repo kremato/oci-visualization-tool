@@ -1,6 +1,6 @@
-import type { ResponseTree } from "common";
+import type { ResponseTreeNode } from "common";
 
-export const sortLimitsRotateScopes = (node: ResponseTree) => {
+export const sortLimitsRotateScopes = (node: ResponseTreeNode) => {
   for (const child of node.children) {
     sortLimitsRotateScopes(child);
   }

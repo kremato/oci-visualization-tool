@@ -1,23 +1,25 @@
 import {
   Names,
   UniqueLimit,
-  ResponseTree,
+  ResponseTreeNode,
   MyLimitDefinitionSummary,
   IdentityCompartment,
   ResourceAvailabilityObject,
 } from "common";
 import { getLimitsClient } from "../clients/getLimitsClient";
-import type { CommonRegion, Token } from "../types/types";
+import type { CommonRegion } from "../types/types";
 import { getAvailabilityDomainsPerRegion } from "./getAvailabilityDomainsPerRegion";
 import { getResourceAvailability } from "./getResourceAvailability ";
 import path from "path";
 import type { identity, limits } from "oci-sdk";
 import { Cache } from "./cache";
 
+const filePath = path.basename(__filename);
+
 const addNode = (
   limitPath: string[],
   uniqueLimit: UniqueLimit,
-  node: ResponseTree
+  node: ResponseTreeNode
 ) => {
   if (limitPath.length === 0) {
     if (node.children.length !== 0)
@@ -43,7 +45,7 @@ const addNode = (
     }
   }
 
-  const child: ResponseTree = Object.create(null);
+  const child: ResponseTreeNode = Object.create(null);
   child["name"] = currentStop;
   child.children = [];
   node.children.push(child);
@@ -53,7 +55,7 @@ const addNode = (
 
 const loadResponseTree = (
   uniqueLimit: UniqueLimit,
-  root: ResponseTree,
+  root: ResponseTreeNode,
   type: "compartment" | "service"
 ) => {
   // TODO: in case of global, remove '!'
@@ -116,106 +118,96 @@ export const loadLimit = async (
   compartment: IdentityCompartment,
   region: CommonRegion,
   limitDefinitionSummary: MyLimitDefinitionSummary,
-  initialPostLimitsCount: number,
-  token: Token,
-  rootCompartments: ResponseTree,
-  rootServices: ResponseTree,
+  rootCompartments: ResponseTreeNode,
+  rootServices: ResponseTreeNode,
   serviceLimits: limits.models.LimitValueSummary[]
 ): Promise<void> => {
-  const limitsClient = getLimitsClient();
-  limitsClient.region = region;
-  const newRequest = token.count != initialPostLimitsCount + 1;
-  const resourceAvailabilityList: {
-    serviceLimit: string;
-    available: string;
-    used: string;
-    quota: string;
-    availabilityDomain?: string;
-  }[] = [];
-  const newUniqueLimit: UniqueLimit = {
-    serviceName: limitDefinitionSummary.serviceName,
-    compartmentId: compartment.id,
-    scope: limitDefinitionSummary.scopeType,
-    regionId: region.regionId,
-    limitName: limitDefinitionSummary.name,
-    compartmentName: compartment.name,
-    resourceAvailability: resourceAvailabilityList,
-    resourceAvailabilitySum: Object.create(null),
-  };
-  if (limitDefinitionSummary.isDeprecated !== undefined)
-    newUniqueLimit.isDeprecated = limitDefinitionSummary.isDeprecated;
+  try {
+    const limitsClient = getLimitsClient();
+    limitsClient.region = region;
+    const resourceAvailabilityList: {
+      serviceLimit: string;
+      available: string;
+      used: string;
+      quota: string;
+      availabilityDomain?: string;
+    }[] = [];
+    const newUniqueLimit: UniqueLimit = {
+      serviceName: limitDefinitionSummary.serviceName,
+      compartmentId: compartment.id,
+      scope: limitDefinitionSummary.scopeType,
+      regionId: region.regionId,
+      limitName: limitDefinitionSummary.name,
+      compartmentName: compartment.name,
+      resourceAvailability: resourceAvailabilityList,
+      resourceAvailabilitySum: Object.create(null),
+    };
+    if (limitDefinitionSummary.isDeprecated !== undefined)
+      newUniqueLimit.isDeprecated = limitDefinitionSummary.isDeprecated;
 
-  const limitSet = Cache.getInstance();
+    const limitSet = Cache.getInstance();
 
-  const limitSetUniqueLimit = limitSet.has(newUniqueLimit);
-  // if limit is already present, skip fetching and just add the limit to the response
-  if (limitSetUniqueLimit) {
-    console.log("LOADED");
-    loadResponseTree(limitSetUniqueLimit, rootCompartments, "compartment");
-    loadResponseTree(limitSetUniqueLimit, rootServices, "service");
-    return;
-  }
+    const limitSetUniqueLimit = limitSet.has(newUniqueLimit);
+    // if limit is already present, skip fetching and just add the limit to the response
+    if (limitSetUniqueLimit) {
+      console.log("LOADED");
+      loadResponseTree(limitSetUniqueLimit, rootCompartments, "compartment");
+      loadResponseTree(limitSetUniqueLimit, rootServices, "service");
+      return;
+    }
 
-  console.log("FETCHING");
+    console.log("FETCHING");
 
-  if (limitDefinitionSummary.scopeType === Names.AD.toString()) {
-    const availabilityDomains = await getAvailabilityDomainsPerRegion(region);
-    for (const availabilityDomain of availabilityDomains) {
-      if (newRequest) {
-        console.log(
-          `[${path.basename(__filename)}]: new request detected, aborting`
+    if (limitDefinitionSummary.scopeType === Names.AD.toString()) {
+      const availabilityDomains = await getAvailabilityDomainsPerRegion(region);
+      for (const availabilityDomain of availabilityDomains) {
+        const availabilityObject = await getAvailabilityObject(
+          compartment.id,
+          limitDefinitionSummary,
+          limitsClient,
+          serviceLimits,
+          availabilityDomain
         );
-        return;
+
+        if (availabilityObject)
+          resourceAvailabilityList.push(availabilityObject);
       }
+    }
+
+    if (limitDefinitionSummary.scopeType === Names.Region.toUpperCase()) {
       const availabilityObject = await getAvailabilityObject(
         compartment.id,
         limitDefinitionSummary,
         limitsClient,
-        serviceLimits,
-        availabilityDomain
+        serviceLimits
       );
-
       if (availabilityObject) resourceAvailabilityList.push(availabilityObject);
     }
-  }
 
-  if (limitDefinitionSummary.scopeType === Names.Region.toUpperCase()) {
-    if (newRequest) {
-      console.log(
-        `[${path.basename(__filename)}]: new request detected, aborting`
-      );
-      return;
+    let totalServiceLimit = 0;
+    let totalAvailable = 0;
+    let totalUsed = 0;
+    let totalQuota = 0;
+    for (const limit of newUniqueLimit.resourceAvailability) {
+      totalServiceLimit +=
+        limit.serviceLimit === "n/a" ? 0 : Number(limit.available);
+      totalAvailable += limit.available === "n/a" ? 0 : Number(limit.available);
+      totalUsed += limit.used === "n/a" ? 0 : Number(limit.used);
+      totalQuota += limit.quota === "n/a" ? 0 : Number(limit.quota);
     }
-    const availabilityObject = await getAvailabilityObject(
-      compartment.id,
-      limitDefinitionSummary,
-      limitsClient,
-      serviceLimits
-    );
-    if (availabilityObject) resourceAvailabilityList.push(availabilityObject);
+
+    newUniqueLimit.resourceAvailabilitySum.serviceLimit =
+      totalServiceLimit.toString();
+    newUniqueLimit.resourceAvailabilitySum.available =
+      totalAvailable.toString();
+    newUniqueLimit.resourceAvailabilitySum.used = totalUsed.toString();
+    newUniqueLimit.resourceAvailabilitySum.quota = totalQuota.toString();
+
+    limitSet.add(newUniqueLimit);
+    loadResponseTree(newUniqueLimit, rootCompartments, "compartment");
+    loadResponseTree(newUniqueLimit, rootServices, "service");
+    // outputToFile("test/getCompartmentsRegionResources.txt", logFormattedOutput);
+  } catch (error) {
+    console.log(`[${filePath}]: ${error}`);
   }
-
-  let totalServiceLimit = 0;
-  let totalAvailable = 0;
-  let totalUsed = 0;
-  let totalQuota = 0;
-  for (const limit of newUniqueLimit.resourceAvailability) {
-    totalServiceLimit +=
-      limit.serviceLimit === "n/a" ? 0 : Number(limit.available);
-    totalAvailable += limit.available === "n/a" ? 0 : Number(limit.available);
-    totalUsed += limit.used === "n/a" ? 0 : Number(limit.used);
-    totalQuota += limit.quota === "n/a" ? 0 : Number(limit.quota);
-  }
-
-  newUniqueLimit.resourceAvailabilitySum.serviceLimit =
-    totalServiceLimit.toString();
-  newUniqueLimit.resourceAvailabilitySum.available = totalAvailable.toString();
-  newUniqueLimit.resourceAvailabilitySum.used = totalUsed.toString();
-  newUniqueLimit.resourceAvailabilitySum.quota = totalQuota.toString();
-
-  limitSet.add(newUniqueLimit);
-  loadResponseTree(newUniqueLimit, rootCompartments, "compartment");
-  loadResponseTree(newUniqueLimit, rootServices, "service");
-
-  // outputToFile("test/getCompartmentsRegionResources.txt", logFormattedOutput);
 };

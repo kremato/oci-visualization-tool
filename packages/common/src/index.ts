@@ -83,9 +83,9 @@ export interface InputData {
   invalidateCache: boolean;
 }
 
-export interface ResponseTree {
+export interface ResponseTreeNode {
   name: string;
-  children: ResponseTree[];
+  children: ResponseTreeNode[];
   limits?: UniqueLimit[];
 }
 
