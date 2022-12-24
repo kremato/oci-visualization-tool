@@ -1,4 +1,3 @@
-import type { CommonRegion } from "../types/types";
 import { requests, models } from "oci-limits";
 import { getLimitsClient } from "../clients/getLimitsClient";
 import { Provider } from "../clients/provider";
@@ -9,6 +8,7 @@ import type {
 import { outputToFile } from "../utils/outputToFile";
 import path from "path";
 import type { MyLimitDefinitionSummary } from "common";
+import type { common } from "oci-sdk";
 
 const validateLimitDefinitionSummary = (
   limitDefinitionSummary: models.LimitDefinitionSummary
@@ -119,7 +119,7 @@ const perLimitName = (
 
 export const getLimitDefinitions = async (
   type: "perScope" | "perServiceName" | "perLimitName",
-  region?: CommonRegion
+  region?: common.Region
 ): Promise<LimitDefinitionsPerScope | LimitDefinitionsPerProperty> => {
   const limitsClient = getLimitsClient();
   // TODO: je tu potrebne nastavovat region, nie je to pre kazdy region rovnake?

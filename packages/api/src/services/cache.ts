@@ -1,16 +1,47 @@
 import path from "path";
-import type { UniqueLimit } from "common";
+import type {
+  IdentityCompartment,
+  MyLimitDefinitionSummary,
+  RegionSubscription,
+  ServiceSummary,
+  UniqueLimit,
+} from "common";
+import type { common } from "oci-sdk";
+import type {
+  LimitDefinitionsPerProperty,
+  ServiceLimitMap,
+  Token,
+} from "../types/types";
 
-// Singelton
+// Singleton
 export class Cache {
   private static instance: Cache;
-  private map: Map<string, UniqueLimit>;
-  constructor() {
-    this.map = new Map();
-    // this[Symbol.iterator] = this.values;
+  private limitCache: Map<string, UniqueLimit>;
+  public compartments: IdentityCompartment[];
+  public regions: common.Region[];
+  public regionSubscriptions: RegionSubscription[];
+  public serviceSubscriptions: ServiceSummary[];
+  public limitDefinitionsPerLimitName: LimitDefinitionsPerProperty;
+  public limitDefinitionsPerRegionPerService: Map<
+    common.Region,
+    Map<string, MyLimitDefinitionSummary[]>
+  >;
+  public serviceLimitMap: ServiceLimitMap;
+  public token: Token;
+
+  private constructor() {
+    this.limitCache = new Map();
+    this.compartments = [];
+    this.regions = [];
+    this.regionSubscriptions = [];
+    this.serviceSubscriptions = [];
+    this.limitDefinitionsPerLimitName = new Map();
+    this.limitDefinitionsPerRegionPerService = new Map();
+    this.serviceLimitMap = new Map();
+    this.token = { count: 0 };
   }
 
-  static getInstance() {
+  static getInstance(): Cache {
     if (this.instance) {
       return this.instance;
     }
@@ -18,25 +49,7 @@ export class Cache {
     return this.instance;
   }
 
-  /* private validateUniqueLimitAsKey(uniqueLimit: UniqueLimit): boolean {
-    const validationList = [
-      uniqueLimit.compartmentId,
-      `${uniqueLimit.regionId}`,
-      uniqueLimit.scope,
-      uniqueLimit.serviceName,
-      uniqueLimit.limitName,
-    ];
-    console.log("ADDING TO LIMIT SET:");
-    console.log(uniqueLimit);
-
-    const validationResult = validationList.reduce(
-      (accumulator, currentValue) => accumulator && !currentValue.includes(","),
-      true
-    );
-    return validationResult;
-  } */
-
-  toLimitString(uniqueLimit: UniqueLimit) {
+  toLimitString(uniqueLimit: UniqueLimit): string {
     return `
     ${uniqueLimit.compartmentId}
     ${uniqueLimit.regionId}
@@ -46,7 +59,7 @@ export class Cache {
     `;
   }
 
-  add(uniqueLimit: UniqueLimit) {
+  addLimit(uniqueLimit: UniqueLimit): void {
     if (uniqueLimit.resourceAvailability.length === 0) {
       console.log(
         `[${path.basename(__filename)}]:
@@ -56,24 +69,16 @@ export class Cache {
       return;
     }
 
-    /* if (this.validateUniqueLimitAsKey(uniqueLimit)) {
-      console.log(
-        `[${path.basename(__filename)}]:
-        One or more of UniqeLimit idnetifiers contains a ','.
-        Operation 'add' refused`
-      );
-    } */
+    if (this.hasLimit(uniqueLimit)) return;
 
-    if (this.has(uniqueLimit)) return;
-
-    this.map.set(this.toLimitString(uniqueLimit), uniqueLimit);
+    this.limitCache.set(this.toLimitString(uniqueLimit), uniqueLimit);
   }
 
-  has(item: UniqueLimit) {
-    return this.map.get(this.toLimitString(item));
+  hasLimit(item: UniqueLimit): UniqueLimit | undefined {
+    return this.limitCache.get(this.toLimitString(item));
   }
 
-  clear() {
-    this.map.clear();
+  clear(): void {
+    this.limitCache.clear();
   }
 }

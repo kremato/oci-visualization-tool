@@ -1,10 +1,9 @@
 import type { common, identity } from "oci-sdk";
 import { getIdentityClient } from "../clients/getIdentityClient";
 import { Provider } from "../clients/provider";
-import type { CommonRegion } from "../types/types";
 
 export const getAvailabilityDomainsPerRegion = async (
-  region: CommonRegion,
+  region: common.Region,
   clientConfiguration?: common.ClientConfiguration
 ): Promise<identity.models.AvailabilityDomain[]> => {
   const identityClient = getIdentityClient(clientConfiguration);

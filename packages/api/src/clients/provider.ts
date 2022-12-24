@@ -8,7 +8,7 @@ export class Provider {
 
   private constructor() {
     this.provider = getProvider();
-    this.provider.getKeyId;
+    /* this.provider.getKeyId; */
   }
 
   static getInstance() {

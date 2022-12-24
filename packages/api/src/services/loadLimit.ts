@@ -7,11 +7,10 @@ import {
   ResourceAvailabilityObject,
 } from "common";
 import { getLimitsClient } from "../clients/getLimitsClient";
-import type { CommonRegion } from "../types/types";
 import { getAvailabilityDomainsPerRegion } from "./getAvailabilityDomainsPerRegion";
 import { getResourceAvailability } from "./getResourceAvailability ";
 import path from "path";
-import type { identity, limits } from "oci-sdk";
+import type { common, identity, limits } from "oci-sdk";
 import { Cache } from "./cache";
 
 const filePath = path.basename(__filename);
@@ -116,7 +115,7 @@ const getAvailabilityObject = async (
 
 export const loadLimit = async (
   compartment: IdentityCompartment,
-  region: CommonRegion,
+  region: common.Region,
   limitDefinitionSummary: MyLimitDefinitionSummary,
   rootCompartments: ResponseTreeNode,
   rootServices: ResponseTreeNode,
@@ -147,7 +146,7 @@ export const loadLimit = async (
 
     const limitSet = Cache.getInstance();
 
-    const limitSetUniqueLimit = limitSet.has(newUniqueLimit);
+    const limitSetUniqueLimit = limitSet.hasLimit(newUniqueLimit);
     // if limit is already present, skip fetching and just add the limit to the response
     if (limitSetUniqueLimit) {
       console.log("LOADED");
@@ -203,7 +202,7 @@ export const loadLimit = async (
     newUniqueLimit.resourceAvailabilitySum.used = totalUsed.toString();
     newUniqueLimit.resourceAvailabilitySum.quota = totalQuota.toString();
 
-    limitSet.add(newUniqueLimit);
+    limitSet.addLimit(newUniqueLimit);
     loadResponseTree(newUniqueLimit, rootCompartments, "compartment");
     loadResponseTree(newUniqueLimit, rootServices, "service");
     // outputToFile("test/getCompartmentsRegionResources.txt", logFormattedOutput);
