@@ -6,7 +6,9 @@ import { AppDispatch } from "./store";
 export const fetchRegionsList = () => {
   return async (dispatch: AppDispatch) => {
     try {
-      const request = new Request(`${import.meta.env.VITE_API}/regions`);
+      const request = new Request(
+        `${import.meta.env.VITE_API}/region-subscriptions`
+      );
 
       const response = await fetch(request);
       const data = (await response.json()) as RegionSubscription[];
