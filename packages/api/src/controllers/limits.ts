@@ -54,7 +54,7 @@ export const store = async (req: Request, res: Response) => {
 
   const rootCompartmentTree = createResponseTreeNode("rootCompartments");
   const rootServiceTree = createResponseTreeNode("rootServices");
-  const loadLimitArgumetns: [
+  const loadLimitArguments: [
     Compartment,
     common.Region,
     MyLimitDefinitionSummary,
@@ -102,7 +102,7 @@ export const store = async (req: Request, res: Response) => {
         if (newRequest) break;
 
         for (const LimitDefinitionSummary of limitDefinitionSummaries) {
-          loadLimitArgumetns.push([
+          loadLimitArguments.push([
             compartment,
             region,
             LimitDefinitionSummary,
@@ -115,8 +115,8 @@ export const store = async (req: Request, res: Response) => {
     }
   }
 
-  while (loadLimitArgumetns.length > 0) {
-    const promises = loadLimitArgumetns
+  while (loadLimitArguments.length > 0) {
+    const promises = loadLimitArguments
       .splice(0, 15)
       .map((item) => loadLimit(...item));
     await Promise.all(promises);
