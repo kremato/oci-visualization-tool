@@ -8,7 +8,7 @@ import type { LimitDefinitionsPerProperty } from "../types/types";
 
 const port = process.env["PORT"];
 
-export const onStart = async () => {
+export const onStart = async (): Promise<void> => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
   const cache = Cache.getInstance();
 
