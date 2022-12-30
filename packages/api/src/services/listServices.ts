@@ -3,7 +3,7 @@ import { getLimitsClient } from "../clients/getLimitsClient";
 import type { ServiceSummary } from "common";
 import path from "path";
 import { log } from "../utils/log";
-import { Provider } from "../clients/provider";
+import { Provider } from "./provider";
 
 // List of available servies for the root compartment/tenancy.
 // Services with an undefined name or description are filtered out

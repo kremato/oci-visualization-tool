@@ -1,6 +1,6 @@
 import { LimitsClient } from "oci-limits";
 import type { common } from "oci-sdk";
-import { Provider } from "./provider";
+import { Provider } from "../services/provider";
 
 export const getLimitsClient = (
   clientConfiguration?: common.ClientConfiguration

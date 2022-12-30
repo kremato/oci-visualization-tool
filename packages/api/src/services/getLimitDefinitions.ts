@@ -1,6 +1,6 @@
 import { requests, models } from "oci-limits";
 import { getLimitsClient } from "../clients/getLimitsClient";
-import { Provider } from "../clients/provider";
+import { Provider } from "./provider";
 import type {
   LimitDefinitionsPerProperty,
   LimitDefinitionsPerScope,

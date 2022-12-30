@@ -1,6 +1,6 @@
 import { identity } from "oci-sdk";
 import { getProvider } from "../clients/getProvider";
-import { Provider } from "../clients/provider";
+import { Provider } from "./provider";
 
 export const listRegionSubscriptions = async (): Promise<
   identity.models.RegionSubscription[]

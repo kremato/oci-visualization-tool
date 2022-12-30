@@ -6,7 +6,7 @@ export const createResponseTreeNode = (
   limits?: UniqueLimit[]
 ): ResponseTreeNode => {
   const node: ResponseTreeNode = Object.create(null);
-  node["name"] = "rootCompartments";
+  node["name"] = name;
   node["children"] = children;
   if (limits) node["limits"] = limits;
   return node;

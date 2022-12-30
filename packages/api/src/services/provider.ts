@@ -1,4 +1,4 @@
-import { getProvider } from "./getProvider";
+import { getProvider } from "../clients/getProvider";
 import type common from "oci-common";
 
 // Singleton

@@ -1,6 +1,6 @@
 import type { common, identity } from "oci-sdk";
 import { getIdentityClient } from "../clients/getIdentityClient";
-import { Provider } from "../clients/provider";
+import { Provider } from "./provider";
 
 export const getAvailabilityDomainsPerRegion = async (
   region: common.Region,
