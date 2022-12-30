@@ -26,7 +26,7 @@ export const list = (_req: Request, res: Response) => {
   res.status(200).send(JSON.stringify(responseLimitDefinitionsPerLimitName));
 };
 
-export const store = async (req: Request, res: Response) => {
+export const store = async (req: Request, res: Response): Promise<void> => {
   // TODO: validation
   const data = req.body as InputData;
   console.log("[/limits]");
