@@ -5,8 +5,6 @@ export interface LimitDefinitionsPerProperty
   extends Map<string, MyLimitDefinitionSummary[]> {}
 export interface LimitDefinitionsPerScope
   extends Map<string, LimitDefinitionsPerProperty> {}
-/* export interface ServiceLimits
-  extends Map<CommonRegion, LimitDefinitionsPerScope> {} */
 export interface Token {
   count: number;
 }
