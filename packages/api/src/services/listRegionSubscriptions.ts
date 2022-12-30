@@ -1,14 +1,17 @@
 import { identity } from "oci-sdk";
 import { getProvider } from "../clients/getProvider";
+import { Provider } from "../clients/provider";
 
-export const listRegionSubscriptions = async (tenancyId: string) => {
+export const listRegionSubscriptions = async (): Promise<
+  identity.models.RegionSubscription[]
+> => {
   const client = new identity.IdentityClient({
     authenticationDetailsProvider: getProvider(),
   });
 
   const listRegionSubscriptionsRequest: identity.requests.ListRegionSubscriptionsRequest =
     {
-      tenancyId,
+      tenancyId: Provider.getInstance().provider.getTenantId(),
     };
 
   const listRegionSubscriptionsResponse = await client.listRegionSubscriptions(

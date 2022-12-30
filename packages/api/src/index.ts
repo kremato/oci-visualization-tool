@@ -8,6 +8,9 @@ import {
   services,
   limits,
 } from "./controllers";
+import path from "path";
+
+const filePath = path.basename(__filename);
 
 try {
   dotenv.config();
@@ -28,7 +31,8 @@ try {
     res.status(404).send("NOT FOUND");
   });
 } catch (error) {
-  console.log("Error executing" + error);
+  console.log(`[${filePath}]: Error executing`);
+  console.log(error);
 } finally {
   console.debug("DONE");
 }

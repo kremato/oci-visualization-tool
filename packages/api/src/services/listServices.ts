@@ -2,40 +2,33 @@ import type { limits } from "oci-sdk";
 import { getLimitsClient } from "../clients/getLimitsClient";
 import type { ServiceSummary } from "common";
 import path from "path";
+import { log } from "../utils/log";
+import { Provider } from "../clients/provider";
 
-/* I was not able to find a request that would be able to list
-   all services that OCI offers. So for the time being, list
-   of available servies for the root compartment/tenancy is
-   used. Although the tenancy may be exactly what is needed */
-/* Services with an undefined name or description are filtered out */
-export const listServices = async (tenancyId: string) => {
+// List of available servies for the root compartment/tenancy.
+// Services with an undefined name or description are filtered out
+export const listServices = async (): Promise<ServiceSummary[]> => {
   const limitsClient = getLimitsClient();
   const listServicesRequest: limits.requests.ListServicesRequest = {
-    compartmentId: tenancyId,
+    // must be tenancy
+    compartmentId: Provider.getInstance().provider.getTenantId(),
   };
 
   const iterator = limitsClient.listServicesRecordIterator(listServicesRequest);
 
-  const result: ServiceSummary[] = [];
+  const summaries: ServiceSummary[] = [];
+  const filePath = path.basename(__filename);
   for await (let serviceSummary of iterator) {
     if (serviceSummary.name === undefined) {
-      console.log(
-        `[${path.basename(
-          __filename
-        )}]: Service with 'undefined' name filtered out.`
-      );
+      log(filePath, "service with 'undefined' name filtered out.");
       continue;
     }
     if (serviceSummary.description === undefined) {
-      console.log(
-        `[${path.basename(
-          __filename
-        )}]: Service with 'undefined' description filtered out.`
-      );
+      log(filePath, "service with 'undefined' description filtered out.");
       continue;
     }
-    result.push(serviceSummary as ServiceSummary);
+    summaries.push(serviceSummary as ServiceSummary);
   }
 
-  return result;
+  return summaries;
 };

@@ -9,39 +9,38 @@ import { outputToFile } from "../utils/outputToFile";
 import path from "path";
 import type { MyLimitDefinitionSummary } from "common";
 import type { common } from "oci-sdk";
+import { log } from "../utils/log";
+
+const filePath = path.basename(__filename);
 
 const validateLimitDefinitionSummary = (
   limitDefinitionSummary: models.LimitDefinitionSummary
-) => {
-  const log: string[] = [];
+): boolean => {
+  const missingProperties: string[] = [];
   if (!limitDefinitionSummary.name) {
-    log.push("name");
+    missingProperties.push("name");
   }
   if (!limitDefinitionSummary.serviceName) {
-    log.push("serviceName");
+    missingProperties.push("serviceName");
   }
   if (!limitDefinitionSummary.scopeType) {
-    log.push("scopeType");
+    missingProperties.push("scopeType");
   }
   if (
     limitDefinitionSummary.scopeType &&
     limitDefinitionSummary.scopeType ===
       models.LimitDefinitionSummary.ScopeType.UnknownValue
   ) {
-    console.log(
-      `[${path.basename(
-        __filename
-      )}]: LimitDefinition is filtered out since 'ScopeType' is set to '${
-        limitDefinitionSummary.scopeType
-      }'`
+    log(
+      filePath,
+      `limitDefinitionSummary is filtered out since 'ScopeType' is set to '${limitDefinitionSummary.scopeType}'`
     );
     return false;
   }
-  if (log.length !== 0) {
-    console.log(
-      `[${path.basename(
-        __filename
-      )}]: LimitDefinition is filtered out since ${log} is/are 'undefined'`
+  if (missingProperties.length !== 0) {
+    log(
+      filePath,
+      `limitDefinitionSummary is filtered out since ${missingProperties} is/are 'undefined'`
     );
     return false;
   }
@@ -51,30 +50,22 @@ const validateLimitDefinitionSummary = (
 const perScope = (
   limitDefinitionsPerScopePerServiceName: LimitDefinitionsPerScope,
   limitDefinitionSummary: MyLimitDefinitionSummary
-) => {
-  const itemScope = limitDefinitionSummary.scopeType;
-  const serviceLimitDefinitions =
-    limitDefinitionsPerScopePerServiceName.get(itemScope);
-  /* serviceLimitDefinitions should not ever be undefined, because limitDefinitionsPerScopePerServiceName was set
-      with all four possibble values of ScopeType and so limitDefinitionsPerScopePerServiceName.get(itemScope) always
-      returns something */
+): void => {
+  const serviceLimitDefinitions = limitDefinitionsPerScopePerServiceName.get(
+    limitDefinitionSummary.scopeType
+  );
+
+  if (!serviceLimitDefinitions) {
+    log(filePath, `no such scope as ${limitDefinitionSummary.scopeType} found`);
+  }
   perServiceName(serviceLimitDefinitions!, limitDefinitionSummary);
 };
 
 const perServiceName = (
   limitDefinitionsPerServiceName: LimitDefinitionsPerProperty,
   limitDefinitionSummary: MyLimitDefinitionSummary
-) => {
+): void => {
   const serviceName = limitDefinitionSummary.serviceName;
-
-  /* if (!serviceName) {
-    console.log(
-      `[${path.basename(
-        __filename
-      )}]: LimitDefinition is filtered out since serviceName in LimitDefinition is 'undefined'`
-    );
-    return;
-  } */
 
   if (!limitDefinitionsPerServiceName.has(serviceName)) {
     limitDefinitionsPerServiceName.set(serviceName, [limitDefinitionSummary]);
@@ -88,26 +79,8 @@ const perServiceName = (
 const perLimitName = (
   limitDefinitionsPerLimitName: LimitDefinitionsPerProperty,
   limitDefinitionSummary: MyLimitDefinitionSummary
-) => {
+): void => {
   const limitName = limitDefinitionSummary.name;
-
-  /* if (!limitName) {
-    console.log(
-      `[${path.basename(
-        __filename
-      )}]: LimitDefinition is filtered out since 'name' in LimitDefinition is 'undefined'`
-    );
-    return;
-  } */
-
-  /* if (!limitDefinitionSummary.serviceName) {
-    console.log(
-      `[${path.basename(
-        __filename
-      )}]: LimitDefinition is filtered out since 'serviceName' in LimitDefinition is 'undefined'`
-    );
-    return;
-  } */
 
   const entry = limitDefinitionsPerLimitName.get(limitName);
   if (!entry) {
@@ -122,18 +95,17 @@ export const getLimitDefinitions = async (
   region?: common.Region
 ): Promise<LimitDefinitionsPerScope | LimitDefinitionsPerProperty> => {
   const limitsClient = getLimitsClient();
-  // TODO: je tu potrebne nastavovat region, nie je to pre kazdy region rovnake?
-  // pise, ze must be tenancy, a asi na tom nieco je
+  // is it neccessary to set region? they do so in the examples on github...
   if (region !== undefined) limitsClient.region = region;
   const listLimitDefinitionsRequest: requests.ListLimitDefinitionsRequest = {
+    // must be tenancy
     compartmentId: Provider.getInstance().provider.getTenantId(),
   };
   const limitDefinitionsPerScopePerServiceName = new Map<
     string,
     LimitDefinitionsPerProperty
   >();
-  const limitDefinitionsPerServiceName: LimitDefinitionsPerProperty = new Map();
-  const limitDefinitionsPerLimitName: LimitDefinitionsPerProperty = new Map();
+  const limitDefinitionsPerProperty: LimitDefinitionsPerProperty = new Map();
 
   const scopeType = models.LimitDefinitionSummary.ScopeType;
   for (const scope of [scopeType.Global, scopeType.Region, scopeType.Ad]) {
@@ -147,12 +119,24 @@ export const getLimitDefinitions = async (
   let logJSON: string = "";
   do {
     !opc || (listLimitDefinitionsRequest.page = opc);
-    const listLimitDefinitionsResponse =
-      await limitsClient.listLimitDefinitions(listLimitDefinitionsRequest);
-    logJSON += JSON.stringify(listLimitDefinitionsResponse.items, null, 4);
-    for (const limitDefinitionSummary of listLimitDefinitionsResponse.items) {
+    let limitDefinitionSummaries: models.LimitDefinitionSummary[] = [];
+    let opcNextPage = "";
+    try {
+      const listLimitDefinitionsResponse =
+        await limitsClient.listLimitDefinitions(listLimitDefinitionsRequest);
+      limitDefinitionSummaries = listLimitDefinitionsResponse.items;
+      opcNextPage = listLimitDefinitionsResponse.opcNextPage;
+    } catch (error) {
+      log(
+        filePath,
+        "fetching of limitDefinitionSummaries failed, ABORTING further fetching"
+      );
+      break;
+    }
+    logJSON += JSON.stringify(limitDefinitionSummaries, null, 4);
+    for (const limitDefinitionSummary of limitDefinitionSummaries) {
       if (!validateLimitDefinitionSummary(limitDefinitionSummary)) continue;
-      // TODO: filter global scope, in case of return to the global scope, delete
+      // filter global scope, in case of return to the global scope, delete this
       if (limitDefinitionSummary.scopeType === "GLOBAL") continue;
       if (type === "perScope") {
         perScope(
@@ -161,21 +145,20 @@ export const getLimitDefinitions = async (
         );
       } else if (type === "perServiceName") {
         perServiceName(
-          limitDefinitionsPerServiceName,
+          limitDefinitionsPerProperty,
           limitDefinitionSummary as MyLimitDefinitionSummary
         );
       } else {
         perLimitName(
-          limitDefinitionsPerLimitName,
+          limitDefinitionsPerProperty,
           limitDefinitionSummary as MyLimitDefinitionSummary
         );
       }
     }
-    opc = listLimitDefinitionsResponse.opcNextPage;
+    opc = opcNextPage;
   } while (opc);
 
   outputToFile("test/limitDefinitionListAllJSON.txt", logJSON);
   if (type === "perScope") return limitDefinitionsPerScopePerServiceName;
-  if (type === "perServiceName") return limitDefinitionsPerServiceName;
-  return limitDefinitionsPerLimitName;
+  return limitDefinitionsPerProperty;
 };
