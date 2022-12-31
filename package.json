@@ -10,6 +10,10 @@
   "dependencies": {
     "@types/cors": "^2.8.13",
     "cors": "^2.8.5",
-    "react-window": "^1.8.8"
+    "react-window": "^1.8.8",
+    "ws": "^8.11.0"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.5.4"
   }
 }

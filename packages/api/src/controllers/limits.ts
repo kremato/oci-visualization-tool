@@ -14,6 +14,7 @@ import { loadLimit } from "../services/loadLimit";
 import { sortLimitsRotateScopes } from "../utils/sortLimitsRotateScopes";
 import { outputToFile } from "../utils/outputToFile";
 import path from "path";
+import { log } from "../utils/log";
 
 export const list = (_req: Request, res: Response) => {
   const responseLimitDefinitionsPerLimitName = Object.create(null);
@@ -64,16 +65,15 @@ export const store = async (req: Request, res: Response): Promise<void> => {
   for (const compartment of filteredCompartments) {
     for (const region of filteredRegions) {
       for (const service of filteredServices) {
-        // TODO: maybe for service limits it would be better if they were a map, where limit name is a key to service limits, so later we would not have to filter them with O(n)
+        // maybe for service limits it would be better if they were a map, where limit name is a key to service limits, so later we would not have to filter them with O(n)
         let limitDefinitionSummaries = cache.limitDefinitionsPerRegionPerService
           .get(region)
           ?.get(service.name);
 
         if (!limitDefinitionSummaries) {
-          console.log(
-            `[${path.basename(
-              __filename
-            )}]: limitDefinitionsPerService.get(region)?.get(service.name) returned undefined`
+          log(
+            path.basename(__filename),
+            "no limitDefinitionSummaries found for a given region or service name"
           );
           continue;
         }

@@ -8,31 +8,29 @@ import {
   services,
   limits,
 } from "./controllers";
-import path from "path";
+import WebSocket, { WebSocketServer } from "ws";
 
-const filePath = path.basename(__filename);
+dotenv.config();
+const app: Express = express();
+app.use(cors());
+app.use(express.json());
 
-try {
-  dotenv.config();
-  const app: Express = express();
-  app.use(cors());
-  app.use(express.json());
-  const port = process.env["PORT"];
+export let socket: WebSocket.WebSocket | undefined = undefined;
+const httpServer = app.listen(process.env["PORT"], configuration.onStart);
+const wss = new WebSocketServer({
+  server: httpServer,
+});
 
-  app.listen(port, configuration.onStart);
+wss.on("connection", (ws) => {
+  console.log(`Received a new connection from the client`);
+  socket = ws;
+});
 
-  app.get("/compartments", compartments.list);
-  app.get("/region-subscriptions", regions.listRegionSubscriptions);
-  app.get("/services", services.list);
-  app.get("/limits", limits.list);
-  app.post("/limits", limits.store);
-
-  app.use((_req, res) => {
-    res.status(404).send("NOT FOUND");
-  });
-} catch (error) {
-  console.log(`[${filePath}]: Error executing`);
-  console.log(error);
-} finally {
-  console.debug("DONE");
-}
+app.get("/compartments", compartments.list);
+app.get("/region-subscriptions", regions.listRegionSubscriptions);
+app.get("/services", services.list);
+app.get("/limits", limits.list);
+app.post("/limits", limits.store);
+app.use((_req, res) => {
+  res.status(404).send("NOT FOUND");
+});

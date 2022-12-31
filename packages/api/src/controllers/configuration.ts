@@ -6,10 +6,8 @@ import { listRegionSubscriptions } from "../services/listRegionSubscriptions";
 import { listServices } from "../services/listServices";
 import type { LimitDefinitionsPerProperty } from "../types/types";
 
-const port = process.env["PORT"];
-
 export const onStart = async (): Promise<void> => {
-  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+  console.log(`⚡️[server]: Server is running`);
   const cache = Cache.getInstance();
 
   cache.compartments = await listCompartments();
