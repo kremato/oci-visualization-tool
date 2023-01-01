@@ -35,13 +35,14 @@ export const getResourceAvailability = async (
         availabilityDomain: availabilityDomain.name!,
       }),
     };
-  const resourceAvailability: limits.models.ResourceAvailability | undefined =
+  let resourceAvailability: limits.models.ResourceAvailability | undefined =
     undefined;
   try {
     const getResourceAvailabilityResponse =
       await limitsClient.getResourceAvailability(
         getResourceAvailabilityRequest
       );
+    resourceAvailability = getResourceAvailabilityResponse.resourceAvailability;
   } catch (error) {
     log(
       filePath,
