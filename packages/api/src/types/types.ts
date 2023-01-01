@@ -13,4 +13,5 @@ export interface MyLimitValueSummary
   name: string;
 }
 // key is service name
-export interface ServiceLimitMap extends Map<string, MyLimitValueSummary[]> {}
+export interface ServiceToServiceLimits
+  extends Map<string, MyLimitValueSummary[]> {}

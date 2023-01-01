@@ -73,14 +73,14 @@ export const store = async (req: Request, res: Response): Promise<void> => {
         if (!limitDefinitionSummaries) {
           log(
             path.basename(__filename),
-            "no limitDefinitionSummaries found for a given region or service name"
+            `no limitDefinitionSummaries found for ${region.regionId} or ${service.name}`
           );
           continue;
         }
 
+        // If specified, load only values about requested limits, not for the whole service
         if (data.limits.length > 0) {
           limitDefinitionSummaries = limitDefinitionSummaries.filter((limit) =>
-            /* data.limits.includes(limit.name) */
             data.limits.some(
               (item) =>
                 item.limitName === limit.name &&
@@ -89,10 +89,8 @@ export const store = async (req: Request, res: Response): Promise<void> => {
           );
         }
 
-        if (
-          !cache.serviceLimitMap.has(service.name) &&
-          cache.token.count === initialPostLimitsCount + 1
-        )
+        // check for service limits
+        if (!cache.serviceLimitMap.has(service.name) && !newRequest)
           cache.serviceLimitMap.set(
             service.name,
             await listServiceLimitsPerService(service.name)

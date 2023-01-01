@@ -3,6 +3,8 @@ import * as limits from "oci-limits";
 import { Provider } from "./provider";
 import type { MyLimitValueSummary } from "../types/types";
 import { outputToFile } from "../utils/outputToFile";
+import { log } from "../utils/log";
+import path from "path";
 
 export const listServiceLimitsPerService = async (
   serviceName: string
@@ -22,9 +24,21 @@ export const listServiceLimitsPerService = async (
   do {
     !opc || (listLimitValuesRequest.page = opc);
 
-    const listLimitValuesResponse = await client.listLimitValues(
-      listLimitValuesRequest
-    );
+    let listLimitValuesResponse:
+      | limits.responses.ListLimitValuesResponse
+      | undefined = undefined;
+    try {
+      listLimitValuesResponse = await client.listLimitValues(
+        listLimitValuesRequest
+      );
+    } catch (error) {
+      log(
+        path.basename(__filename),
+        `fetching of service limits for ${serviceName} failed, ABORTING further fetching`
+      );
+      break;
+    }
+
     logJSON += JSON.stringify(listLimitValuesResponse.items, null, 4);
 
     response = response.concat(

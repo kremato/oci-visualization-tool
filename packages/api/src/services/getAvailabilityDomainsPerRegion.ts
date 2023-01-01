@@ -1,5 +1,7 @@
 import type { common, identity } from "oci-sdk";
+import path from "path";
 import { getIdentityClient } from "../clients/getIdentityClient";
+import { log } from "../utils/log";
 import { Provider } from "./provider";
 
 export const getAvailabilityDomainsPerRegion = async (
@@ -12,6 +14,16 @@ export const getAvailabilityDomainsPerRegion = async (
   const request: identity.requests.ListAvailabilityDomainsRequest = {
     compartmentId: Provider.getInstance().provider.getTenantId(),
   };
-  const response = await identityClient.listAvailabilityDomains(request);
-  return response.items;
+
+  let availibilityDomains: identity.models.AvailabilityDomain[] = [];
+  try {
+    const response = await identityClient.listAvailabilityDomains(request);
+    availibilityDomains = response.items;
+  } catch (error) {
+    log(
+      path.basename(__filename),
+      `unable to fetch availibilityDomains for a region with the ID of ${region.regionId}`
+    );
+  }
+  return availibilityDomains;
 };

@@ -1,4 +1,4 @@
-import { requests, models } from "oci-limits";
+import { requests, models, responses } from "oci-limits";
 import { getLimitsClient } from "../clients/getLimitsClient";
 import { Provider } from "./provider";
 import type {
@@ -95,7 +95,7 @@ export const getLimitDefinitions = async (
   region?: common.Region
 ): Promise<LimitDefinitionsPerScope | LimitDefinitionsPerProperty> => {
   const limitsClient = getLimitsClient();
-  // is it neccessary to set region? they do so in the examples on github...
+  // is it neccessary to set region? they do so in the examples on github(https://github.com/oracle/oci-java-sdk/blob/master/bmc-examples/src/main/java/LimitsExample.java)
   if (region !== undefined) limitsClient.region = region;
   const listLimitDefinitionsRequest: requests.ListLimitDefinitionsRequest = {
     // must be tenancy
@@ -115,17 +115,18 @@ export const getLimitDefinitions = async (
     );
   }
 
-  let opc: string | undefined = undefined;
   let logJSON: string = "";
+  let opc: string | undefined = undefined;
   do {
     !opc || (listLimitDefinitionsRequest.page = opc);
-    let limitDefinitionSummaries: models.LimitDefinitionSummary[] = [];
-    let opcNextPage = "";
+
+    let listLimitDefinitionsResponse:
+      | responses.ListLimitDefinitionsResponse
+      | undefined = undefined;
     try {
-      const listLimitDefinitionsResponse =
-        await limitsClient.listLimitDefinitions(listLimitDefinitionsRequest);
-      limitDefinitionSummaries = listLimitDefinitionsResponse.items;
-      opcNextPage = listLimitDefinitionsResponse.opcNextPage;
+      listLimitDefinitionsResponse = await limitsClient.listLimitDefinitions(
+        listLimitDefinitionsRequest
+      );
     } catch (error) {
       log(
         filePath,
@@ -133,8 +134,9 @@ export const getLimitDefinitions = async (
       );
       break;
     }
-    logJSON += JSON.stringify(limitDefinitionSummaries, null, 4);
-    for (const limitDefinitionSummary of limitDefinitionSummaries) {
+
+    logJSON += JSON.stringify(listLimitDefinitionsResponse.items, null, 4);
+    for (const limitDefinitionSummary of listLimitDefinitionsResponse.items) {
       if (!validateLimitDefinitionSummary(limitDefinitionSummary)) continue;
       // filter global scope, in case of return to the global scope, delete this
       if (limitDefinitionSummary.scopeType === "GLOBAL") continue;
@@ -155,7 +157,7 @@ export const getLimitDefinitions = async (
         );
       }
     }
-    opc = opcNextPage;
+    opc = listLimitDefinitionsResponse.opcNextPage;
   } while (opc);
 
   outputToFile("test/limitDefinitionListAllJSON.txt", logJSON);
