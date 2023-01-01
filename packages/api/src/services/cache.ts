@@ -12,6 +12,7 @@ import type {
   ServiceToServiceLimits,
   Token,
 } from "../types/types";
+import { log } from "../utils/log";
 
 // Singleton
 export class Cache {
@@ -69,9 +70,9 @@ export class Cache {
 
   addLimit(uniqueLimit: UniqueLimit): void {
     if (uniqueLimit.resourceAvailability.length === 0) {
-      console.log(
-        `[${path.basename(__filename)}]:
-        Adding UniqueLimit with resourceAvailibility.length === 0
+      log(
+        path.basename(__filename),
+        `Adding UniqueLimit with resourceAvailibility.length === 0
         into LimitSet is not advised, operation refused`
       );
       return;
