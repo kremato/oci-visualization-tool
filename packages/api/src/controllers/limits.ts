@@ -1,8 +1,4 @@
-import type {
-  InputData,
-  MyLimitDefinitionSummary,
-  ResponseTreeNode,
-} from "common";
+import type { InputData, MyLimitDefinitionSummary } from "common";
 import type { Request, Response } from "express";
 import type { common } from "oci-sdk";
 import { Cache } from "../services/cache";
@@ -15,6 +11,7 @@ import { sortLimitsRotateScopes } from "../utils/sortLimitsRotateScopes";
 import { outputToFile } from "../utils/outputToFile";
 import path from "path";
 import { log } from "../utils/log";
+import { loadResponseTree } from "../services/loadResponseTree";
 
 export const list = (_req: Request, res: Response) => {
   const responseLimitDefinitionsPerLimitName = Object.create(null);
@@ -52,14 +49,10 @@ export const store = async (req: Request, res: Response): Promise<void> => {
     return data.services.includes(service.name);
   });
 
-  const rootCompartmentTree = createResponseTreeNode("rootCompartments");
-  const rootServiceTree = createResponseTreeNode("rootServices");
   const loadLimitArguments: [
     Compartment,
     common.Region,
     MyLimitDefinitionSummary,
-    ResponseTreeNode,
-    ResponseTreeNode,
     MyLimitValueSummary[]
   ][] = [];
   for (const compartment of filteredCompartments) {
@@ -103,8 +96,6 @@ export const store = async (req: Request, res: Response): Promise<void> => {
             compartment,
             region,
             LimitDefinitionSummary,
-            rootCompartmentTree,
-            rootServiceTree,
             cache.serviceLimitMap.get(service.name)!,
           ]);
         }
@@ -112,11 +103,21 @@ export const store = async (req: Request, res: Response): Promise<void> => {
     }
   }
 
+  const rootCompartmentTree = createResponseTreeNode("rootCompartments");
+  const rootServiceTree = createResponseTreeNode("rootServices");
   while (loadLimitArguments.length > 0) {
     const promises = loadLimitArguments
       .splice(0, 15)
       .map((item) => loadLimit(...item));
-    await Promise.all(promises);
+
+    const uniqueLimits = await Promise.all(promises);
+
+    for (const limit of uniqueLimits) {
+      if (!newRequest) cache.addLimit(limit);
+      loadResponseTree(limit, rootCompartmentTree, "compartment");
+      loadResponseTree(limit, rootServiceTree, "service");
+    }
+
     if (newRequest) {
       res.status(409).send([]);
       return;

@@ -1,7 +1,6 @@
 import {
   Names,
   UniqueLimit,
-  ResponseTreeNode,
   MyLimitDefinitionSummary,
   IdentityCompartment,
   ResourceAvailabilityObject,
@@ -9,70 +8,8 @@ import {
 import { getLimitsClient } from "../clients/getLimitsClient";
 import { getAvailabilityDomainsPerRegion } from "./getAvailabilityDomainsPerRegion";
 import { getResourceAvailability } from "./getResourceAvailability";
-import path from "path";
 import type { common, identity, limits } from "oci-sdk";
 import { Cache } from "./cache";
-import { log } from "../utils/log";
-
-const filePath = path.basename(__filename);
-
-const addNode = (
-  limitPath: string[],
-  uniqueLimit: UniqueLimit,
-  node: ResponseTreeNode
-) => {
-  if (limitPath.length === 0) {
-    if (node.children.length !== 0)
-      log(filePath, `pushing UniqueLimits into node.limits in a non leaf!`);
-
-    if (!node.limits) {
-      node["limits"] = [uniqueLimit];
-    } else {
-      node.limits.push(uniqueLimit);
-    }
-    return;
-  }
-
-  const currentStop = limitPath.pop()!;
-
-  for (const child of node.children) {
-    if (child.name === currentStop) {
-      addNode(limitPath, uniqueLimit, child);
-      return;
-    }
-  }
-
-  const child: ResponseTreeNode = Object.create(null);
-  child["name"] = currentStop;
-  child.children = [];
-  node.children.push(child);
-
-  addNode(limitPath, uniqueLimit, child);
-};
-
-const loadResponseTree = (
-  uniqueLimit: UniqueLimit,
-  root: ResponseTreeNode,
-  type: "compartment" | "service"
-) => {
-  // TODO: in case of global, remove '!'
-  let limitPath =
-    type === "compartment"
-      ? [
-          uniqueLimit.serviceName,
-          uniqueLimit.scope,
-          uniqueLimit.regionId!,
-          uniqueLimit.compartmentName,
-        ]
-      : [
-          uniqueLimit.scope,
-          uniqueLimit.regionId!,
-          uniqueLimit.compartmentName,
-          uniqueLimit.serviceName,
-        ];
-
-  addNode(limitPath, uniqueLimit, root);
-};
 
 const getAvailabilityObject = async (
   compartmentId: string,
@@ -115,10 +52,8 @@ export const loadLimit = async (
   compartment: IdentityCompartment,
   region: common.Region,
   limitDefinitionSummary: MyLimitDefinitionSummary,
-  rootCompartments: ResponseTreeNode,
-  rootServices: ResponseTreeNode,
   serviceLimits: limits.models.LimitValueSummary[]
-): Promise<void> => {
+): Promise<UniqueLimit> => {
   const limitsClient = getLimitsClient();
   limitsClient.region = region;
   const resourceAvailabilityList: {
@@ -138,6 +73,7 @@ export const loadLimit = async (
     resourceAvailability: resourceAvailabilityList,
     resourceAvailabilitySum: Object.create(null),
   };
+
   if (limitDefinitionSummary.isDeprecated !== undefined)
     newUniqueLimit.isDeprecated = limitDefinitionSummary.isDeprecated;
 
@@ -147,9 +83,7 @@ export const loadLimit = async (
   // if limit is already present, skip fetching and just add the limit to the response
   if (limitSetUniqueLimit) {
     console.log("LOADED");
-    loadResponseTree(limitSetUniqueLimit, rootCompartments, "compartment");
-    loadResponseTree(limitSetUniqueLimit, rootServices, "service");
-    return;
+    return limitSetUniqueLimit;
   }
 
   console.log("FETCHING");
@@ -202,8 +136,6 @@ export const loadLimit = async (
   newUniqueLimit.resourceAvailabilitySum.used = totalUsed.toString();
   newUniqueLimit.resourceAvailabilitySum.quota = totalQuota.toString();
 
-  cache.addLimit(newUniqueLimit);
-  loadResponseTree(newUniqueLimit, rootCompartments, "compartment");
-  loadResponseTree(newUniqueLimit, rootServices, "service");
   // outputToFile("test/getCompartmentsRegionResources.txt", logFormattedOutput);
+  return newUniqueLimit;
 };
