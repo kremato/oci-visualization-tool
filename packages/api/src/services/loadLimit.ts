@@ -141,9 +141,9 @@ export const loadLimit = async (
   if (limitDefinitionSummary.isDeprecated !== undefined)
     newUniqueLimit.isDeprecated = limitDefinitionSummary.isDeprecated;
 
-  const limitSet = Cache.getInstance();
+  const cache = Cache.getInstance();
 
-  const limitSetUniqueLimit = limitSet.hasLimit(newUniqueLimit);
+  const limitSetUniqueLimit = cache.hasLimit(newUniqueLimit);
   // if limit is already present, skip fetching and just add the limit to the response
   if (limitSetUniqueLimit) {
     console.log("LOADED");
@@ -155,7 +155,12 @@ export const loadLimit = async (
   console.log("FETCHING");
 
   if (limitDefinitionSummary.scopeType === Names.AD.toString()) {
-    const availabilityDomains = await getAvailabilityDomainsPerRegion(region);
+    if (!cache.availabilityDomainsPerRegion.has(region))
+      cache.availabilityDomainsPerRegion.set(
+        region,
+        await getAvailabilityDomainsPerRegion(region)
+      );
+    const availabilityDomains = cache.availabilityDomainsPerRegion.get(region)!;
     for (const availabilityDomain of availabilityDomains) {
       const availabilityObject = await getAvailabilityObject(
         compartment.id,
@@ -197,7 +202,7 @@ export const loadLimit = async (
   newUniqueLimit.resourceAvailabilitySum.used = totalUsed.toString();
   newUniqueLimit.resourceAvailabilitySum.quota = totalQuota.toString();
 
-  limitSet.addLimit(newUniqueLimit);
+  cache.addLimit(newUniqueLimit);
   loadResponseTree(newUniqueLimit, rootCompartments, "compartment");
   loadResponseTree(newUniqueLimit, rootServices, "service");
   // outputToFile("test/getCompartmentsRegionResources.txt", logFormattedOutput);

@@ -6,10 +6,10 @@ import type {
   ServiceSummary,
   UniqueLimit,
 } from "common";
-import type { common } from "oci-sdk";
+import type { common, identity } from "oci-sdk";
 import type {
   LimitDefinitionsPerProperty,
-  ServiceLimitMap,
+  ServiceToServiceLimits,
   Token,
 } from "../types/types";
 
@@ -26,7 +26,14 @@ export class Cache {
     common.Region,
     Map<string, MyLimitDefinitionSummary[]>
   >;
-  public serviceLimitMap: ServiceLimitMap;
+  /* stores service limits for each service, this is needed because
+  limits.responses.GetResourceAvailabilityResponse does not include
+  information about service limits */
+  public serviceLimitMap: ServiceToServiceLimits;
+  public availabilityDomainsPerRegion: Map<
+    common.Region,
+    identity.models.AvailabilityDomain[]
+  >;
   public token: Token;
 
   private constructor() {
@@ -38,6 +45,7 @@ export class Cache {
     this.limitDefinitionsPerLimitName = new Map();
     this.limitDefinitionsPerRegionPerService = new Map();
     this.serviceLimitMap = new Map();
+    this.availabilityDomainsPerRegion = new Map();
     this.token = { count: 0 };
   }
 
