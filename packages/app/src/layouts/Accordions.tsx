@@ -3,7 +3,6 @@ import { Collapsable } from "./Collapsable";
 import { Typography, Divider, Stack } from "@mui/material";
 
 export const Accordions = () => {
-  // TODO: render accordions based on user choice
   const compartmentNodes = useAppSelector(
     (state) => state.compartments.compartmentNodes
   );
