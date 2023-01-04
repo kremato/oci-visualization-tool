@@ -1,6 +1,6 @@
 import { useAppSelector } from "../hooks/useAppSelector";
 import { Collapsable } from "./Collapsable";
-import { Typography, Divider, Stack } from "@mui/material";
+import { Typography, Stack } from "@mui/material";
 
 export const Accordions = () => {
   const compartmentNodes = useAppSelector(
@@ -21,7 +21,6 @@ export const Accordions = () => {
 
   return (
     <>
-      <hr />
       <Stack spacing={2}>
         {showByCompartment && (
           <div>

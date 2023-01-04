@@ -1,20 +1,21 @@
 import { Button } from "@mui/material";
 import { useAppDispatch } from "../hooks/useAppDispatch";
+import { fetchLimitsData } from "../store/inputActionCreators";
 import { inputActions } from "../store/inputSlice";
 
 interface Props {
   text: string;
-  action: () => void;
 }
 
-export const ModifiableButton = ({ text, action }: Props) => {
+export const SendButton = ({ text }: Props) => {
   const dispatch = useAppDispatch();
 
   return (
     <Button
       variant="contained"
       onClick={() => {
-        action(), dispatch(inputActions.updateShowProgressBar(true));
+        dispatch(fetchLimitsData());
+        dispatch(inputActions.updateShowProgressBar(true));
       }}
     >
       {text}
