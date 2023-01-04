@@ -15,7 +15,6 @@ export const getResourceAvailability = async (
     (availabilityDomain !== undefined && !availabilityDomain.name) ||
     !limitDefinitionSummary.serviceName
   ) {
-    console.debug();
     log(
       filePath,
       `unable to create GetResourceAvailabilityRequest because either limitDefinitionSummary.name,
