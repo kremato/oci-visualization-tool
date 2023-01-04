@@ -1,5 +1,4 @@
 import { IdentityClient } from "oci-identity";
-import type { ConfigFileAuthenticationDetailsProvider } from "oci-common";
 import type { common } from "oci-sdk";
 import { Provider } from "../services/provider";
 

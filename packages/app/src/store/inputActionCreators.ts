@@ -39,6 +39,9 @@ export const fetchLimitsData = () => {
       console.log(`Received status code 409, old request rejected`);
       return;
     }
+    dispatch(inputActions.updateShowProgressBar(false));
+    dispatch(inputActions.updateProgressValue(0));
+
     const data = (await parseResponseBody(response)) as ResponseTreeNode[];
     if (data.length === 0) return;
     console.log("RESPONSE");

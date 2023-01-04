@@ -4,6 +4,8 @@ import LinearProgress, {
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { useEffect, useState } from "react";
+import { inputActions } from "../../store/inputSlice";
+import { useAppSelector } from "../../hooks/useAppSelector";
 
 function LinearProgressWithLabel(
   props: LinearProgressProps & { value: number }
@@ -23,10 +25,13 @@ function LinearProgressWithLabel(
 }
 
 export default function LoadingBar() {
-  const [progress, setProgress] = useState(0);
-  const [showProgressBar, setShowProgressBar] = useState(false);
+  /* const [progress, setProgress] = useState(0); */
+  const progress = useAppSelector((state) => state.input.progressValue);
+  const showProgressBar = useAppSelector(
+    (state) => state.input.showProgressBar
+  );
 
-  useEffect(() => {
+  /* useEffect(() => {
     const timer = setInterval(() => {
       setProgress((prevProgress) =>
         prevProgress >= 100 ? 10 : prevProgress + 10
@@ -35,7 +40,7 @@ export default function LoadingBar() {
     return () => {
       clearInterval(timer);
     };
-  }, []);
+  }, []); */
 
   return (
     <>

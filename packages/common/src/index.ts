@@ -31,8 +31,8 @@ export interface MyLimitDefinitionSummary
     | limits.models.LimitDefinitionSummary.ScopeType.Global;
 }
 
-/* export interface LimitDefinitionsPerProperty
-  extends StringHash<MyLimitDefinitionSummary[]> {} */
+export interface LimitDefinitionsPerProperty
+  extends StringHash<MyLimitDefinitionSummary[]> {}
 
 export interface ResourceDataAD {
   resourceName: string | undefined;

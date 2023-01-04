@@ -18,6 +18,8 @@ const inputSlice = createSlice({
     showByService: false,
     showDeprecated: false,
     invalidateCache: false,
+    showProgressBar: false,
+    progressValue: 0,
   },
   reducers: {
     replaceCompartmentsId(state, action: PayloadAction<string[]>) {
@@ -41,7 +43,7 @@ const inputSlice = createSlice({
     updateSumADResources(state, action: PayloadAction<boolean>) {
       state.sumADResources = action.payload;
     },
-    upadateExpandAll(state, action: PayloadAction<boolean>) {
+    updateExpandAll(state, action: PayloadAction<boolean>) {
       state.expandAll = action.payload;
     },
     updateHideNoAvailability(state, action: PayloadAction<boolean>) {
@@ -67,6 +69,12 @@ const inputSlice = createSlice({
     },
     updateInvalidateCache(state, action: PayloadAction<boolean>) {
       state.invalidateCache = action.payload;
+    },
+    updateShowProgressBar(state, action: PayloadAction<boolean>) {
+      state.showProgressBar = action.payload;
+    },
+    updateProgressValue(state, action: PayloadAction<number>) {
+      state.progressValue = action.payload;
     },
   },
 });

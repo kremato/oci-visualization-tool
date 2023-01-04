@@ -15,11 +15,39 @@ import { ReduxCheckbox } from "./layouts/ReduxCheckbox";
 import { LimitsDropdown } from "./components/Limits/LimitsDropdown";
 import { Accordions } from "./layouts/Accordions";
 import { inputActions } from "./store/inputSlice";
+import LoadingBar from "./components/Loading/LoadingBar";
+
+interface tmp {
+  failedServices: string[];
+  countLoadedLimits: number;
+  countLimitDefinitionSummaries: number;
+}
 
 function App() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    const ws = new WebSocket("ws://localhost:8546");
+    ws.onopen = (_event) => console.log("Browser side WS connection opened!");
+    ws.onmessage = (message) => {
+      console.log(`Message from the server: ${message}`);
+      console.dir(message);
+      console.log("Message data");
+      console.log(message.data);
+      console.log("Message type");
+      console.log(message.type);
+      const data = JSON.parse(message.data) as tmp;
+      console.log("Parsed data");
+      console.log(data);
+      dispatch(
+        inputActions.updateProgressValue(
+          Math.floor(
+            (data.countLoadedLimits / data.countLimitDefinitionSummaries) * 100
+          )
+        )
+      );
+    };
+
     dispatch(fetchCompartmentsList());
     dispatch(fetchRegionsList());
     dispatch(fetchServicesList());
@@ -63,6 +91,15 @@ function App() {
             display={"flex"}
             justifyContent={"space-between"}
           >
+            <LoadingBar />
+          </Grid>
+          <Grid
+            item
+            xs={12}
+            p={"0.5rem 0rem 0.5rem 0rem"}
+            display={"flex"}
+            justifyContent={"space-between"}
+          >
             <ReduxCheckbox
               label="Invalidate cache"
               action={inputActions.updateInvalidateCache}
@@ -78,7 +115,7 @@ function App() {
           <div>
             <ReduxCheckbox
               label="Expand all"
-              action={inputActions.upadateExpandAll}
+              action={inputActions.updateExpandAll}
               stateCallback={(state) => state.input.expandAll}
             />
           </div>

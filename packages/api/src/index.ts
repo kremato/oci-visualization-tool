@@ -25,6 +25,9 @@ wss.on("connection", (ws) => {
   console.log(`Received a new connection from the client`);
   socket = ws;
 });
+wss.on("close", () => {
+  socket = undefined;
+});
 
 app.get("/compartments", compartments.list);
 app.get("/region-subscriptions", regions.listRegionSubscriptions);
