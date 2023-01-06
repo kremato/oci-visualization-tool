@@ -6,7 +6,6 @@ const inputSlice = createSlice({
     compartments: [] as string[],
     regions: [] as string[],
     services: [] as string[],
-    scopes: [] as string[],
     limits: [] as { limitName: string; serviceName: string }[],
     sumADResources: false,
     expandAll: false,
@@ -30,9 +29,6 @@ const inputSlice = createSlice({
     },
     replaceServicesId(state, action: PayloadAction<string[]>) {
       state.services = action.payload;
-    },
-    replaceScopes(state, action: PayloadAction<string[]>) {
-      state.scopes = action.payload;
     },
     replaceLimits(
       state,
