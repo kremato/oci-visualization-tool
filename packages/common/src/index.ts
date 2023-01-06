@@ -74,14 +74,6 @@ export enum Names {
   Scope = "scope",
   Limit = "limit",
 }
-export interface InputData {
-  compartments: string[];
-  regions: string[];
-  services: string[];
-  scopes: string[];
-  limits: { limitName: string; serviceName: string }[];
-  invalidateCache: boolean;
-}
 
 export interface ResponseTreeNode {
   name: string;

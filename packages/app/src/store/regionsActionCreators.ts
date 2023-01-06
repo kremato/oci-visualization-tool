@@ -2,17 +2,15 @@ import { RegionSubscription } from "common";
 import { regionsActions } from "./regionsSlice";
 import { AppDispatch } from "./store";
 
-// TODO: pridat navratove hodnoty funckcii alebo prerobit podla navodu
 export const fetchRegionsList = () => {
   return async (dispatch: AppDispatch) => {
     try {
       const request = new Request(
         `${import.meta.env.VITE_API}/region-subscriptions`
       );
-
       const response = await fetch(request);
-      const data = (await response.json()) as RegionSubscription[];
-      dispatch(regionsActions.replaceRegions(data));
+      const { data } = await response.json();
+      dispatch(regionsActions.replaceRegions(data as RegionSubscription[]));
     } catch (e) {
       console.log(e);
     }

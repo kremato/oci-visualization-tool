@@ -1,6 +1,6 @@
 import common = require("oci-common");
 
-const configurationFilePath = "/home/kremato/.oci/my_oci_config";
+const configurationFilePath = "/home/kremato/.oci/config";
 const profile = "DEFAULT";
 
 export const getProvider =

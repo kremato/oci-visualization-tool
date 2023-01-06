@@ -1,8 +1,8 @@
-import type { InputData, MyLimitDefinitionSummary } from "common";
+import type { MyLimitDefinitionSummary } from "common";
 import type { Request, Response } from "express";
 import type { common } from "oci-sdk";
 import { Cache } from "../services/cache";
-import type { MyLimitValueSummary } from "../types/types";
+import type { InputData, MyLimitValueSummary } from "../types/types";
 import { createResponseTreeNode } from "../utils/createResponseTreeNode";
 import type { Compartment } from "oci-identity/lib/model";
 import { listServiceLimitsPerService } from "../services/listServiceLimitsPerService";
@@ -13,6 +13,13 @@ import path from "path";
 import { log } from "../utils/log";
 import { loadResponseTree } from "../services/loadResponseTree";
 import { socket } from "..";
+import { storeLimitsSchema } from "../utils/validationSchemas";
+import {
+  oldRequestFailureResponse,
+  successResponse,
+  validationError,
+} from "./responses";
+import type { ValidationError } from "yup";
 
 export const list = (_req: Request, res: Response) => {
   const responseLimitDefinitionsPerLimitName = Object.create(null);
@@ -22,13 +29,19 @@ export const list = (_req: Request, res: Response) => {
   ] of Cache.getInstance().limitDefinitionsPerLimitName.entries()) {
     responseLimitDefinitionsPerLimitName[key] = value;
   }
-  res.status(200).send(JSON.stringify(responseLimitDefinitionsPerLimitName));
+  /* return res
+    .status(200)
+    .send(JSON.stringify(responseLimitDefinitionsPerLimitName)); */
+  return successResponse(res, responseLimitDefinitionsPerLimitName);
 };
 
-export const store = async (req: Request, res: Response): Promise<void> => {
-  // TODO: validation
-  const data = req.body as InputData;
-  console.log(data);
+export const store = async (req: Request, res: Response) => {
+  let data: InputData;
+  try {
+    data = (await storeLimitsSchema.validate(req.body)) as InputData;
+  } catch (error) {
+    return validationError(res, error as ValidationError);
+  }
 
   const cache = Cache.getInstance();
 
@@ -61,7 +74,6 @@ export const store = async (req: Request, res: Response): Promise<void> => {
   for (const compartment of filteredCompartments) {
     for (const region of filteredRegions) {
       for (const service of filteredServices) {
-        // maybe for service limits it would be better if they were a map, where limit name is a key to service limits, so later we would not have to filter them with O(n)
         let limitDefinitionSummaries = cache.limitDefinitionsPerRegionPerService
           .get(region)
           ?.get(service.name);
@@ -94,8 +106,7 @@ export const store = async (req: Request, res: Response): Promise<void> => {
           );
 
         if (newRequest) {
-          res.status(409).send([]);
-          return;
+          return oldRequestFailureResponse(res);
         }
 
         for (const LimitDefinitionSummary of limitDefinitionSummaries) {
@@ -115,8 +126,12 @@ export const store = async (req: Request, res: Response): Promise<void> => {
   const rootServiceTree = createResponseTreeNode("rootServices");
   let countLoadedLimits = 0;
   while (loadLimitArguments.length > 0) {
+    if (newRequest) {
+      return oldRequestFailureResponse(res);
+    }
+
     const promises = loadLimitArguments
-      .splice(0, 15)
+      .splice(0, 20)
       .map((item) => loadLimit(...item));
 
     const startTime = performance.now();
@@ -128,16 +143,11 @@ export const store = async (req: Request, res: Response): Promise<void> => {
       loadResponseTree(limit, rootServiceTree, "service");
     }
 
-    if (newRequest) {
-      res.status(409).send([]);
-      return;
-    }
-
     countLoadedLimits += uniqueLimits.length;
 
     /* send progress update only if promise fetching took more than half a second
     so the client is not overwhelmed and synchronization issues dont arise */
-    if (endTime - startTime >= 500) {
+    if (!newRequest && endTime - startTime >= 500) {
       console.log("SENDING SOCKET UPDATE!!");
       socket?.send(
         JSON.stringify({
@@ -151,8 +161,12 @@ export const store = async (req: Request, res: Response): Promise<void> => {
 
   sortLimitsRotateScopes(rootCompartmentTree);
   sortLimitsRotateScopes(rootServiceTree);
-  const responseData = JSON.stringify([rootCompartmentTree, rootServiceTree]);
+  outputToFile(
+    "test/postLimitsResponse.txt",
+    JSON.stringify([rootCompartmentTree, rootServiceTree])
+  );
 
-  newRequest ? res.status(409).send([]) : res.status(200).send(responseData);
-  outputToFile("test/postLimitsResponse.txt", responseData);
+  return newRequest
+    ? oldRequestFailureResponse(res)
+    : successResponse(res, [rootCompartmentTree, rootServiceTree]);
 };

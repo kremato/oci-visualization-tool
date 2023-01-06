@@ -13,7 +13,7 @@ import { log } from "../utils/log";
 
 const filePath = path.basename(__filename);
 
-const validateLimitDefinitionSummary = (
+const limitDefinitionSummaryIsValid = (
   limitDefinitionSummary: models.LimitDefinitionSummary
 ): boolean => {
   const missingProperties: string[] = [];
@@ -137,7 +137,7 @@ export const getLimitDefinitions = async (
 
     logJSON += JSON.stringify(listLimitDefinitionsResponse.items, null, 4);
     for (const limitDefinitionSummary of listLimitDefinitionsResponse.items) {
-      if (!validateLimitDefinitionSummary(limitDefinitionSummary)) continue;
+      if (!limitDefinitionSummaryIsValid(limitDefinitionSummary)) continue;
       // filter global scope, in case of return to the global scope, delete this
       if (limitDefinitionSummary.scopeType === "GLOBAL") continue;
       if (type === "perScope") {
