@@ -25,7 +25,6 @@ export const ADRow = ({ uniqueLimit }: Props) => {
   }
 
   if (uniqueLimit.resourceAvailability.length === 0) {
-    console.log("uniqueLimit.resourceAvailability.length === 0");
     return (
       <tr>
         <Typography>No data for {uniqueLimit.limitName}</Typography>
@@ -34,19 +33,24 @@ export const ADRow = ({ uniqueLimit }: Props) => {
   }
 
   const aDRows = [];
-  if (sumADResources) {
-    if (!hide(uniqueLimit.resourceAvailabilitySum, hideParams))
-      aDRows.push(
-        <LimitRow
-          key={"SUM"}
-          name={"SUM"}
-          serviceLimit={uniqueLimit.resourceAvailabilitySum.serviceLimit}
-          availability={uniqueLimit.resourceAvailabilitySum.available}
-          used={uniqueLimit.resourceAvailabilitySum.used}
-          quota={uniqueLimit.resourceAvailabilitySum.quota}
-        />
-      );
-  } else
+
+  if (
+    sumADResources &&
+    !hide(uniqueLimit.resourceAvailabilitySum, hideParams)
+  ) {
+    aDRows.push(
+      <LimitRow
+        key={"SUM"}
+        name={"SUM"}
+        serviceLimit={uniqueLimit.resourceAvailabilitySum.serviceLimit}
+        availability={uniqueLimit.resourceAvailabilitySum.available}
+        used={uniqueLimit.resourceAvailabilitySum.used}
+        quota={uniqueLimit.resourceAvailabilitySum.quota}
+      />
+    );
+  }
+
+  if (!sumADResources) {
     for (const resourceAvailability of uniqueLimit.resourceAvailability) {
       if (hide(resourceAvailability, hideParams)) continue;
       const row = (
@@ -61,6 +65,7 @@ export const ADRow = ({ uniqueLimit }: Props) => {
       );
       aDRows.push(row);
     }
+  }
 
   if (aDRows.length === 0) {
     return <></>;

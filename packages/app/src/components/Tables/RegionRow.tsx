@@ -17,7 +17,6 @@ export const RegionRow = ({ uniqueLimit }: Props) => {
       state.input.hideNoQuota,
     ]
   );
-
   const showDeprecated = useAppSelector((state) => state.input.showDeprecated);
 
   if (
