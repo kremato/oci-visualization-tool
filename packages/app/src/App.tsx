@@ -6,7 +6,7 @@ import { fetchRegionsList } from "./store/regionsActionCreators";
 import { fetchServicesList } from "./store/servicesActionCreator";
 import { fetchLimitdefinitionsPerLimitName } from "./store/limitDefinitionsActionCreators";
 import { Grid } from "@mui/material";
-import { Accordions } from "./layouts/Accordions";
+import { RootAccordions } from "./components/Accordions/RootAccordions";
 import { inputActions } from "./store/inputSlice";
 import { DispatchLimitsRequestSubgrid } from "./layouts/DispatchLimitsRequestSubgrid";
 import { TableOptionsSubgrid } from "./layouts/TableOptionsSubgrid";
@@ -17,7 +17,7 @@ interface tmp {
   countLimitDefinitionSummaries: number;
 }
 
-function App() {
+export const App = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -41,6 +41,9 @@ function App() {
         )
       );
     };
+    ws.onclose = (_event) => {
+      console.log("WS connection closed");
+    };
 
     dispatch(fetchCompartmentsList());
     dispatch(fetchRegionsList());
@@ -60,12 +63,10 @@ function App() {
           <hr />
         </Grid>
         <Grid item xs={12}>
-          <Accordions />
+          <RootAccordions />
         </Grid>
       </Grid>
       ;
     </div>
   );
-}
-
-export default App;
+};

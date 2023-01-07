@@ -1,8 +1,8 @@
-import { useAppSelector } from "../hooks/useAppSelector";
-import { Collapsable } from "./Collapsable";
+import { useAppSelector } from "../../hooks/useAppSelector";
+import { NestedAccordions } from "./NestedAccordions";
 import { Typography, Stack } from "@mui/material";
 
-export const Accordions = () => {
+export const RootAccordions = () => {
   const compartmentNodes = useAppSelector(
     (state) => state.compartments.compartmentNodes
   );
@@ -13,10 +13,10 @@ export const Accordions = () => {
   const showByService = useAppSelector((state) => state.input.showByService);
 
   const Compartments = compartmentNodes.map((childNode, index) => {
-    return <Collapsable node={childNode} key={index} />;
+    return <NestedAccordions node={childNode} key={index} />;
   });
   const Services = serviceNodes.map((childNode, index) => {
-    return <Collapsable node={childNode} key={index} />;
+    return <NestedAccordions node={childNode} key={index} />;
   });
 
   return (

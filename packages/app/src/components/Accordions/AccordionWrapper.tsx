@@ -4,7 +4,7 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { ReactNode, useEffect, useState } from "react";
-import { useAppSelector } from "../hooks/useAppSelector";
+import { useAppSelector } from "../../hooks/useAppSelector";
 
 interface Props {
   title: string;

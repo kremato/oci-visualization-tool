@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { LimitDefinitionsPerProperty, ServiceSummary } from "common";
+import { LimitDefinitionsPerProperty } from "common";
 
 const limitDefinitionSlice = createSlice({
   name: "limitDefinitions",

@@ -1,7 +1,7 @@
 import { Grid } from "@mui/material";
 import { CompartmentsDropdown } from "../components/Compartments/CompartmentsDropdown";
 import { LimitsDropdown } from "../components/Limits/LimitsDropdown";
-import LoadingBar from "../components/Loading/LoadingBar";
+import { LoadingBar } from "../components/Loading/LoadingBar";
 import { RegionsDropdown } from "../components/Regions/RegionsDropdown";
 import { ServicesDropdown } from "../components/Services/ServicesDropdown";
 import { inputActions } from "../store/inputSlice";

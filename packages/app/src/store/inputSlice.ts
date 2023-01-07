@@ -8,6 +8,9 @@ const inputSlice = createSlice({
     services: [] as string[],
     scopes: [] as string[],
     limits: [] as { limitName: string; serviceName: string }[],
+    invalidateCache: false,
+    showProgressBar: false,
+    progressValue: 0,
     sumADResources: false,
     expandAll: false,
     hideNoAvailability: true,
@@ -17,9 +20,6 @@ const inputSlice = createSlice({
     showByCompartment: true,
     showByService: false,
     showDeprecated: false,
-    invalidateCache: false,
-    showProgressBar: false,
-    progressValue: 0,
   },
   reducers: {
     replaceCompartmentsId(state, action: PayloadAction<string[]>) {
