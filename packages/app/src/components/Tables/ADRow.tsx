@@ -2,7 +2,7 @@ import { useAppSelector } from "../../hooks/useAppSelector";
 import { UniqueLimit } from "common";
 import { Typography } from "@mui/material";
 import { hide } from "../../utils/hide";
-import React from "react";
+import { LimitRow } from "./LimitRow";
 
 interface Props {
   uniqueLimit: UniqueLimit;
@@ -37,49 +37,27 @@ export const ADRow = ({ uniqueLimit }: Props) => {
   if (sumADResources) {
     if (!hide(uniqueLimit.resourceAvailabilitySum, hideParams))
       aDRows.push(
-        <tr key={"SUM"}>
-          <td>
-            <Typography>SUM</Typography>
-          </td>
-          <td>
-            <Typography>
-              {uniqueLimit.resourceAvailabilitySum.serviceLimit}
-            </Typography>
-          </td>
-          <td>
-            <Typography>
-              {uniqueLimit.resourceAvailabilitySum.available}
-            </Typography>
-          </td>
-          <td>
-            <Typography>{uniqueLimit.resourceAvailabilitySum.used}</Typography>
-          </td>
-          <td>
-            <Typography>{uniqueLimit.resourceAvailabilitySum.quota}</Typography>
-          </td>
-        </tr>
+        <LimitRow
+          key={"SUM"}
+          name={"SUM"}
+          serviceLimit={uniqueLimit.resourceAvailabilitySum.serviceLimit}
+          availability={uniqueLimit.resourceAvailabilitySum.available}
+          used={uniqueLimit.resourceAvailabilitySum.used}
+          quota={uniqueLimit.resourceAvailabilitySum.quota}
+        />
       );
   } else
     for (const resourceAvailability of uniqueLimit.resourceAvailability) {
       if (hide(resourceAvailability, hideParams)) continue;
       const row = (
-        <tr key={resourceAvailability.availabilityDomain}>
-          <td>
-            <Typography>{resourceAvailability.availabilityDomain}</Typography>
-          </td>
-          <td>
-            <Typography>{resourceAvailability.serviceLimit}</Typography>
-          </td>
-          <td>
-            <Typography>{resourceAvailability.available}</Typography>
-          </td>
-          <td>
-            <Typography>{resourceAvailability.used}</Typography>
-          </td>
-          <td>
-            <Typography>{resourceAvailability.quota}</Typography>
-          </td>
-        </tr>
+        <LimitRow
+          key={resourceAvailability.availabilityDomain}
+          name={resourceAvailability.availabilityDomain || "AD name missing"}
+          serviceLimit={resourceAvailability.serviceLimit}
+          availability={resourceAvailability.available}
+          used={resourceAvailability.used}
+          quota={resourceAvailability.quota}
+        />
       );
       aDRows.push(row);
     }

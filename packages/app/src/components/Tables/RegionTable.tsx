@@ -1,6 +1,7 @@
 import { UniqueLimit } from "common";
 import { Typography } from "@mui/material";
 import { RegionRow } from "./RegionRow";
+import { LimitsTableHead } from "./LimitsTableHead";
 
 interface Props {
   limits: UniqueLimit[];
@@ -12,25 +13,7 @@ export const RegionTable = ({ limits }: Props) => {
 
   return (
     <table>
-      <thead>
-        <tr>
-          <th>
-            <Typography>Limit Name</Typography>
-          </th>
-          <th>
-            <Typography>Service limit</Typography>
-          </th>
-          <th>
-            <Typography>Available</Typography>
-          </th>
-          <th>
-            <Typography>Used</Typography>
-          </th>
-          <th>
-            <Typography>Quota</Typography>
-          </th>
-        </tr>
-      </thead>
+      <LimitsTableHead domainTable={false} />
       <tbody>
         {limits.map((uniqueLimit) => {
           return (
@@ -43,50 +26,4 @@ export const RegionTable = ({ limits }: Props) => {
       </tbody>
     </table>
   );
-  /* return (
-    <table>
-      <thead>
-        <tr>
-          <th>
-            <Typography>Limit Name</Typography>
-          </th>
-          <th>
-            <Typography>Available</Typography>
-          </th>
-          <th>
-            <Typography>Used</Typography>
-          </th>
-          <th>
-            <Typography>Quota</Typography>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {limits.map((uniqueLimit) => {
-          return (
-            <tr key={uniqueLimit.limitName}>
-              <td>
-                <Typography>{uniqueLimit.limitName}</Typography>
-              </td>
-              <td>
-                <Typography>
-                  {uniqueLimit.resourceAvailabilitySum.available}
-                </Typography>
-              </td>
-              <td>
-                <Typography>
-                  {uniqueLimit.resourceAvailabilitySum.used}
-                </Typography>
-              </td>
-              <td>
-                <Typography>
-                  {uniqueLimit.resourceAvailabilitySum.quota}
-                </Typography>
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
-  ); */
 };

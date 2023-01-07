@@ -2,6 +2,7 @@ import { useAppSelector } from "../../hooks/useAppSelector";
 import { UniqueLimit } from "common";
 import { Typography } from "@mui/material";
 import { hide } from "../../utils/hide";
+import { LimitRow } from "./LimitRow";
 
 interface Props {
   uniqueLimit: UniqueLimit;
@@ -27,24 +28,12 @@ export const RegionRow = ({ uniqueLimit }: Props) => {
   }
 
   return (
-    <tr>
-      <td>
-        <Typography>{uniqueLimit.limitName}</Typography>
-      </td>
-      <td>
-        <Typography>
-          {uniqueLimit.resourceAvailabilitySum.serviceLimit}
-        </Typography>
-      </td>
-      <td>
-        <Typography>{uniqueLimit.resourceAvailabilitySum.available}</Typography>
-      </td>
-      <td>
-        <Typography>{uniqueLimit.resourceAvailabilitySum.used}</Typography>
-      </td>
-      <td>
-        <Typography>{uniqueLimit.resourceAvailabilitySum.quota}</Typography>
-      </td>
-    </tr>
+    <LimitRow
+      name={uniqueLimit.limitName}
+      serviceLimit={uniqueLimit.resourceAvailabilitySum.serviceLimit}
+      availability={uniqueLimit.resourceAvailabilitySum.available}
+      used={uniqueLimit.resourceAvailabilitySum.used}
+      quota={uniqueLimit.resourceAvailabilitySum.quota}
+    />
   );
 };
