@@ -8,7 +8,7 @@ import { fetchLimitdefinitionsPerLimitName } from "./store/limitDefinitionsActio
 import { Grid } from "@mui/material";
 import { Accordions } from "./layouts/Accordions";
 import { inputActions } from "./store/inputSlice";
-import { DispatchRequestSubgrid } from "./layouts/DispatchRequestSubgrid";
+import { DispatchLimitsRequestSubgrid } from "./layouts/DispatchLimitsRequestSubgrid";
 import { TableOptionsSubgrid } from "./layouts/TableOptionsSubgrid";
 
 interface tmp {
@@ -48,19 +48,10 @@ function App() {
     dispatch(fetchLimitdefinitionsPerLimitName());
   }, [dispatch]);
 
-  {
-    /* <div className="App">
-      <CompartmentList />
-      <RegionList />
-      <ServiceList />
-      <ModifiableButton text={"Send"} action={sendData} />
-    </div> */
-  }
-
   return (
     <div className="App">
       <Grid container p={"1rem"}>
-        <DispatchRequestSubgrid />
+        <DispatchLimitsRequestSubgrid />
         <Grid item xs={12}>
           <hr />
         </Grid>

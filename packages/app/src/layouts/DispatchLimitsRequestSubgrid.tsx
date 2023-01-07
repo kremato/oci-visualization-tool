@@ -8,7 +8,7 @@ import { inputActions } from "../store/inputSlice";
 import { SendButton } from "./SendButton";
 import { ReduxCheckbox } from "./ReduxCheckbox";
 
-export const DispatchRequestSubgrid = () => {
+export const DispatchLimitsRequestSubgrid = () => {
   return (
     <Grid container item>
       <Grid item xs={3}>
