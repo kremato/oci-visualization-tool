@@ -6,6 +6,7 @@ const inputSlice = createSlice({
     compartments: [] as string[],
     regions: [] as string[],
     services: [] as string[],
+    scopes: [] as string[],
     limits: [] as { limitName: string; serviceName: string }[],
     sumADResources: false,
     expandAll: false,
@@ -30,11 +31,23 @@ const inputSlice = createSlice({
     replaceServicesId(state, action: PayloadAction<string[]>) {
       state.services = action.payload;
     },
+    replaceScopes(state, action: PayloadAction<string[]>) {
+      state.scopes = action.payload;
+    },
     replaceLimits(
       state,
       action: PayloadAction<{ limitName: string; serviceName: string }[]>
     ) {
       state.limits = action.payload;
+    },
+    updateInvalidateCache(state, action: PayloadAction<boolean>) {
+      state.invalidateCache = action.payload;
+    },
+    updateShowProgressBar(state, action: PayloadAction<boolean>) {
+      state.showProgressBar = action.payload;
+    },
+    updateProgressValue(state, action: PayloadAction<number>) {
+      state.progressValue = action.payload;
     },
     updateSumADResources(state, action: PayloadAction<boolean>) {
       state.sumADResources = action.payload;
@@ -62,15 +75,6 @@ const inputSlice = createSlice({
     },
     updateShowDeprecated(state, action: PayloadAction<boolean>) {
       state.showDeprecated = action.payload;
-    },
-    updateInvalidateCache(state, action: PayloadAction<boolean>) {
-      state.invalidateCache = action.payload;
-    },
-    updateShowProgressBar(state, action: PayloadAction<boolean>) {
-      state.showProgressBar = action.payload;
-    },
-    updateProgressValue(state, action: PayloadAction<number>) {
-      state.progressValue = action.payload;
     },
   },
 });

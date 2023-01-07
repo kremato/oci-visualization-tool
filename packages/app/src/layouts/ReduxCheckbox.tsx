@@ -1,6 +1,6 @@
 import { Checkbox, FormControlLabel } from "@mui/material";
 import { useAppDispatch } from "../hooks/useAppDispatch";
-import { ActionCreatorWithPayload, ThunkDispatch } from "@reduxjs/toolkit";
+import { ActionCreatorWithPayload } from "@reduxjs/toolkit";
 import { useAppSelector } from "../hooks/useAppSelector";
 import { RootState } from "../store/store";
 
