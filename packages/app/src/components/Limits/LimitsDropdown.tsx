@@ -1,5 +1,5 @@
 import { useAppSelector } from "../../hooks/useAppSelector";
-import { Names } from "common";
+import { Names } from "../../types/types";
 import Virtualize from "../../layouts/DropdownWithReactWindow";
 
 export const LimitsDropdown = () => {

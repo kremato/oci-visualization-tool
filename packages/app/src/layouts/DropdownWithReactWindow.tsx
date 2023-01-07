@@ -7,7 +7,7 @@ import Popper from "@mui/material/Popper";
 import { useTheme, styled } from "@mui/material/styles";
 import { VariableSizeList, ListChildComponentProps } from "react-window";
 import Typography from "@mui/material/Typography";
-import { Names } from "common";
+import { Names } from "../types/types";
 import { ListItemText, Checkbox } from "@mui/material";
 import { capitalizeFirstLetter } from "../utils/capitalizeFirstLetter";
 import { useRef } from "react";
@@ -33,11 +33,6 @@ function renderRow(props: ListChildComponentProps) {
     );
   }
 
-  /* <Typography component="li" {...dataSet[0]} noWrap style={inlineStyle}>
-      {dataSet}
-    </Typography> */
-
-  /* style={{ padding: 0, height: "100%" }} */
   return (
     <Typography component="div" {...dataSet[0]} noWrap style={inlineStyle}>
       {dataSet}
@@ -172,7 +167,6 @@ export default function Virtualize({ name, options }: Props) {
       filterOptions={filterOptions}
       groupBy={(option) => `${option.serviceName}`}
       getOptionLabel={(option) => option.primaryLabel}
-      //renderOption={(props, option) => [props, option] as React.ReactNode}
       onChange={(_event, newValue) => {
         handleChange(newValue);
       }}
@@ -203,7 +197,6 @@ export default function Virtualize({ name, options }: Props) {
           />
         </li>
       )}
-      // TODO: Post React 18 update - validate this conversion, look like a hidden bug
       renderGroup={(params) => params as unknown as React.ReactNode}
       renderInput={(params) => (
         <TextField

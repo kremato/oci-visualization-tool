@@ -4,7 +4,7 @@ import { ListItemText, Checkbox } from "@mui/material";
 import { capitalizeFirstLetter } from "../utils/capitalizeFirstLetter";
 import { inputActions } from "../store/inputSlice";
 import { useAppDispatch } from "../hooks/useAppDispatch";
-import { Names } from "common";
+import { Names } from "../types/types";
 
 interface DropdownItem {
   primaryLabel: string;
@@ -23,7 +23,6 @@ export const Dropdown = ({ name, options }: Props) => {
   const handleChange = (selected: DropdownItem[]) => {
     let action = inputActions.replaceCompartmentsId;
     const inputList = selected.map((item) => {
-      /* name === Names.Compartment ? item.secondaryLabel : item.primaryLabel */
       if (name === Names.Compartment) return item.secondaryLabel;
       return item.primaryLabel;
     });
