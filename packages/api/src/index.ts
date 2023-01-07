@@ -23,6 +23,7 @@ const wss = new WebSocketServer({
 
 wss.on("connection", (ws) => {
   console.log(`Received a new connection from the client`);
+  if (socket) socket.close();
   socket = ws;
 });
 wss.on("close", () => {

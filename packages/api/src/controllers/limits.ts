@@ -20,6 +20,7 @@ import {
   validationError,
 } from "./responses";
 import type { ValidationError } from "yup";
+import { newRequest } from "../utils/newRequest";
 
 export const list = (_req: Request, res: Response) => {
   const responseLimitDefinitionsPerLimitName = Object.create(null);
@@ -29,9 +30,6 @@ export const list = (_req: Request, res: Response) => {
   ] of Cache.getInstance().limitDefinitionsPerLimitName.entries()) {
     responseLimitDefinitionsPerLimitName[key] = value;
   }
-  /* return res
-    .status(200)
-    .send(JSON.stringify(responseLimitDefinitionsPerLimitName)); */
   return successResponse(res, responseLimitDefinitionsPerLimitName);
 };
 
@@ -47,7 +45,6 @@ export const store = async (req: Request, res: Response) => {
 
   const initialPostLimitsCount = cache.token.count;
   cache.token.count += 1;
-  const newRequest = cache.token.count != initialPostLimitsCount + 1;
 
   if (data.invalidateCache) {
     Cache.getInstance().clear();
@@ -99,13 +96,16 @@ export const store = async (req: Request, res: Response) => {
         }
 
         // check for service limit values
-        if (!cache.serviceLimitMap.has(service.name) && !newRequest)
+        if (
+          !cache.serviceLimitMap.has(service.name) &&
+          !newRequest(initialPostLimitsCount)
+        )
           cache.serviceLimitMap.set(
             service.name,
             await listServiceLimitsPerService(service.name)
           );
 
-        if (newRequest) {
+        if (newRequest(initialPostLimitsCount)) {
           return oldRequestFailureResponse(res);
         }
 
@@ -126,7 +126,7 @@ export const store = async (req: Request, res: Response) => {
   const rootServiceTree = createResponseTreeNode("rootServices");
   let countLoadedLimits = 0;
   while (loadLimitArguments.length > 0) {
-    if (newRequest) {
+    if (newRequest(initialPostLimitsCount)) {
       return oldRequestFailureResponse(res);
     }
 
@@ -138,7 +138,7 @@ export const store = async (req: Request, res: Response) => {
     const uniqueLimits = await Promise.all(promises);
     const endTime = performance.now();
     for (const limit of uniqueLimits) {
-      if (!newRequest) cache.addLimit(limit);
+      if (!newRequest(initialPostLimitsCount)) cache.addLimit(limit);
       loadResponseTree(limit, rootCompartmentTree, "compartment");
       loadResponseTree(limit, rootServiceTree, "service");
     }
@@ -147,7 +147,7 @@ export const store = async (req: Request, res: Response) => {
 
     /* send progress update only if promise fetching took more than half a second
     so the client is not overwhelmed and synchronization issues dont arise */
-    if (!newRequest && endTime - startTime >= 500) {
+    if (!newRequest(initialPostLimitsCount) && endTime - startTime >= 500) {
       console.log("SENDING SOCKET UPDATE!!");
       socket?.send(
         JSON.stringify({
@@ -166,7 +166,7 @@ export const store = async (req: Request, res: Response) => {
     JSON.stringify([rootCompartmentTree, rootServiceTree])
   );
 
-  return newRequest
+  return newRequest(initialPostLimitsCount)
     ? oldRequestFailureResponse(res)
     : successResponse(res, [rootCompartmentTree, rootServiceTree]);
 };
