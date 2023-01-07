@@ -19,6 +19,5 @@ export const LimitsDropdown = () => {
     }
   );
 
-  //return <Dropdown2 name={Names.Limit} options={options} />;
   return <Virtualize name={Names.Limit} options={options} />;
 };
