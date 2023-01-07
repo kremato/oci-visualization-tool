@@ -49,12 +49,12 @@ export const loadResponseTree = (
       ? [
           uniqueLimit.serviceName,
           uniqueLimit.scope,
-          uniqueLimit.regionId!,
+          uniqueLimit.regionId,
           uniqueLimit.compartmentName,
         ]
       : [
           uniqueLimit.scope,
-          uniqueLimit.regionId!,
+          uniqueLimit.regionId,
           uniqueLimit.compartmentName,
           uniqueLimit.serviceName,
         ];

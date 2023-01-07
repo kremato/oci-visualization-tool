@@ -27,8 +27,7 @@ export interface MyLimitDefinitionSummary
   serviceName: string;
   scopeType:
     | limits.models.LimitDefinitionSummary.ScopeType.Ad
-    | limits.models.LimitDefinitionSummary.ScopeType.Region
-    | limits.models.LimitDefinitionSummary.ScopeType.Global;
+    | limits.models.LimitDefinitionSummary.ScopeType.Region;
 }
 
 export interface LimitDefinitionsPerProperty
@@ -65,15 +64,6 @@ export interface CompartmentData {
   global?: StringHash<ResourceDataGlobal[]>;
 }
 export interface CompartmentsHash extends StringHash<CompartmentData> {}
-export enum Names {
-  Global = "global",
-  Region = "region",
-  AD = "AD",
-  Compartment = "compartment",
-  Service = "service",
-  Scope = "scope",
-  Limit = "limit",
-}
 
 export interface ResponseTreeNode {
   name: string;
@@ -106,9 +96,8 @@ export interface UniqueLimit {
   compartmentId: string;
   scope:
     | limits.models.LimitDefinitionSummary.ScopeType.Ad
-    | limits.models.LimitDefinitionSummary.ScopeType.Region
-    | limits.models.LimitDefinitionSummary.ScopeType.Global;
-  regionId?: string;
+    | limits.models.LimitDefinitionSummary.ScopeType.Region;
+  regionId: string;
   isDeprecated?: boolean;
   limitName: string;
   compartmentName: string;

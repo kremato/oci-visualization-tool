@@ -1,5 +1,4 @@
-import {
-  Names,
+import type {
   UniqueLimit,
   MyLimitDefinitionSummary,
   IdentityCompartment,
@@ -8,7 +7,7 @@ import {
 import { getLimitsClient } from "../clients/getLimitsClient";
 import { getAvailabilityDomainsPerRegion } from "./getAvailabilityDomainsPerRegion";
 import { getResourceAvailability } from "./getResourceAvailability";
-import type { common, identity, limits } from "oci-sdk";
+import { common, identity, limits } from "oci-sdk";
 import { Cache } from "./cache";
 
 const getAvailabilityObject = async (
@@ -88,7 +87,10 @@ export const loadLimit = async (
 
   console.log("FETCHING");
 
-  if (limitDefinitionSummary.scopeType === Names.AD.toString()) {
+  if (
+    limitDefinitionSummary.scopeType ===
+    limits.models.LimitDefinitionSummary.ScopeType.Ad
+  ) {
     if (!cache.availabilityDomainsPerRegion.has(region))
       cache.availabilityDomainsPerRegion.set(
         region,
@@ -108,7 +110,10 @@ export const loadLimit = async (
     }
   }
 
-  if (limitDefinitionSummary.scopeType === Names.Region.toUpperCase()) {
+  if (
+    limitDefinitionSummary.scopeType ===
+    limits.models.LimitDefinitionSummary.ScopeType.Region
+  ) {
     const availabilityObject = await getAvailabilityObject(
       compartment.id,
       limitDefinitionSummary,

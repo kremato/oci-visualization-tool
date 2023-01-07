@@ -8,7 +8,7 @@ import type {
 import { outputToFile } from "../utils/outputToFile";
 import path from "path";
 import type { MyLimitDefinitionSummary } from "common";
-import type { common } from "oci-sdk";
+import { common, limits } from "oci-sdk";
 import { log } from "../utils/log";
 
 const filePath = path.basename(__filename);
@@ -16,16 +16,11 @@ const filePath = path.basename(__filename);
 const limitDefinitionSummaryIsValid = (
   limitDefinitionSummary: models.LimitDefinitionSummary
 ): boolean => {
-  const missingProperties: string[] = [];
-  if (!limitDefinitionSummary.name) {
-    missingProperties.push("name");
-  }
-  if (!limitDefinitionSummary.serviceName) {
-    missingProperties.push("serviceName");
-  }
-  if (!limitDefinitionSummary.scopeType) {
-    missingProperties.push("scopeType");
-  }
+  if (
+    limitDefinitionSummary.scopeType ===
+    models.LimitDefinitionSummary.ScopeType.Global
+  )
+    return false;
   if (
     limitDefinitionSummary.scopeType &&
     limitDefinitionSummary.scopeType ===
@@ -36,6 +31,16 @@ const limitDefinitionSummaryIsValid = (
       `limitDefinitionSummary is filtered out since 'ScopeType' is set to '${limitDefinitionSummary.scopeType}'`
     );
     return false;
+  }
+  const missingProperties: string[] = [];
+  if (!limitDefinitionSummary.name) {
+    missingProperties.push("name");
+  }
+  if (!limitDefinitionSummary.serviceName) {
+    missingProperties.push("serviceName");
+  }
+  if (!limitDefinitionSummary.scopeType) {
+    missingProperties.push("scopeType");
   }
   if (missingProperties.length !== 0) {
     log(
@@ -95,7 +100,6 @@ export const getLimitDefinitions = async (
   region?: common.Region
 ): Promise<LimitDefinitionsPerScope | LimitDefinitionsPerProperty> => {
   const limitsClient = getLimitsClient();
-  // is it neccessary to set region? they do so in the examples on github(https://github.com/oracle/oci-java-sdk/blob/master/bmc-examples/src/main/java/LimitsExample.java)
   if (region !== undefined) limitsClient.region = region;
   const listLimitDefinitionsRequest: requests.ListLimitDefinitionsRequest = {
     // must be tenancy
@@ -138,8 +142,11 @@ export const getLimitDefinitions = async (
     logJSON += JSON.stringify(listLimitDefinitionsResponse.items, null, 4);
     for (const limitDefinitionSummary of listLimitDefinitionsResponse.items) {
       if (!limitDefinitionSummaryIsValid(limitDefinitionSummary)) continue;
-      // filter global scope, in case of return to the global scope, delete this
-      if (limitDefinitionSummary.scopeType === "GLOBAL") continue;
+      if (
+        limitDefinitionSummary.scopeType ===
+        limits.models.LimitDefinitionSummary.ScopeType.Global
+      )
+        continue;
       if (type === "perScope") {
         perScope(
           limitDefinitionsPerScopePerServiceName,
