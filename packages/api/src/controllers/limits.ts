@@ -6,7 +6,7 @@ import type { InputData, MyLimitValueSummary } from "../types/types";
 import { createResponseTreeNode } from "../utils/createResponseTreeNode";
 import type { Compartment } from "oci-identity/lib/model";
 import { listServiceLimitsPerService } from "../services/listServiceLimitsPerService";
-import { loadUniqueLimit } from "../services/loadLimit";
+import { loadUniqueLimit } from "../services/loadUniqueLimit";
 import { sortLimitsRotateScopes } from "../utils/sortLimitsRotateScopes";
 import { outputToFile } from "../utils/outputToFile";
 import path from "path";
