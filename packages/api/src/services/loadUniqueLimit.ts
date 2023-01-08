@@ -46,7 +46,7 @@ const getAvailabilityObject = async (
   };
 };
 
-export const loadLimit = async (
+export const loadUniqueLimit = async (
   compartment: identity.models.Compartment,
   region: common.Region,
   limitDefinitionSummary: MyLimitDefinitionSummary,

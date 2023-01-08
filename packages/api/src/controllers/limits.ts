@@ -6,7 +6,7 @@ import type { InputData, MyLimitValueSummary } from "../types/types";
 import { createResponseTreeNode } from "../utils/createResponseTreeNode";
 import type { Compartment } from "oci-identity/lib/model";
 import { listServiceLimitsPerService } from "../services/listServiceLimitsPerService";
-import { loadLimit } from "../services/loadLimit";
+import { loadUniqueLimit } from "../services/loadLimit";
 import { sortLimitsRotateScopes } from "../utils/sortLimitsRotateScopes";
 import { outputToFile } from "../utils/outputToFile";
 import path from "path";
@@ -132,7 +132,7 @@ export const store = async (req: Request, res: Response) => {
 
     const promises = loadLimitArguments
       .splice(0, 20)
-      .map((item) => loadLimit(...item));
+      .map((item) => loadUniqueLimit(...item));
 
     const startTime = performance.now();
     const uniqueLimits = await Promise.all(promises);
