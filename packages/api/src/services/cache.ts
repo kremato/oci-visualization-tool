@@ -1,9 +1,7 @@
 import path from "path";
 import type {
-  IdentityCompartment,
   MyLimitDefinitionSummary,
-  RegionSubscription,
-  ServiceSummary,
+  MyServiceSummary,
   UniqueLimit,
 } from "common";
 import type { common, identity } from "oci-sdk";
@@ -18,10 +16,10 @@ import { log } from "../utils/log";
 export class Cache {
   private static instance: Cache;
   private limitCache: Map<string, UniqueLimit>;
-  public compartments: IdentityCompartment[];
+  public compartments: identity.models.Compartment[];
   public regions: common.Region[];
-  public regionSubscriptions: RegionSubscription[];
-  public serviceSubscriptions: ServiceSummary[];
+  public regionSubscriptions: identity.models.RegionSubscription[];
+  public serviceSubscriptions: MyServiceSummary[];
   public limitDefinitionsPerLimitName: LimitDefinitionsPerProperty;
   public limitDefinitionsPerRegionPerService: Map<
     common.Region,

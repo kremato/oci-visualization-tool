@@ -1,10 +1,6 @@
-import type { identity, limits } from "oci-sdk";
+import type { limits } from "oci-sdk";
 
-// grep --exclude=\node_modules -rnw ../app -e "CompartmentsHash"
-export type IdentityCompartment = identity.models.Compartment;
-export type IdentityRegion = identity.models.Region; // IdentityRegion is not used anywhere
-export type RegionSubscription = identity.models.RegionSubscription;
-export type ServiceSummary = Omit<
+export type MyServiceSummary = Omit<
   limits.models.ServiceSummary,
   "name" | "description"
 > & {
@@ -12,9 +8,7 @@ export type ServiceSummary = Omit<
   description: string;
 };
 
-export interface HierarchyMap extends Map<string, IdentityCompartment[]> {}
-
-export interface StringHash<Value> {
+interface StringHash<Value> {
   [id: string]: Value;
 }
 
@@ -33,55 +27,11 @@ export interface MyLimitDefinitionSummary
 export interface LimitDefinitionsPerProperty
   extends StringHash<MyLimitDefinitionSummary[]> {}
 
-export interface ResourceDataAD {
-  resourceName: string | undefined;
-  availibilityDomainList: {
-    aDName: string | undefined;
-    available: string;
-    used: string;
-    quota: string;
-  }[];
-}
-export interface ResourceDataRegion {
-  resourceName: string | undefined;
-  available: string;
-  used: string;
-  quota: string;
-}
-export interface ScopeObject {
-  aDScopeHash: StringHash<ResourceDataAD[]>;
-  regionScopeHash: StringHash<ResourceDataRegion[]>;
-}
-export interface ResourceDataGlobal {
-  resourceName: string | undefined;
-  available: string;
-  used: string;
-  quota: string;
-}
-export interface CompartmentData {
-  compartmentName: string;
-  regions: StringHash<ScopeObject>;
-  global?: StringHash<ResourceDataGlobal[]>;
-}
-export interface CompartmentsHash extends StringHash<CompartmentData> {}
-
 export interface ResponseTreeNode {
   name: string;
   children: ResponseTreeNode[];
   limits?: UniqueLimit[];
 }
-
-/* export interface ScopeType extends Omit<
-limits.models.LimitDefinitionSummary.ScopeType,
-"name" | "serviceName" | "scopeType"
-> {
-name: string;
-serviceName: string;
-scopeType:
-| limits.models.LimitDefinitionSummary.ScopeType.Ad
-| limits.models.LimitDefinitionSummary.ScopeType.Region
-| limits.models.LimitDefinitionSummary.ScopeType.Global;
-} */
 
 export interface ResourceAvailabilityObject {
   serviceLimit: string;

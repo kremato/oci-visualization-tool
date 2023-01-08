@@ -1,16 +1,17 @@
+import type { identity } from "oci-sdk";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IdentityCompartment, ResponseTreeNode } from "common";
+import { ResponseTreeNode } from "common";
 
 const compartmentsSlice = createSlice({
   name: "compartments",
   initialState: {
-    compartmentList: [] as IdentityCompartment[],
+    compartmentList: [] as identity.models.Compartment[],
     compartmentNodes: [] as ResponseTreeNode[],
   },
   reducers: {
     replaceCompartmentList(
       state,
-      action: PayloadAction<IdentityCompartment[]>
+      action: PayloadAction<identity.models.Compartment[]>
     ) {
       state.compartmentList = action.payload;
     },

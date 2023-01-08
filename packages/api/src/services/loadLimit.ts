@@ -1,7 +1,6 @@
 import type {
   UniqueLimit,
   MyLimitDefinitionSummary,
-  IdentityCompartment,
   ResourceAvailabilityObject,
 } from "common";
 import { getLimitsClient } from "../clients/getLimitsClient";
@@ -48,7 +47,7 @@ const getAvailabilityObject = async (
 };
 
 export const loadLimit = async (
-  compartment: IdentityCompartment,
+  compartment: identity.models.Compartment,
   region: common.Region,
   limitDefinitionSummary: MyLimitDefinitionSummary,
   serviceLimits: limits.models.LimitValueSummary[]

@@ -1,13 +1,16 @@
+import type { identity } from "oci-sdk";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RegionSubscription } from "common";
 
 const regionsSlice = createSlice({
   name: "regions",
   initialState: {
-    regionsList: [] as RegionSubscription[],
+    regionsList: [] as identity.models.RegionSubscription[],
   },
   reducers: {
-    replaceRegions(state, action: PayloadAction<RegionSubscription[]>) {
+    replaceRegions(
+      state,
+      action: PayloadAction<identity.models.RegionSubscription[]>
+    ) {
       state.regionsList = action.payload;
     },
   },

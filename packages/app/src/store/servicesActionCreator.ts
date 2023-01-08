@@ -1,4 +1,4 @@
-import { ServiceSummary } from "common";
+import { MyServiceSummary } from "common";
 import { servicesActions } from "./servicesSlice";
 import { AppDispatch } from "./store";
 
@@ -8,7 +8,7 @@ export const fetchServicesList = () => {
       const request = new Request(`${import.meta.env.VITE_API}/services`);
       const response = await fetch(request);
       const { data } = await response.json();
-      dispatch(servicesActions.replaceServices(data as ServiceSummary[]));
+      dispatch(servicesActions.replaceServices(data as MyServiceSummary[]));
     } catch (e) {
       console.log(e);
     }

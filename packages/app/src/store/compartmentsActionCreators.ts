@@ -1,4 +1,4 @@
-import { IdentityCompartment } from "common";
+import type { identity } from "oci-sdk";
 import { compartmentsActions } from "./compartmentsSlice";
 import { AppDispatch } from "./store";
 
@@ -10,7 +10,7 @@ export const fetchCompartmentsList = () => {
       const { data } = await response.json();
       dispatch(
         compartmentsActions.replaceCompartmentList(
-          data as IdentityCompartment[]
+          data as identity.models.Compartment[]
         )
       );
     } catch (e) {

@@ -1,14 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ResponseTreeNode, ServiceSummary } from "common";
+import { ResponseTreeNode, MyServiceSummary } from "common";
 
 const servicesSlice = createSlice({
   name: "services",
   initialState: {
-    servicesList: [] as ServiceSummary[],
+    servicesList: [] as MyServiceSummary[],
     serviceNodes: [] as ResponseTreeNode[],
   },
   reducers: {
-    replaceServices(state, action: PayloadAction<ServiceSummary[]>) {
+    replaceServices(state, action: PayloadAction<MyServiceSummary[]>) {
       state.servicesList = action.payload;
     },
     replaceServiceNodes(state, action: PayloadAction<ResponseTreeNode[]>) {
