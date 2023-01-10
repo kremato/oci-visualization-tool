@@ -128,7 +128,7 @@ export const loadUniqueLimit = async (
   let totalQuota = 0;
   for (const limit of newUniqueLimit.resourceAvailability) {
     totalServiceLimit +=
-      limit.serviceLimit === "n/a" ? 0 : Number(limit.available);
+      limit.serviceLimit === "n/a" ? 0 : Number(limit.serviceLimit);
     totalAvailable += limit.available === "n/a" ? 0 : Number(limit.available);
     totalUsed += limit.used === "n/a" ? 0 : Number(limit.used);
     totalQuota += limit.quota === "n/a" ? 0 : Number(limit.quota);
