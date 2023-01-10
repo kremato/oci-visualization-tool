@@ -1,4 +1,5 @@
 import { Button } from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
 import { useAppDispatch } from "../hooks/useAppDispatch";
 import { fetchLimitsData } from "../store/inputActionCreators";
 import { inputActions } from "../store/inputSlice";
@@ -17,6 +18,7 @@ export const SendButton = ({ text }: Props) => {
         dispatch(fetchLimitsData());
         dispatch(inputActions.updateShowProgressBar(true));
       }}
+      endIcon={<SendIcon />}
     >
       {text}
     </Button>
