@@ -1,6 +1,6 @@
 import { ResponseTreeNode } from "common";
 import { AccordionWrapper } from "./AccordionWrapper";
-import { Table } from "../../components/Tables/Table";
+import { Table } from "../Table/Table";
 
 interface Props {
   node: ResponseTreeNode;

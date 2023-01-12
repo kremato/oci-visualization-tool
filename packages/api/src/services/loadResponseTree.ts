@@ -43,17 +43,14 @@ export const loadResponseTree = (
   root: ResponseTreeNode,
   type: "compartment" | "service"
 ) => {
-  // in case of global, remove '!'
   let limitPath =
     type === "compartment"
       ? [
           uniqueLimit.serviceName,
-          uniqueLimit.scope,
           uniqueLimit.regionId,
           uniqueLimit.compartmentName,
         ]
       : [
-          uniqueLimit.scope,
           uniqueLimit.regionId,
           uniqueLimit.compartmentName,
           uniqueLimit.serviceName,

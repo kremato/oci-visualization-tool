@@ -1,23 +1,24 @@
 import { Typography } from "@mui/material";
 import { UniqueLimit } from "common";
-import { ADRow } from "./ADRow";
 import { LimitsTableHead } from "./LimitsTableHead";
+import { Row } from "./Row";
 
 interface Props {
-  limits: UniqueLimit[];
+  uniqueLimits: UniqueLimit[];
 }
 
-export const ADTable = ({ limits }: Props) => {
-  if (limits.length === 0)
-    return <Typography>No table cause no limits provided</Typography>;
+export const Table = ({ uniqueLimits }: Props) => {
+  if (uniqueLimits.length === 0) {
+    return <Typography>No limits found</Typography>;
+  }
 
   return (
     <table>
       <LimitsTableHead />
       <tbody>
-        {limits.map((uniqueLimit) => {
+        {uniqueLimits.map((uniqueLimit) => {
           return (
-            <ADRow
+            <Row
               uniqueLimit={uniqueLimit}
               key={uniqueLimit.limitName + uniqueLimit.serviceName}
             />

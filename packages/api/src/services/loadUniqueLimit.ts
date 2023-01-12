@@ -33,16 +33,13 @@ const getAvailabilityObject = async (
       limit.availabilityDomain === availabilityDomain?.name &&
       limit.name === limitDefinitionSummary.name
   );
+
   return {
     serviceLimit: serviceLimit?.value ? serviceLimit.value.toString() : "n/a",
     available,
     used,
     quota,
-    /* availabilityDomain: availabilityDomain.name parameter is only added to the
-      request object in case availabilityDomain is defined */
-    ...(availabilityDomain && {
-      availabilityDomain: availabilityDomain.name,
-    }),
+    availabilityDomain: availabilityDomain ? availabilityDomain.name : "REGION",
   };
 };
 
@@ -54,13 +51,7 @@ export const loadUniqueLimit = async (
 ): Promise<UniqueLimit> => {
   const limitsClient = getLimitsClient();
   limitsClient.region = region;
-  const resourceAvailabilityList: {
-    serviceLimit: string;
-    available: string;
-    used: string;
-    quota: string;
-    availabilityDomain?: string;
-  }[] = [];
+  const resourceAvailabilityList: ResourceAvailabilityObject[] = [];
   const newUniqueLimit: UniqueLimit = {
     serviceName: limitDefinitionSummary.serviceName,
     compartmentId: compartment.id,
@@ -139,6 +130,10 @@ export const loadUniqueLimit = async (
   newUniqueLimit.resourceAvailabilitySum.available = totalAvailable.toString();
   newUniqueLimit.resourceAvailabilitySum.used = totalUsed.toString();
   newUniqueLimit.resourceAvailabilitySum.quota = totalQuota.toString();
+  newUniqueLimit.resourceAvailabilitySum.availabilityDomain =
+    newUniqueLimit.scope === limits.models.LimitDefinitionSummary.ScopeType.Ad
+      ? "SUM"
+      : "REGION";
 
   // outputToFile("test/getCompartmentsRegionResources.txt", logFormattedOutput);
   return newUniqueLimit;

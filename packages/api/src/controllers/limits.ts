@@ -7,7 +7,7 @@ import { createResponseTreeNode } from "../utils/createResponseTreeNode";
 import type { Compartment } from "oci-identity/lib/model";
 import { listServiceLimitsPerService } from "../services/listServiceLimitsPerService";
 import { loadUniqueLimit } from "../services/loadUniqueLimit";
-import { sortLimitsRotateScopes } from "../utils/sortLimitsRotateScopes";
+import { sortLimits } from "../utils/sortLimits";
 import { outputToFile } from "../utils/outputToFile";
 import path from "path";
 import { log } from "../utils/log";
@@ -159,8 +159,8 @@ export const store = async (req: Request, res: Response) => {
     }
   }
 
-  sortLimitsRotateScopes(rootCompartmentTree);
-  sortLimitsRotateScopes(rootServiceTree);
+  sortLimits(rootCompartmentTree);
+  sortLimits(rootServiceTree);
   outputToFile(
     "test/postLimitsResponse.txt",
     JSON.stringify([rootCompartmentTree, rootServiceTree])

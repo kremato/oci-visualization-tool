@@ -1,6 +1,6 @@
 import { ResourceAvailabilityObject } from "common";
 
-export const hide = (
+export const hideResourceAvailability = (
   resourceAvailabilityObject: ResourceAvailabilityObject,
   // hideNoServiceLimits, hideNoAvailability, hideNoUsed, hideNoQuota
   checkboxValues: [boolean, boolean, boolean, boolean]

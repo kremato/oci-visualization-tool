@@ -38,7 +38,7 @@ export interface ResourceAvailabilityObject {
   available: string;
   used: string;
   quota: string;
-  availabilityDomain?: string;
+  availabilityDomain: string | undefined;
 }
 
 export interface UniqueLimit {
