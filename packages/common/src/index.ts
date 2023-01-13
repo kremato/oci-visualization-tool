@@ -34,11 +34,11 @@ export interface ResponseTreeNode {
 }
 
 export interface ResourceAvailabilityObject {
+  availabilityDomain: string | undefined;
   serviceLimit: string;
   available: string;
   used: string;
   quota: string;
-  availabilityDomain: string | undefined;
 }
 
 export interface UniqueLimit {

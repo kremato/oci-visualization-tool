@@ -35,11 +35,11 @@ const getAvailabilityObject = async (
   );
 
   return {
+    availabilityDomain: availabilityDomain ? availabilityDomain.name : "REGION",
     serviceLimit: serviceLimit?.value ? serviceLimit.value.toString() : "n/a",
     available,
     used,
     quota,
-    availabilityDomain: availabilityDomain ? availabilityDomain.name : "REGION",
   };
 };
 
@@ -124,16 +124,15 @@ export const loadUniqueLimit = async (
     totalUsed += limit.used === "n/a" ? 0 : Number(limit.used);
     totalQuota += limit.quota === "n/a" ? 0 : Number(limit.quota);
   }
-
+  newUniqueLimit.resourceAvailabilitySum.availabilityDomain =
+    newUniqueLimit.scope === limits.models.LimitDefinitionSummary.ScopeType.Ad
+      ? "SUM"
+      : "REGION";
   newUniqueLimit.resourceAvailabilitySum.serviceLimit =
     totalServiceLimit.toString();
   newUniqueLimit.resourceAvailabilitySum.available = totalAvailable.toString();
   newUniqueLimit.resourceAvailabilitySum.used = totalUsed.toString();
   newUniqueLimit.resourceAvailabilitySum.quota = totalQuota.toString();
-  newUniqueLimit.resourceAvailabilitySum.availabilityDomain =
-    newUniqueLimit.scope === limits.models.LimitDefinitionSummary.ScopeType.Ad
-      ? "SUM"
-      : "REGION";
 
   // outputToFile("test/getCompartmentsRegionResources.txt", logFormattedOutput);
   return newUniqueLimit;
