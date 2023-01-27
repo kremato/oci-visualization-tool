@@ -44,20 +44,11 @@ const makePath = (
   }
 };
 
-const convertToCSV = (responseTreeRootNodes: ResponseTreeNode[]): string => {
-  let csvLog: string[][] = [
-    [
-      "COMPARTMENT",
-      "REGION",
-      "SERVICE",
-      "LIMIT",
-      "AVAILABILITY DOMAIN",
-      "SERVICE LIMIT",
-      "AVAILABLE",
-      "USED",
-      "QUOTA",
-    ],
-  ];
+const convertToCSV = (
+  responseTreeRootNodes: ResponseTreeNode[],
+  csvTableHeaders: string[]
+): string => {
+  let csvLog: string[][] = [csvTableHeaders];
   for (const node of responseTreeRootNodes) {
     makePath(node, [], csvLog);
   }
@@ -87,6 +78,7 @@ interface Props {
   fileType: string;
   stateCallback: (state: RootState) => ResponseTreeNode[];
   parseAsCSV?: boolean;
+  asCompartmentNodes?: boolean;
 }
 
 export const DownloadButton = ({
@@ -95,14 +87,27 @@ export const DownloadButton = ({
   fileType,
   stateCallback,
   parseAsCSV = false,
+  asCompartmentNodes = true,
 }: Props) => {
-  const compartmentNodes = useAppSelector(stateCallback);
+  const rootNodes = useAppSelector(stateCallback);
 
-  const exportToFile = (fileName: string, fileType: string) => {
+  const exportToFile = () => {
+    const csvTableHeaders = [
+      asCompartmentNodes ? "COMPARTMENT" : "SERVICE",
+      asCompartmentNodes ? "REGION" : "COMPARTMENT",
+      asCompartmentNodes ? "SERVICE" : "REGION",
+      "LIMIT",
+      "AVAILABILITY DOMAIN",
+      "SERVICE LIMIT",
+      "AVAILABLE",
+      "USED",
+      "QUOTA",
+    ];
+
     downloadFile(
       parseAsCSV
-        ? convertToCSV(compartmentNodes)
-        : JSON.stringify(compartmentNodes),
+        ? convertToCSV(rootNodes, csvTableHeaders)
+        : JSON.stringify(rootNodes),
       fileName,
       fileType
     );
@@ -112,7 +117,7 @@ export const DownloadButton = ({
     <Button
       variant="contained"
       endIcon={<DownloadIcon />}
-      onClick={() => exportToFile(fileName, fileType)}
+      onClick={exportToFile}
     >
       {buttonText}
     </Button>

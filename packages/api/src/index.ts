@@ -23,7 +23,7 @@ const wss = new WebSocketServer({
 
 wss.on("connection", (ws) => {
   console.log(`Received a new connection from the client`);
-  if (socket) socket.close();
+  if (socket) socket.close(1011);
   socket = ws;
 });
 wss.on("close", () => {
@@ -35,6 +35,10 @@ app.get("/region-subscriptions", regions.listRegionSubscriptions);
 app.get("/services", services.list);
 app.get("/limits", limits.list);
 app.post("/limits", limits.store);
+app.get("/", (req, res) => {
+  socket?.send("ahoj");
+  res.send();
+});
 app.use((_req, res) => {
   res.status(404).send("NOT FOUND");
 });

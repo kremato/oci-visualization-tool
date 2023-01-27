@@ -59,6 +59,7 @@ export const RootAccordions = () => {
                 fileType={"text/csv"}
                 stateCallback={(state) => state.services.serviceNodes}
                 parseAsCSV={true}
+                asCompartmentNodes={false}
               />
             </AccordionHeader>
             {Services}
