@@ -32,9 +32,6 @@ export const LoadingBar = () => {
     <>
       {showProgressBar && (
         <Box sx={{ width: "100%" }}>
-          <div>aaaaa</div>
-          <div>{`countLoadedLimits: ${message?.countLoadedLimits}`}</div>
-          <div>{`countLimitDefinitionSummaries: ${message?.countLimitDefinitionSummaries}`}</div>
           <LinearProgressWithLabel
             value={
               message
