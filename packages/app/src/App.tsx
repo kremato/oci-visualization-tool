@@ -1,15 +1,15 @@
+import "./App.css";
 import { useEffect } from "react";
 import { useAppDispatch } from "./hooks/useAppDispatch";
 import { fetchCompartmentsList } from "./store/compartmentsActionCreators";
-import "./App.css";
 import { fetchRegionsList } from "./store/regionsActionCreators";
 import { fetchServicesList } from "./store/servicesActionCreator";
 import { fetchLimitdefinitionsPerLimitName } from "./store/limitDefinitionsActionCreators";
 import { Grid } from "@mui/material";
 import { RootAccordions } from "./components/Accordions/RootAccordions";
-import { inputActions } from "./store/inputSlice";
 import { DispatchLimitsRequestSubgrid } from "./layouts/DispatchLimitsRequestSubgrid";
 import { TableOptionsSubgrid } from "./layouts/TableOptionsSubgrid";
+import { Header } from "./components/Header/Header";
 
 interface tmp {
   failedServices: string[];
@@ -21,30 +21,6 @@ export const App = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:8546");
-    ws.onopen = (_event) => console.log("Browser side WS connection opened!");
-    ws.onmessage = (message) => {
-      console.log(`Message from the server: ${message}`);
-      console.dir(message);
-      console.log("Message data");
-      console.log(message.data);
-      console.log("Message type");
-      console.log(message.type);
-      const data = JSON.parse(message.data) as tmp;
-      console.log("Parsed data");
-      console.log(data);
-      dispatch(
-        inputActions.updateProgressValue(
-          Math.floor(
-            (data.countLoadedLimits / data.countLimitDefinitionSummaries) * 100
-          )
-        )
-      );
-    };
-    ws.onclose = (_event) => {
-      console.log("WS connection closed");
-    };
-
     dispatch(fetchCompartmentsList());
     dispatch(fetchRegionsList());
     dispatch(fetchServicesList());
@@ -53,6 +29,7 @@ export const App = () => {
 
   return (
     <div className="App">
+      <Header />
       <Grid container p={"1rem"}>
         <DispatchLimitsRequestSubgrid />
         <Grid item xs={12}>
