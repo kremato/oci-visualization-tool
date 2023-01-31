@@ -1,13 +1,13 @@
-import { useAppSelector } from "../../hooks/useAppSelector";
 import { Names } from "../../types/types";
 import Virtualize from "../../layouts/DropdownWithReactWindow";
+import { useDropdownItemsData } from "../../hooks/useDropdownItemsData";
+import { MyLimitDefinitionSummary } from "common";
 
 export const LimitsDropdown = () => {
-  const limitDefinitionsPerLimitName = useAppSelector(
-    (state) => state.limitDefinitions.limitDefinitionsPerLimitName
-  );
+  const limitDefinitionsPerLimitName =
+    useDropdownItemsData<MyLimitDefinitionSummary[]>("limits");
 
-  const options = Object.values(limitDefinitionsPerLimitName).flatMap(
+  const options = limitDefinitionsPerLimitName.flatMap(
     (limitDefintionSummaries) => {
       return limitDefintionSummaries.map((limitDefinition) => {
         return {

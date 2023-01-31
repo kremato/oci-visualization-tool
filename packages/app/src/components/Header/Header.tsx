@@ -1,9 +1,6 @@
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
+import { AppBar, Box, Toolbar, Typography, Button, Stack } from "@mui/material";
 import { SocketStatus } from "./SocketStatus";
+import { ApiStatus } from "./ApiStatus";
 
 export const Header = () => {
   return (
@@ -13,7 +10,10 @@ export const Header = () => {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             OCI Visualization Tool
           </Typography>
-          <SocketStatus />
+          <Stack direction="row" spacing={2}>
+            <ApiStatus />
+            <SocketStatus />
+          </Stack>
           <Button color="inherit">Help</Button>
         </Toolbar>
       </AppBar>

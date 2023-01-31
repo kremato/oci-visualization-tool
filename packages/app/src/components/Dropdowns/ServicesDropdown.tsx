@@ -1,9 +1,10 @@
-import { useAppSelector } from "../../hooks/useAppSelector";
+import { MyServiceSummary } from "common";
+import { useDropdownItemsData } from "../../hooks/useDropdownItemsData";
 import { Dropdown } from "../../layouts/Dropdown";
 import { Names } from "../../types/types";
 
 export const ServicesDropdown = () => {
-  const services = useAppSelector((state) => state.services.servicesList);
+  const services = useDropdownItemsData<MyServiceSummary>("services");
 
   const options = services.map((service) => {
     return {

@@ -7,3 +7,11 @@ export enum Names {
   Scope = "scope",
   Limit = "limit",
 }
+
+export type ApiStatus = "up" | "down" | "loading";
+
+export type ApiDropdownDataEndpoints =
+  | "compartments"
+  | "region-subscriptions"
+  | "services"
+  | "limits";

@@ -1,9 +1,12 @@
-import { useAppSelector } from "../../hooks/useAppSelector";
+import { useDropdownItemsData } from "../../hooks/useDropdownItemsData";
 import { Dropdown } from "../../layouts/Dropdown";
 import { Names } from "../../types/types";
+import type { identity } from "oci-sdk";
 
 export const RegionsDropdown = () => {
-  const regions = useAppSelector((state) => state.regions.regionsList);
+  const regions = useDropdownItemsData<identity.models.RegionSubscription>(
+    "region-subscriptions"
+  );
 
   const options = regions.map((region) => {
     return {

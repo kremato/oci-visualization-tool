@@ -1,9 +1,9 @@
 import { Grid } from "@mui/material";
-import { CompartmentsDropdown } from "../components/Compartments/CompartmentsDropdown";
-import { LimitsDropdown } from "../components/Limits/LimitsDropdown";
+import { CompartmentsDropdown } from "../components/Dropdowns/CompartmentsDropdown";
+import { LimitsDropdown } from "../components/Dropdowns/LimitsDropdown";
 import { LoadingBar } from "../components/Loading/LoadingBar";
-import { RegionsDropdown } from "../components/Regions/RegionsDropdown";
-import { ServicesDropdown } from "../components/Services/ServicesDropdown";
+import { RegionsDropdown } from "../components/Dropdowns/RegionsDropdown";
+import { ServicesDropdown } from "../components/Dropdowns/ServicesDropdown";
 import { inputActions } from "../store/inputSlice";
 import { SendButton } from "./SendButton";
 import { ReduxCheckbox } from "./ReduxCheckbox";

@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { ApiStatus } from "../types/types";
 
 const inputSlice = createSlice({
   name: "input",
@@ -10,6 +11,7 @@ const inputSlice = createSlice({
     limits: [] as { limitName: string; serviceName: string }[],
     invalidateCache: false,
     showProgressBar: false,
+    apiStatus: "loading" as ApiStatus,
     progressValue: 0,
     sumADResources: false,
     expandAll: false,
@@ -45,6 +47,10 @@ const inputSlice = createSlice({
     },
     updateShowProgressBar(state, action: PayloadAction<boolean>) {
       state.showProgressBar = action.payload;
+    },
+    updateApiStatus(state, action: PayloadAction<ApiStatus>) {
+      console.log("callled");
+      state.apiStatus = action.payload;
     },
     updateProgressValue(state, action: PayloadAction<number>) {
       state.progressValue = action.payload;

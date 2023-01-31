@@ -1,8 +1,7 @@
 import { ResponseTreeNode } from "common";
 import { parseResponseBody } from "../utils/parseResponseBody";
-import { compartmentsActions } from "./compartmentsSlice";
 import { inputActions } from "./inputSlice";
-import { servicesActions } from "./servicesSlice";
+import { nodeActions } from "./nodeSlice";
 import store, { AppDispatch } from "./store";
 
 export const fetchLimitsData = () => {
@@ -46,9 +45,7 @@ export const fetchLimitsData = () => {
 
     dispatch(inputActions.updateShowProgressBar(false));
     dispatch(inputActions.updateProgressValue(0));
-    dispatch(
-      compartmentsActions.replaceCompartmentNodes(rootCompartments.children)
-    );
-    dispatch(servicesActions.replaceServiceNodes(rootServices.children));
+    dispatch(nodeActions.replaceServiceNodes(rootServices.children));
+    dispatch(nodeActions.replaceCompartmentNodes(rootCompartments.children));
   };
 };

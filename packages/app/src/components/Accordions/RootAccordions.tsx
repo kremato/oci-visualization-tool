@@ -6,9 +6,9 @@ import { AccordionHeader } from "./AccordionHeader";
 
 export const RootAccordions = () => {
   const compartmentNodes = useAppSelector(
-    (state) => state.compartments.compartmentNodes
+    (state) => state.nodes.compartmentNodes
   );
-  const serviceNodes = useAppSelector((state) => state.services.serviceNodes);
+  const serviceNodes = useAppSelector((state) => state.nodes.serviceNodes);
   const showByCompartment = useAppSelector(
     (state) => state.input.showByCompartment
   );
@@ -31,13 +31,13 @@ export const RootAccordions = () => {
                 buttonText="JSON"
                 fileName={"limitsPerCompartment.json"}
                 fileType={"text/json"}
-                stateCallback={(state) => state.compartments.compartmentNodes}
+                stateCallback={(state) => state.nodes.compartmentNodes}
               />
               <DownloadButton
                 buttonText="CSV"
                 fileName={"limitsPerCompartment.csv"}
                 fileType={"text/csv"}
-                stateCallback={(state) => state.compartments.compartmentNodes}
+                stateCallback={(state) => state.nodes.compartmentNodes}
                 parseAsCSV={true}
               />
             </AccordionHeader>
@@ -51,13 +51,13 @@ export const RootAccordions = () => {
                 buttonText="JSON"
                 fileName={"limitsPerCompartment.json"}
                 fileType={"text/json"}
-                stateCallback={(state) => state.services.serviceNodes}
+                stateCallback={(state) => state.nodes.serviceNodes}
               />
               <DownloadButton
                 buttonText="CSV"
                 fileName={"limitsPerCompartment.csv"}
                 fileType={"text/csv"}
-                stateCallback={(state) => state.services.serviceNodes}
+                stateCallback={(state) => state.nodes.serviceNodes}
                 parseAsCSV={true}
                 asCompartmentNodes={false}
               />
