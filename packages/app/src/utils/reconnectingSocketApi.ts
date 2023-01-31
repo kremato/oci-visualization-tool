@@ -1,10 +1,18 @@
 const socketStatusListeners = new Set<() => void>();
 const socketMessageListeners = new Set<() => void>();
 
-export const addSocketStatusListener = socketStatusListeners.add;
-export const deleteSocketStatusListener = socketStatusListeners.delete;
-export const addSocketMessageListener = socketMessageListeners.add;
-export const deleteSocketMessageListener = socketMessageListeners.delete;
+export const addSocketStatusListener = socketStatusListeners.add.bind(
+  socketStatusListeners
+);
+export const deleteSocketStatusListener = socketStatusListeners.delete.bind(
+  socketStatusListeners
+);
+export const addSocketMessageListener = socketMessageListeners.add.bind(
+  socketMessageListeners
+);
+export const deleteSocketMessageListener = socketMessageListeners.delete.bind(
+  socketMessageListeners
+);
 
 const SOCKET_RECONNECT_DELAY_MILISECONDS = 5000;
 
