@@ -22,15 +22,11 @@ import {
 import type { ValidationError } from "yup";
 import { newRequest } from "../utils/newRequest";
 
+// returns a list of of limits grouped by limit name(each group has its own list)
 export const list = (_req: Request, res: Response) => {
-  const responseLimitDefinitionsPerLimitName = Object.create(null);
-  for (const [
-    key,
-    value,
-  ] of Cache.getInstance().limitDefinitionsPerLimitName.entries()) {
-    responseLimitDefinitionsPerLimitName[key] = value;
-  }
-  return successResponse(res, responseLimitDefinitionsPerLimitName);
+  return successResponse(res, [
+    ...Cache.getInstance().limitDefinitionsPerLimitName.values(),
+  ]);
 };
 
 export const store = async (req: Request, res: Response) => {
@@ -148,7 +144,6 @@ export const store = async (req: Request, res: Response) => {
     /* send progress update only if promise fetching took more than half a second
     so the client is not overwhelmed and synchronization issues dont arise */
     if (!newRequest(initialPostLimitsCount) && endTime - startTime >= 500) {
-      console.log("SENDING SOCKET UPDATE!!");
       socket?.send(
         JSON.stringify({
           failedServices,

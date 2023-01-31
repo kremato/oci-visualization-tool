@@ -6,6 +6,8 @@ import { listRegionSubscriptions } from "../services/listRegionSubscriptions";
 import { listServices } from "../services/listServices";
 import type { LimitDefinitionsPerProperty } from "../types/types";
 
+export let apiIsReady = false;
+
 export const onStart = async (): Promise<void> => {
   console.log(`⚡️[server]: Server is running`);
   const cache = Cache.getInstance();
@@ -37,4 +39,5 @@ export const onStart = async (): Promise<void> => {
     );
   }
   console.log("[server]: App.use() finished");
+  apiIsReady = true;
 };

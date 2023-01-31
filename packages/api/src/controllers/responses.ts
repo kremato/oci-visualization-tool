@@ -24,3 +24,10 @@ export const validationError = (
     message: validationError.errors,
   });
 };
+
+export const apiIsNotReadyResponse = (response: Response) => {
+  return response.status(503).send({
+    data: {},
+    message: "api is not ready",
+  });
+};
