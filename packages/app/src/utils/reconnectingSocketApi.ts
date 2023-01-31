@@ -1,11 +1,18 @@
-export const openStateListeners = new Set<() => void>();
-export const messageListeners = new Set<() => void>();
+const socketStatusListeners = new Set<() => void>();
+const socketMessageListeners = new Set<() => void>();
 
-const updateMessageStates = () => {
-  messageListeners.forEach((listener) => listener());
+export const addSocketStatusListener = socketStatusListeners.add;
+export const deleteSocketStatusListener = socketStatusListeners.delete;
+export const addSocketMessageListener = socketMessageListeners.add;
+export const deleteSocketMessageListener = socketMessageListeners.delete;
+
+const SOCKET_RECONNECT_DELAY_MILISECONDS = 5000;
+
+const updateMessageListeners = () => {
+  socketMessageListeners.forEach((listener) => listener());
 };
-const updateOpenStates = () => {
-  openStateListeners.forEach((listener) => listener());
+const updateStatusListeners = () => {
+  socketStatusListeners.forEach((listener) => listener());
 };
 
 export interface SocketMessageData {
@@ -27,14 +34,14 @@ const socketApi = (): {
 
     socket.onopen = (_event) => {
       isOpen = true;
-      updateOpenStates();
+      updateStatusListeners();
     };
 
     socket.onmessage = (message) => {
       console.log(`message from the server ${message}`);
       console.log(message.data);
       progressMessage = JSON.parse(message.data);
-      updateMessageStates();
+      updateMessageListeners();
     };
 
     socket.onclose = (event) => {
@@ -43,10 +50,10 @@ const socketApi = (): {
         return;
       }
       isOpen = false;
-      updateOpenStates();
+      updateStatusListeners();
       setTimeout(() => {
         startSocket();
-      }, 5000);
+      }, SOCKET_RECONNECT_DELAY_MILISECONDS);
     };
   };
 

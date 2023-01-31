@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import {
-  messageListeners,
   reconnectingSocketApi,
+  addSocketMessageListener,
+  deleteSocketMessageListener,
 } from "../utils/reconnectingSocketApi";
 
 export const useSocketMessage = () => {
@@ -10,10 +11,10 @@ export const useSocketMessage = () => {
     const messageListener = () => {
       setMessage(reconnectingSocketApi.getMessage());
     };
-    messageListeners.add(messageListener);
+    addSocketMessageListener(messageListener);
     messageListener();
     return () => {
-      messageListeners.delete(messageListener);
+      deleteSocketMessageListener(messageListener);
     };
   }, []);
 

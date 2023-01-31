@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import {
-  openStateListeners,
   reconnectingSocketApi,
+  addSocketStatusListener,
+  deleteSocketStatusListener,
 } from "../utils/reconnectingSocketApi";
 
 export const useSocketStatus = () => {
@@ -10,10 +11,10 @@ export const useSocketStatus = () => {
     const statusListener = () => {
       setIsOpen(reconnectingSocketApi.isOpen());
     };
-    openStateListeners.add(statusListener);
+    addSocketStatusListener(statusListener);
     statusListener();
     return () => {
-      openStateListeners.delete(statusListener);
+      deleteSocketStatusListener(statusListener);
     };
   }, []);
 
