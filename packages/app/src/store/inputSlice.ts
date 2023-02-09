@@ -12,7 +12,6 @@ const inputSlice = createSlice({
     invalidateCache: false,
     showProgressBar: false,
     apiStatus: "loading" as ApiStatus,
-    progressValue: 0,
     sumADResources: false,
     expandAll: false,
     hideNoAvailability: true,
@@ -51,9 +50,6 @@ const inputSlice = createSlice({
     updateApiStatus(state, action: PayloadAction<ApiStatus>) {
       console.log("callled");
       state.apiStatus = action.payload;
-    },
-    updateProgressValue(state, action: PayloadAction<number>) {
-      state.progressValue = action.payload;
     },
     updateSumADResources(state, action: PayloadAction<boolean>) {
       state.sumADResources = action.payload;

@@ -5,6 +5,8 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useSocketMessage } from "../../hooks/useSocketMessage";
+import { useSocketStatus } from "../../hooks/useSocketStatus";
+import { useEffect, useState } from "react";
 
 const LinearProgressWithLabel = (
   props: LinearProgressProps & { value: number }
@@ -22,27 +24,34 @@ const LinearProgressWithLabel = (
 );
 
 export const LoadingBar = () => {
-  //const progress = useAppSelector((state) => state.input.progressValue);
   const message = useSocketMessage();
+  const socketIsUp = useSocketStatus();
+  const [progressValue, setProgressValue] = useState(0);
   const showProgressBar = useAppSelector(
     (state) => state.input.showProgressBar
   );
 
+  useEffect(() => {
+    setProgressValue(0);
+  }, [showProgressBar]);
+
+  useEffect(() => {
+    setProgressValue(
+      message
+        ? Math.floor(
+            (message.countLoadedLimits /
+              message.countLimitDefinitionSummaries) *
+              100
+          )
+        : 0
+    );
+  }, [message]);
+
   return (
     <>
-      {showProgressBar && (
+      {socketIsUp && showProgressBar && (
         <Box sx={{ width: "100%" }}>
-          <LinearProgressWithLabel
-            value={
-              message
-                ? Math.floor(
-                    (message.countLoadedLimits /
-                      message.countLimitDefinitionSummaries) *
-                      100
-                  )
-                : 0
-            }
-          />
+          <LinearProgressWithLabel value={progressValue} />
         </Box>
       )}
     </>

@@ -6,6 +6,7 @@ import store, { AppDispatch } from "./store";
 
 export const fetchLimitsData = () => {
   return async (dispatch: AppDispatch, getState: typeof store.getState) => {
+    dispatch(inputActions.updateShowProgressBar(true));
     const inputState = getState().input;
     const requestBody = {
       compartments: inputState.compartments,
@@ -28,6 +29,7 @@ export const fetchLimitsData = () => {
       response = await fetch(request);
     } catch (error) {
       console.log("Failed to fetch");
+      dispatch(inputActions.updateShowProgressBar(false));
       return;
     }
 
@@ -36,15 +38,17 @@ export const fetchLimitsData = () => {
       data: ResponseTreeNode[];
     };
 
+    if (response.status === 409) return;
+
     if (!response.ok) {
       console.log(body.message);
+      dispatch(inputActions.updateShowProgressBar(false));
       return;
     }
 
     const [rootCompartments, rootServices] = body.data;
 
     dispatch(inputActions.updateShowProgressBar(false));
-    dispatch(inputActions.updateProgressValue(0));
     dispatch(nodeActions.replaceServiceNodes(rootServices.children));
     dispatch(nodeActions.replaceCompartmentNodes(rootCompartments.children));
   };

@@ -1,3 +1,6 @@
+import { inputActions } from "../store/inputSlice";
+import store from "../store/store";
+
 const socketStatusListeners = new Set<() => void>();
 const socketMessageListeners = new Set<() => void>();
 
@@ -53,8 +56,8 @@ const socketApi = (): {
     };
 
     socket.onclose = (event) => {
+      store.dispatch(inputActions.updateShowProgressBar(false));
       if (event.code !== 1006) {
-        console.log("event code");
         return;
       }
       isOpen = false;
