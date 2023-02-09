@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: api.Dockerfile
+    ports:
+      - 8546:8546
+    volumes:
+      - ~/.oci:/root/.oci:ro
+  app:
+    build:
+      context: .
+      dockerfile: app.Dockerfile
+    ports:
+      - 5173:80
