@@ -1,4 +1,4 @@
-import type { limits } from "oci-sdk";
+import type { limits } from "common";
 
 export type MyServiceSummary = Omit<
   limits.models.ServiceSummary,
@@ -54,3 +54,7 @@ export interface UniqueLimit {
   resourceAvailability: ResourceAvailabilityObject[];
   resourceAvailabilitySum: ResourceAvailabilityObject;
 }
+
+export * as identity from "oci-identity";
+export * as limits from "oci-limits";
+export * as common from "oci-common";

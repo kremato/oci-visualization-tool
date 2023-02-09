@@ -1,7 +1,7 @@
 import { useDropdownItemsData } from "../../hooks/useDropdownItemsData";
 import { Dropdown } from "../../layouts/Dropdown";
 import { Names } from "../../types/types";
-import type { identity } from "oci-sdk";
+import type { identity } from "common";
 
 export const RegionsDropdown = () => {
   const regions = useDropdownItemsData<identity.models.RegionSubscription>(

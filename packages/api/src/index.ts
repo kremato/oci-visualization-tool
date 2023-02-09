@@ -9,11 +9,6 @@ import {
   limits,
 } from "./controllers";
 import WebSocket, { WebSocketServer } from "ws";
-import { apiIsReady } from "./controllers/configuration";
-import {
-  apiIsNotReadyResponse,
-  successResponse,
-} from "./controllers/responses";
 
 dotenv.config();
 const app: Express = express();
@@ -40,12 +35,9 @@ app.get("/region-subscriptions", regions.listRegionSubscriptions);
 app.get("/services", services.list);
 app.get("/limits", limits.list);
 app.post("/limits", limits.store);
-app.get("/", (_req, res) => {
-  if (!apiIsReady) {
-    return apiIsNotReadyResponse(res);
-  }
-  return successResponse(res, {});
-});
+app.get("/", configuration.onPing);
 app.use((_req, res) => {
   res.status(404).send("NOT FOUND");
 });
+
+export const ahoj = 5;

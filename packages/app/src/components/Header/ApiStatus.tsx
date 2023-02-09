@@ -5,7 +5,7 @@ import { getApiStatus } from "../../utils/getApiStatus";
 import { inputActions } from "../../store/inputSlice";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 
-const GET_API_STATUS_DELAY_MILISECONDS = 2500;
+const getApiStatusDelayMiliseconds = 2500;
 
 export const ApiStatus = () => {
   const dispatch = useAppDispatch();
@@ -19,7 +19,7 @@ export const ApiStatus = () => {
     updateApiStatus();
     const timer = setInterval(() => {
       updateApiStatus();
-    }, GET_API_STATUS_DELAY_MILISECONDS);
+    }, getApiStatusDelayMiliseconds);
     return () => {
       clearInterval(timer);
     };

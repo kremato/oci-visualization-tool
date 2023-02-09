@@ -1,5 +1,4 @@
-import * as limits from "oci-limits";
-
+import { limits } from "common";
 import { Provider } from "./provider";
 import type { MyLimitValueSummary } from "../types/types";
 import { outputToFile } from "../utils/outputToFile";

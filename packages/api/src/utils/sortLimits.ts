@@ -1,5 +1,4 @@
-import type { ResponseTreeNode, UniqueLimit } from "common";
-import { limits } from "oci-sdk";
+import { ResponseTreeNode, UniqueLimit, limits } from "common";
 
 const compareLimits = (a: UniqueLimit, b: UniqueLimit) => {
   if (a.scope === b.scope) return a.limitName.localeCompare(b.limitName);

@@ -1,5 +1,4 @@
-import type { MyLimitDefinitionSummary } from "common";
-import type { limits } from "oci-sdk";
+import type { MyLimitDefinitionSummary, limits } from "common";
 import type { InferType } from "yup";
 import type { storeLimitsSchema } from "../utils/validationSchemas";
 

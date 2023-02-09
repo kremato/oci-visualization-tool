@@ -1,12 +1,14 @@
-import type {
+import {
   UniqueLimit,
   MyLimitDefinitionSummary,
   ResourceAvailabilityObject,
+  common,
+  identity,
+  limits,
 } from "common";
 import { getLimitsClient } from "../clients/getLimitsClient";
 import { getAvailabilityDomainsPerRegion } from "./getAvailabilityDomainsPerRegion";
 import { getResourceAvailability } from "./getResourceAvailability";
-import { common, identity, limits } from "oci-sdk";
 import { Cache } from "./cache";
 
 const getAvailabilityObject = async (

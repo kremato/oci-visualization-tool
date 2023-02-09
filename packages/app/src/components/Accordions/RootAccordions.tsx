@@ -23,7 +23,7 @@ export const RootAccordions = () => {
 
   return (
     <>
-      <Stack spacing={2} pt={2}>
+      <Stack spacing={2}>
         {showByCompartment && (
           <div>
             <AccordionHeader title={"Limits Per Compartment"}>

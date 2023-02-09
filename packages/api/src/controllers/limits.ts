@@ -1,10 +1,8 @@
-import type { MyLimitDefinitionSummary } from "common";
+import type { MyLimitDefinitionSummary, common, identity } from "common";
 import type { Request, Response } from "express";
-import type { common } from "oci-sdk";
 import { Cache } from "../services/cache";
 import type { InputData, MyLimitValueSummary } from "../types/types";
 import { createResponseTreeNode } from "../utils/createResponseTreeNode";
-import type { Compartment } from "oci-identity/lib/model";
 import { listServiceLimitsPerService } from "../services/listServiceLimitsPerService";
 import { loadUniqueLimit } from "../services/loadUniqueLimit";
 import { sortLimits } from "../utils/sortLimits";
@@ -57,7 +55,7 @@ export const store = async (req: Request, res: Response) => {
   });
 
   const loadLimitArguments: [
-    Compartment,
+    identity.models.Compartment,
     common.Region,
     MyLimitDefinitionSummary,
     MyLimitValueSummary[]

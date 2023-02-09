@@ -1,5 +1,5 @@
 import { getProvider } from "../clients/getProvider";
-import type common from "oci-common";
+import type { common } from "common";
 
 // Singleton
 export class Provider {
@@ -8,7 +8,6 @@ export class Provider {
 
   private constructor() {
     this.provider = getProvider();
-    /* this.provider.getKeyId; */
   }
 
   static getInstance() {

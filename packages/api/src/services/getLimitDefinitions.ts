@@ -1,4 +1,3 @@
-import { requests, models, responses } from "oci-limits";
 import { getLimitsClient } from "../clients/getLimitsClient";
 import { Provider } from "./provider";
 import type {
@@ -7,24 +6,23 @@ import type {
 } from "../types/types";
 import { outputToFile } from "../utils/outputToFile";
 import path from "path";
-import type { MyLimitDefinitionSummary } from "common";
-import { common, limits } from "oci-sdk";
+import { MyLimitDefinitionSummary, common, limits } from "common";
 import { log } from "../utils/log";
 
 const filePath = path.basename(__filename);
 
 const limitDefinitionSummaryIsValid = (
-  limitDefinitionSummary: models.LimitDefinitionSummary
+  limitDefinitionSummary: limits.models.LimitDefinitionSummary
 ): boolean => {
   if (
     limitDefinitionSummary.scopeType ===
-    models.LimitDefinitionSummary.ScopeType.Global
+    limits.models.LimitDefinitionSummary.ScopeType.Global
   )
     return false;
   if (
     limitDefinitionSummary.scopeType &&
     limitDefinitionSummary.scopeType ===
-      models.LimitDefinitionSummary.ScopeType.UnknownValue
+      limits.models.LimitDefinitionSummary.ScopeType.UnknownValue
   ) {
     log(
       filePath,
@@ -101,17 +99,18 @@ export const getLimitDefinitions = async (
 ): Promise<LimitDefinitionsPerScope | LimitDefinitionsPerProperty> => {
   const limitsClient = getLimitsClient();
   if (region !== undefined) limitsClient.region = region;
-  const listLimitDefinitionsRequest: requests.ListLimitDefinitionsRequest = {
-    // must be tenancy
-    compartmentId: Provider.getInstance().provider.getTenantId(),
-  };
+  const listLimitDefinitionsRequest: limits.requests.ListLimitDefinitionsRequest =
+    {
+      // must be tenancy
+      compartmentId: Provider.getInstance().provider.getTenantId(),
+    };
   const limitDefinitionsPerScopePerServiceName = new Map<
     string,
     LimitDefinitionsPerProperty
   >();
   const limitDefinitionsPerProperty: LimitDefinitionsPerProperty = new Map();
 
-  const scopeType = models.LimitDefinitionSummary.ScopeType;
+  const scopeType = limits.models.LimitDefinitionSummary.ScopeType;
   for (const scope of [scopeType.Global, scopeType.Region, scopeType.Ad]) {
     limitDefinitionsPerScopePerServiceName.set(
       scope,
@@ -125,7 +124,7 @@ export const getLimitDefinitions = async (
     !opc || (listLimitDefinitionsRequest.page = opc);
 
     let listLimitDefinitionsResponse:
-      | responses.ListLimitDefinitionsResponse
+      | limits.responses.ListLimitDefinitionsResponse
       | undefined = undefined;
     try {
       listLimitDefinitionsResponse = await limitsClient.listLimitDefinitions(

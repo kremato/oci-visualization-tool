@@ -3,8 +3,9 @@ import type {
   MyLimitDefinitionSummary,
   MyServiceSummary,
   UniqueLimit,
+  common,
+  identity,
 } from "common";
-import type { common, identity } from "oci-sdk";
 import type {
   LimitDefinitionsPerProperty,
   ServiceToServiceLimits,

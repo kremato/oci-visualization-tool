@@ -5,7 +5,7 @@ import { Typography } from "@mui/material";
 
 export const TableOptionsSubgrid = () => {
   return (
-    <Grid container item xs={12}>
+    <Grid container item xs={12} pt={2}>
       <Grid item xs={12}>
         <Typography variant="h5">Table Configuration</Typography>
       </Grid>

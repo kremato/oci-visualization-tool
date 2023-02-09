@@ -1,6 +1,5 @@
-import type { limits } from "oci-sdk";
 import { getLimitsClient } from "../clients/getLimitsClient";
-import type { MyServiceSummary } from "common";
+import type { MyServiceSummary, limits } from "common";
 import path from "path";
 import { log } from "../utils/log";
 import { Provider } from "./provider";

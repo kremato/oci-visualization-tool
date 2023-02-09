@@ -1,12 +1,14 @@
-import { common } from "oci-sdk";
+import { common } from "common";
 import { Cache } from "../services/cache";
 import { getLimitDefinitions } from "../services/getLimitDefinitions";
 import { listCompartments } from "../services/listCompartments";
 import { listRegionSubscriptions } from "../services/listRegionSubscriptions";
 import { listServices } from "../services/listServices";
 import type { LimitDefinitionsPerProperty } from "../types/types";
+import { apiIsNotReadyResponse, successResponse } from "./responses";
+import type { Request, Response } from "express";
 
-export let apiIsReady = false;
+let apiIsReady = false;
 
 export const onStart = async (): Promise<void> => {
   console.log(`⚡️[server]: Server is running`);
@@ -40,4 +42,11 @@ export const onStart = async (): Promise<void> => {
   }
   console.log("[server]: App.use() finished");
   apiIsReady = true;
+};
+
+export const onPing = (_req: Request, res: Response) => {
+  if (!apiIsReady) {
+    return apiIsNotReadyResponse(res);
+  }
+  return successResponse(res, {});
 };

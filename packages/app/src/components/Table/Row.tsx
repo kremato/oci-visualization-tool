@@ -1,4 +1,4 @@
-import { limits } from "oci-sdk";
+import { limits } from "common";
 import { ResourceAvailabilityObject, UniqueLimit } from "common";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { Names } from "../../types/types";

@@ -1,11 +1,10 @@
-import { IdentityClient } from "oci-identity";
-import type { common } from "oci-sdk";
+import { common, identity } from "common";
 import { Provider } from "../services/provider";
 
 export const getIdentityClient = (
   clientConfiguration?: common.ClientConfiguration
-): IdentityClient => {
-  const identityClient = new IdentityClient(
+): identity.IdentityClient => {
+  const identityClient = new identity.IdentityClient(
     {
       authenticationDetailsProvider: Provider.getInstance().provider,
     },

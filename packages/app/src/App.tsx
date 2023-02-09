@@ -18,7 +18,7 @@ export const App = () => {
         <Grid item xs={12}>
           <hr />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} pt={2}>
           <RootAccordions />
         </Grid>
       </Grid>

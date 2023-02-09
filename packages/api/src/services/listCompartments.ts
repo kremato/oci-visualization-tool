@@ -1,5 +1,5 @@
 import { getCompartment } from "./getCompartment";
-import type { identity } from "oci-sdk";
+import type { identity } from "common";
 import { getIdentityClient } from "../clients/getIdentityClient";
 import { Provider } from "./provider";
 import { log } from "../utils/log";

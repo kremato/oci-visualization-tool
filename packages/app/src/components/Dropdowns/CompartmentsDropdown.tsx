@@ -1,6 +1,6 @@
 import { Dropdown } from "../../layouts/Dropdown";
 import { Names } from "../../types/types";
-import type { identity } from "oci-sdk";
+import type { identity } from "common";
 import { useDropdownItemsData } from "../../hooks/useDropdownItemsData";
 
 export const CompartmentsDropdown = () => {

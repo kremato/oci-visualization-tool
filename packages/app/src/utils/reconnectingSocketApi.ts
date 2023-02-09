@@ -14,7 +14,7 @@ export const deleteSocketMessageListener = socketMessageListeners.delete.bind(
   socketMessageListeners
 );
 
-const SOCKET_RECONNECT_DELAY_MILISECONDS = 5000;
+const socketReconnectDelayInMiliseconds = 5000;
 
 const updateMessageListeners = () => {
   socketMessageListeners.forEach((listener) => listener());
@@ -61,7 +61,7 @@ const socketApi = (): {
       updateStatusListeners();
       setTimeout(() => {
         startSocket();
-      }, SOCKET_RECONNECT_DELAY_MILISECONDS);
+      }, socketReconnectDelayInMiliseconds);
     };
   };
 

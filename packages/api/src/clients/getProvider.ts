@@ -1,7 +1,7 @@
-import common = require("oci-common");
+import { common } from "common";
 
 const configurationFilePath = "~/.oci/config";
-const profile = "DEFAULT";
+const profile = process.env["PROFILE"] ? process.env["PROFILE"] : "DEFAULT";
 
 export const getProvider =
   (): common.ConfigFileAuthenticationDetailsProvider => {

@@ -1,4 +1,4 @@
-import { identity } from "oci-sdk";
+import { identity } from "common";
 import { getProvider } from "../clients/getProvider";
 import { Provider } from "./provider";
 

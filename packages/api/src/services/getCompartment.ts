@@ -1,4 +1,4 @@
-import type { identity } from "oci-sdk";
+import type { identity } from "common";
 import path from "path";
 import { log } from "../utils/log";
 
