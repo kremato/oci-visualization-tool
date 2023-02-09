@@ -61,6 +61,27 @@ const convertToCSV = (
   return csvString;
 };
 
+const getChildLimits = (node: ResponseTreeNode): UniqueLimit[] => {
+  if (node.limits) {
+    return node.limits;
+  }
+
+  let limits: UniqueLimit[] = [];
+  for (const child of node.children) {
+    limits = limits.concat(getChildLimits(child));
+  }
+
+  return limits;
+};
+
+const convertToJSON = (responseTreeRootNodes: ResponseTreeNode[]) => {
+  let limits: UniqueLimit[] = [];
+  for (const node of responseTreeRootNodes) {
+    limits = limits.concat(getChildLimits(node));
+  }
+  return JSON.stringify(limits);
+};
+
 const downloadFile = (data: string, fileName: string, fileType: string) => {
   const blob = new Blob([data], {
     type: fileType,
@@ -107,7 +128,7 @@ export const DownloadButton = ({
     downloadFile(
       parseAsCSV
         ? convertToCSV(rootNodes, csvTableHeaders)
-        : JSON.stringify(rootNodes),
+        : convertToJSON(rootNodes),
       fileName,
       fileType
     );
