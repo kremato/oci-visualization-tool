@@ -16,7 +16,6 @@
     "common": "*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-markdown": "^8.0.5",
     "react-redux": "^8.0.4",
     "react-window": "^1.8.8",
     "swr": "^2.0.3"
