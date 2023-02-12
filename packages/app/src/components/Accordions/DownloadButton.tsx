@@ -118,7 +118,7 @@ export const DownloadButton = ({
       asCompartmentNodes ? "REGION" : "COMPARTMENT",
       asCompartmentNodes ? "SERVICE" : "REGION",
       "LIMIT",
-      "AVAILABILITY DOMAIN",
+      "SCOPE",
       "SERVICE LIMIT",
       "AVAILABLE",
       "USED",

@@ -11,6 +11,14 @@ import { getAvailabilityDomainsPerRegion } from "./getAvailabilityDomainsPerRegi
 import { getResourceAvailability } from "./getResourceAvailability";
 import { Cache } from "./cache";
 
+const maxValue = 9223372036854776000;
+
+const getResourceAvailibilityForUndefinedAndMaxValue = (
+  property: number | undefined
+) => {
+  return property && property != maxValue ? property.toString() : "n/a";
+};
+
 const getAvailabilityObject = async (
   compartmentId: string,
   limitDefinitionSummary: MyLimitDefinitionSummary,
@@ -27,9 +35,15 @@ const getAvailabilityObject = async (
 
   if (!resourceAvailability) return;
 
-  const available = resourceAvailability.available?.toString() || "n/a";
-  const used = resourceAvailability.used?.toString() || "n/a";
-  const quota = resourceAvailability.effectiveQuotaValue?.toString() || "n/a";
+  const available = getResourceAvailibilityForUndefinedAndMaxValue(
+    resourceAvailability.available
+  );
+  const used = getResourceAvailibilityForUndefinedAndMaxValue(
+    resourceAvailability.used
+  );
+  const quota = getResourceAvailibilityForUndefinedAndMaxValue(
+    resourceAvailability.effectiveQuotaValue
+  );
   const serviceLimit = serviceLimits.find(
     (limit) =>
       limit.availabilityDomain === availabilityDomain?.name &&
@@ -38,7 +52,9 @@ const getAvailabilityObject = async (
 
   return {
     availabilityDomain: availabilityDomain ? availabilityDomain.name : "REGION",
-    serviceLimit: serviceLimit?.value ? serviceLimit.value.toString() : "n/a",
+    serviceLimit: getResourceAvailibilityForUndefinedAndMaxValue(
+      serviceLimit?.value
+    ),
     available,
     used,
     quota,

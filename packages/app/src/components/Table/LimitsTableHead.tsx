@@ -13,7 +13,7 @@ export const LimitsTableHead = ({ domainTable = true }: Props) => {
         </th>
         {domainTable && (
           <th>
-            <Typography>Availibility Domain</Typography>
+            <Typography>Scope</Typography>
           </th>
         )}
         <th>

@@ -6,10 +6,28 @@ import { Typography } from "@mui/material";
 export const TableOptionsSubgrid = () => {
   return (
     <Grid container item xs={12} pt={2}>
+      <Grid item xs={12} display={"flex"} flexDirection={"column"}>
+        <Typography variant="h5">Accordion Display</Typography>
+        <ReduxCheckbox
+          label="Show limits per compartment"
+          action={inputActions.updateShowByCompartment}
+          stateCallback={(state) => state.input.showByCompartment}
+        />
+        <ReduxCheckbox
+          label="Show limits per service"
+          action={inputActions.updateShowByService}
+          stateCallback={(state) => state.input.showByService}
+        />
+        <ReduxCheckbox
+          label="Expand all"
+          action={inputActions.updateExpandAll}
+          stateCallback={(state) => state.input.expandAll}
+        />
+      </Grid>
       <Grid item xs={12}>
         <Typography variant="h5">Table Configuration</Typography>
       </Grid>
-      <Grid item xs={4} display={"flex"} flexDirection={"column"}>
+      {/* <Grid item xs={4} display={"flex"} flexDirection={"column"}>
         <ReduxCheckbox
           label="Expand all"
           action={inputActions.updateExpandAll}
@@ -25,7 +43,7 @@ export const TableOptionsSubgrid = () => {
           action={inputActions.updateShowByService}
           stateCallback={(state) => state.input.showByService}
         />
-      </Grid>
+      </Grid> */}
       <Grid item xs={4} display={"flex"} flexDirection={"column"}>
         <ReduxCheckbox
           label="Hide limits with no service limit"
