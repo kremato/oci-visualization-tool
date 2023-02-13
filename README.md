@@ -6,11 +6,11 @@ oci-visualization-tool helps users with an Oracle Cloud Infrastructure (OCI) acc
 
 [A configuration file is needed so the app can access user credentials](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm).
 For the backend to run correctly, the required location of the config file is `~/.oci/config`. It is also necessary for the key_file to be in the `~/.oci` directory, and the path in the key_file entry in the config file has to be defined with a `~` (absolute path won't work).
-For example, there is a file with the name of **key.pem** and a file with the name **config** in the `~/.oci directory`. The key_file entry in the config file would look like this: `key_file=~/.oci/key.pem`
+For example, there is a file with the name of **key.pem** and a file with the name **config** in the `~/.oci` directory. The key_file entry in the config file would look like this: `key_file=~/.oci/key.pem`
 
 ## Getting Started
 
-To run the app, clone the and use this command in the project root directory:
+To run the app, clone the repository and use this command in the project root directory:
 
 ```bash
 docker-compose up -d
@@ -24,8 +24,8 @@ The command starts both the backend and the frontend. The app should be availabl
 
 There are two options for limit fetch.
 
-1. Fill out the compartment, region, and service dropdown. This option will retrieve all limits for every combination of compartment, region, and service. ![compartmen_region_service](/assets/images/compartment_region_service.png)
-2. Fill out the compartment, region, service, and limit dropdown. This option will retrieve limit values for the chosen limits in every combination of compartment, region, and service(if the chosen limits belong to the chosen services). ![compartmen_region_service_limit](/assets/images/compartment_region_service_limit.png)
+1. Fill out the compartment, region, and service dropdowns. This option will retrieve all limits for every combination of compartment, region, and service. ![compartmen_region_service](/assets/images/compartment_region_service.png)
+2. Fill out the compartment, region, service, and limit dropdowns. This option will retrieve limit values for the chosen limits in every combination of compartment, region, and service(if the chosen limits belong to the chosen services). ![compartmen_region_service_limit](/assets/images/compartment_region_service_limit.png)
 
 Any other combination will result in an empty response.
 Request responses are cached so that duplicate requests are faster. However, if the "Invalide limit cache" option is checked, all cached limits are deleted, and every new request must fetch the limits from the OCI API again.
