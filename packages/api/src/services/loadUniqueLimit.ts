@@ -2,7 +2,6 @@ import {
   UniqueLimit,
   MyLimitDefinitionSummary,
   ResourceAvailabilityObject,
-  common,
   identity,
   limits,
 } from "common";
@@ -11,13 +10,12 @@ import { getAvailabilityDomainsPerRegion } from "./getAvailabilityDomainsPerRegi
 import { getResourceAvailability } from "./getResourceAvailability";
 import { Cache } from "./cache";
 
-const maxValue = 9223372036854776000;
+const maxValue = Number.MAX_SAFE_INTEGER;
 
 const getResourceAvailibilityForUndefinedAndMaxValue = (
   property: number | undefined
-) => {
-  return property && property != maxValue ? property.toString() : "n/a";
-};
+) =>
+  property !== undefined && property <= maxValue ? property.toString() : "n/a";
 
 const getAvailabilityObject = async (
   compartmentId: string,
@@ -63,18 +61,18 @@ const getAvailabilityObject = async (
 
 export const loadUniqueLimit = async (
   compartment: identity.models.Compartment,
-  region: common.Region,
+  region: identity.models.RegionSubscription,
   limitDefinitionSummary: MyLimitDefinitionSummary,
   serviceLimits: limits.models.LimitValueSummary[]
 ): Promise<UniqueLimit> => {
   const limitsClient = getLimitsClient();
-  limitsClient.region = region;
+  limitsClient.regionId = region.regionName;
   const resourceAvailabilityList: ResourceAvailabilityObject[] = [];
   const newUniqueLimit: UniqueLimit = {
     serviceName: limitDefinitionSummary.serviceName,
     compartmentId: compartment.id,
     scope: limitDefinitionSummary.scopeType,
-    regionId: region.regionId,
+    regionId: region.regionName,
     limitName: limitDefinitionSummary.name,
     compartmentName: compartment.name,
     resourceAvailability: resourceAvailabilityList,
@@ -89,11 +87,8 @@ export const loadUniqueLimit = async (
   const limitSetUniqueLimit = cache.hasLimit(newUniqueLimit);
   // if limit is already present, skip fetching and just add the limit to the response
   if (limitSetUniqueLimit) {
-    console.log("LOADED");
     return limitSetUniqueLimit;
   }
-
-  console.log("FETCHING");
 
   if (
     limitDefinitionSummary.scopeType ===
@@ -128,6 +123,7 @@ export const loadUniqueLimit = async (
       limitsClient,
       serviceLimits
     );
+
     if (availabilityObject) resourceAvailabilityList.push(availabilityObject);
   }
 
@@ -152,6 +148,5 @@ export const loadUniqueLimit = async (
   newUniqueLimit.resourceAvailabilitySum.used = totalUsed.toString();
   newUniqueLimit.resourceAvailabilitySum.quota = totalQuota.toString();
 
-  // outputToFile("test/getCompartmentsRegionResources.txt", logFormattedOutput);
   return newUniqueLimit;
 };

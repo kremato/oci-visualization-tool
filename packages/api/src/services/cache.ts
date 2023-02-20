@@ -3,7 +3,6 @@ import type {
   MyLimitDefinitionSummary,
   MyServiceSummary,
   UniqueLimit,
-  common,
   identity,
 } from "common";
 import type {
@@ -18,12 +17,11 @@ export class Cache {
   private static instance: Cache;
   private limitCache: Map<string, UniqueLimit>;
   public compartments: identity.models.Compartment[];
-  public regions: common.Region[];
   public regionSubscriptions: identity.models.RegionSubscription[];
   public serviceSubscriptions: MyServiceSummary[];
   public limitDefinitionsPerLimitName: LimitDefinitionsPerProperty;
   public limitDefinitionsPerRegionPerService: Map<
-    common.Region,
+    identity.models.RegionSubscription,
     Map<string, MyLimitDefinitionSummary[]>
   >;
   /* stores service limits for each service, this is needed because
@@ -31,7 +29,7 @@ export class Cache {
   information about service limits */
   public serviceLimitMap: ServiceToServiceLimits;
   public availabilityDomainsPerRegion: Map<
-    common.Region,
+    identity.models.RegionSubscription,
     identity.models.AvailabilityDomain[]
   >;
   public token: Token;
@@ -39,7 +37,6 @@ export class Cache {
   private constructor() {
     this.limitCache = new Map();
     this.compartments = [];
-    this.regions = [];
     this.regionSubscriptions = [];
     this.serviceSubscriptions = [];
     this.limitDefinitionsPerLimitName = new Map();

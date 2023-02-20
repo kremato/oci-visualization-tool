@@ -1,4 +1,4 @@
-import type { MyLimitDefinitionSummary, common, identity } from "common";
+import type { MyLimitDefinitionSummary, identity } from "common";
 import type { Request, Response } from "express";
 import { Cache } from "../services/cache";
 import type { InputData, MyLimitValueSummary } from "../types/types";
@@ -47,8 +47,8 @@ export const store = async (req: Request, res: Response) => {
   const filteredCompartments = cache.compartments.filter((compartment) => {
     return data.compartments.includes(compartment.id);
   });
-  const filteredRegions = cache.regions.filter((region) => {
-    return data.regions.includes(region.regionId);
+  const filteredRegions = cache.regionSubscriptions.filter((region) => {
+    return data.regions.includes(region.regionName);
   });
   const filteredServices = cache.serviceSubscriptions.filter((service) => {
     return data.services.includes(service.name);
@@ -56,7 +56,7 @@ export const store = async (req: Request, res: Response) => {
 
   const loadLimitArguments: [
     identity.models.Compartment,
-    common.Region,
+    identity.models.RegionSubscription,
     MyLimitDefinitionSummary,
     MyLimitValueSummary[]
   ][] = [];
@@ -72,7 +72,7 @@ export const store = async (req: Request, res: Response) => {
         if (!limitDefinitionSummaries) {
           log(
             path.basename(__filename),
-            `no limitDefinitionSummaries found for ${region.regionId} or ${service.name}`
+            `no limitDefinitionSummaries found for ${region.regionName} or ${service.name}`
           );
           failedServices.push(service.name);
           continue;

@@ -1,4 +1,3 @@
-import { common } from "common";
 import { Cache } from "../services/cache";
 import { getLimitDefinitions } from "../services/getLimitDefinitions";
 import { listCompartments } from "../services/listCompartments";
@@ -22,24 +21,20 @@ export const onStart = async (): Promise<void> => {
         service.name
       )
   );
-  cache.regions = common.Region.values().filter((region) =>
-    cache.regionSubscriptions.some(
-      (item) => item.regionName === region.regionId
-    )
-  );
   cache.limitDefinitionsPerLimitName = (await getLimitDefinitions(
     "perLimitName"
   )) as LimitDefinitionsPerProperty;
 
-  for (const region of cache.regions) {
+  for (const region of cache.regionSubscriptions) {
     cache.limitDefinitionsPerRegionPerService.set(
       region,
       (await getLimitDefinitions(
         "perServiceName",
-        region
+        region.regionName
       )) as LimitDefinitionsPerProperty
     );
   }
+
   console.log("[server]: App.use() finished");
   apiIsReady = true;
 };

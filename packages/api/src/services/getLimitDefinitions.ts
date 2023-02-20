@@ -6,7 +6,7 @@ import type {
 } from "../types/types";
 import { outputToFile } from "../utils/outputToFile";
 import path from "path";
-import { MyLimitDefinitionSummary, common, limits } from "common";
+import { MyLimitDefinitionSummary, limits } from "common";
 import { log } from "../utils/log";
 
 const filePath = path.basename(__filename);
@@ -95,10 +95,10 @@ const perLimitName = (
 
 export const getLimitDefinitions = async (
   type: "perScope" | "perServiceName" | "perLimitName",
-  region?: common.Region
+  regionId?: string
 ): Promise<LimitDefinitionsPerScope | LimitDefinitionsPerProperty> => {
   const limitsClient = getLimitsClient();
-  if (region !== undefined) limitsClient.region = region;
+  if (regionId !== undefined) limitsClient.regionId = regionId;
   const listLimitDefinitionsRequest: limits.requests.ListLimitDefinitionsRequest =
     {
       // must be tenancy

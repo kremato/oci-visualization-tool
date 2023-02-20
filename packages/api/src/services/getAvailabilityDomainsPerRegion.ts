@@ -5,12 +5,12 @@ import { log } from "../utils/log";
 import { Provider } from "./provider";
 
 export const getAvailabilityDomainsPerRegion = async (
-  region: common.Region,
+  region: identity.models.RegionSubscription,
   clientConfiguration?: common.ClientConfiguration
 ): Promise<identity.models.AvailabilityDomain[]> => {
   const identityClient = getIdentityClient(clientConfiguration);
 
-  identityClient.region = region;
+  identityClient.regionId = region.regionName;
   const request: identity.requests.ListAvailabilityDomainsRequest = {
     compartmentId: Provider.getInstance().provider.getTenantId(),
   };
@@ -22,7 +22,7 @@ export const getAvailabilityDomainsPerRegion = async (
   } catch (error) {
     log(
       path.basename(__filename),
-      `unable to fetch availibilityDomains for a region with the ID of ${region.regionId}`
+      `unable to fetch availibilityDomains for a region with the ID of ${region.regionName}`
     );
   }
   return availibilityDomains;
