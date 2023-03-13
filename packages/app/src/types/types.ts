@@ -1,3 +1,9 @@
+export interface DropdownItem {
+  primaryLabel: string;
+  secondaryLabel: string;
+  serviceName?: string;
+}
+
 export enum Names {
   Global = "global",
   Region = "region",

@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Grid, Stack } from "@mui/material";
 import { CompartmentsDropdown } from "../components/Dropdowns/CompartmentsDropdown";
 import { LimitsDropdown } from "../components/Dropdowns/LimitsDropdown";
 import { LoadingBar } from "../components/Loading/LoadingBar";
@@ -10,25 +10,18 @@ import { ReduxCheckbox } from "./ReduxCheckbox";
 
 export const DispatchLimitsRequestSubgrid = () => {
   return (
-    <Grid container item>
-      <Grid item xs={3}>
+    <Grid container item xs={12}>
+      <Stack direction={"row"} width={"100%"}>
         <CompartmentsDropdown />
-      </Grid>
-      <Grid item xs={3}>
         <RegionsDropdown />
-      </Grid>
-      <Grid item xs={3}>
         <ServicesDropdown />
-      </Grid>
-      <Grid item xs={3}>
         <LimitsDropdown />
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        p={"0.5rem 0rem 0.5rem 0rem"}
-        display={"flex"}
+      </Stack>
+      <Stack
+        direction={"row"}
         justifyContent={"space-between"}
+        p={"0.5rem 0rem 0.5rem 0rem"}
+        width={"100%"}
       >
         <ReduxCheckbox
           label="Invalidate cache"
@@ -36,16 +29,10 @@ export const DispatchLimitsRequestSubgrid = () => {
           stateCallback={(state) => state.input.invalidateCache}
         />
         <SendButton text={"Send"} />
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        p={"0.5rem 0rem 0.5rem 0rem"}
-        display={"flex"}
-        justifyContent={"space-between"}
-      >
+      </Stack>
+      <Stack direction={"row"} p={"0.5rem 0rem 0.5rem 0rem"} width={"100%"}>
         <LoadingBar />
-      </Grid>
+      </Stack>
     </Grid>
   );
 };

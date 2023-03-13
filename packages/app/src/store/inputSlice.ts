@@ -7,7 +7,6 @@ const inputSlice = createSlice({
     compartments: [] as string[],
     regions: [] as string[],
     services: [] as string[],
-    scopes: [] as string[],
     limits: [] as { limitName: string; serviceName: string }[],
     invalidateCache: false,
     showProgressBar: false,
@@ -32,9 +31,6 @@ const inputSlice = createSlice({
     replaceServicesId(state, action: PayloadAction<string[]>) {
       state.services = action.payload;
     },
-    replaceScopes(state, action: PayloadAction<string[]>) {
-      state.scopes = action.payload;
-    },
     replaceLimits(
       state,
       action: PayloadAction<{ limitName: string; serviceName: string }[]>
@@ -48,7 +44,6 @@ const inputSlice = createSlice({
       state.showProgressBar = action.payload;
     },
     updateApiStatus(state, action: PayloadAction<ApiStatus>) {
-      console.log("callled");
       state.apiStatus = action.payload;
     },
     updateSumADResources(state, action: PayloadAction<boolean>) {

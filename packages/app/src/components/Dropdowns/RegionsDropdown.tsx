@@ -11,7 +11,6 @@ export const RegionsDropdown = () => {
   const options = regions.map((region) => {
     return {
       primaryLabel: region.regionName,
-
       secondaryLabel: region.regionName,
     };
   });
