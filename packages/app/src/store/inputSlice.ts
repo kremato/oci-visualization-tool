@@ -4,11 +4,6 @@ import { ApiStatus } from "../types/types";
 const inputSlice = createSlice({
   name: "input",
   initialState: {
-    compartments: [] as string[],
-    regions: [] as string[],
-    services: [] as string[],
-    limits: [] as { limitName: string; serviceName: string }[],
-    invalidateCache: false,
     showProgressBar: false,
     apiStatus: "loading" as ApiStatus,
     sumADResources: false,
@@ -22,24 +17,6 @@ const inputSlice = createSlice({
     showDeprecated: false,
   },
   reducers: {
-    replaceCompartmentsId(state, action: PayloadAction<string[]>) {
-      state.compartments = action.payload;
-    },
-    replaceRegionsId(state, action: PayloadAction<string[]>) {
-      state.regions = action.payload;
-    },
-    replaceServicesId(state, action: PayloadAction<string[]>) {
-      state.services = action.payload;
-    },
-    replaceLimits(
-      state,
-      action: PayloadAction<{ limitName: string; serviceName: string }[]>
-    ) {
-      state.limits = action.payload;
-    },
-    updateInvalidateCache(state, action: PayloadAction<boolean>) {
-      state.invalidateCache = action.payload;
-    },
     updateShowProgressBar(state, action: PayloadAction<boolean>) {
       state.showProgressBar = action.payload;
     },

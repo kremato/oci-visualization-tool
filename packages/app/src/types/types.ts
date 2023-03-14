@@ -4,16 +4,6 @@ export interface DropdownItem {
   serviceName?: string;
 }
 
-export enum Names {
-  Global = "global",
-  Region = "region",
-  AD = "AD",
-  Compartment = "compartment",
-  Service = "service",
-  Scope = "scope",
-  Limit = "limit",
-}
-
 export type ApiStatus = "up" | "down" | "loading";
 
 export type ApiDropdownDataEndpoints =
@@ -21,3 +11,19 @@ export type ApiDropdownDataEndpoints =
   | "region-subscriptions"
   | "services"
   | "limits";
+
+export enum LimitsFormEntries {
+  Compartments = "compartments",
+  Regions = "regions",
+  Services = "services",
+  Limits = "limits",
+  InvalidateCache = "invalidateCache",
+}
+
+export interface LimitsFormValues {
+  [LimitsFormEntries.Compartments]: string[];
+  [LimitsFormEntries.Regions]: string[];
+  [LimitsFormEntries.Services]: string[];
+  [LimitsFormEntries.Limits]: { limitName: string; serviceName: string }[];
+  [LimitsFormEntries.InvalidateCache]: boolean;
+}

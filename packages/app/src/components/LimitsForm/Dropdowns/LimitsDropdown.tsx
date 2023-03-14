@@ -1,9 +1,14 @@
-import { Names } from "../../types/types";
-import Virtualize from "../../layouts/DropdownWithReactWindow";
-import { useDropdownItemsData } from "../../hooks/useDropdownItemsData";
+import VirtualizedDropdown from "../../../layouts/DropdownWithReactWindow";
+import { useDropdownItemsData } from "../../../hooks/useDropdownItemsData";
 import { MyLimitDefinitionSummary } from "common";
+import { Control } from "react-hook-form";
+import { LimitsFormEntries, LimitsFormValues } from "../../../types/types";
 
-export const LimitsDropdown = () => {
+interface Props {
+  control: Control<LimitsFormValues, any>;
+}
+
+export const LimitsDropdown = ({ control }: Props) => {
   const limitDefinitionsPerLimitName =
     useDropdownItemsData<MyLimitDefinitionSummary[]>("limits");
 
@@ -19,5 +24,11 @@ export const LimitsDropdown = () => {
     }
   );
 
-  return <Virtualize name={Names.Limit} options={options} />;
+  return (
+    <VirtualizedDropdown
+      name={LimitsFormEntries.Limits}
+      options={options}
+      control={control}
+    />
+  );
 };

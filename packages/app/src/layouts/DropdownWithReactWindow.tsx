@@ -7,13 +7,13 @@ import Popper from "@mui/material/Popper";
 import { useTheme, styled } from "@mui/material/styles";
 import { VariableSizeList, ListChildComponentProps } from "react-window";
 import Typography from "@mui/material/Typography";
-import { Names } from "../types/types";
+import { DropdownItem } from "../types/types";
 import { ListItemText, Checkbox } from "@mui/material";
 import { capitalizeFirstLetter } from "../utils/capitalizeFirstLetter";
-import { useRef } from "react";
+import { useState } from "react";
 import { createFilterOptions } from "@mui/material/Autocomplete";
-import { useAppDispatch } from "../hooks/useAppDispatch";
-import { inputActions } from "../store/inputSlice";
+import { Control, Controller, ControllerRenderProps } from "react-hook-form";
+import { LimitsFormEntries, LimitsFormValues } from "../types/types";
 
 const LISTBOX_PADDING = 8; // px
 
@@ -125,87 +125,100 @@ const StyledPopper = styled(Popper)({
   },
 });
 
-interface DropdownItem {
-  primaryLabel: string;
-  secondaryLabel: string;
-  serviceName?: string;
-}
-
 interface Props {
-  name: Names;
+  name: LimitsFormEntries;
   options: DropdownItem[];
+  control: Control<LimitsFormValues, any>;
 }
 
-export default function Virtualize({ name, options }: Props) {
-  const dispatch = useAppDispatch();
+export default function VirtualizedDropdown({ name, options, control }: Props) {
+  const [value, setValue] = useState<DropdownItem[]>([]);
+  const [inputValue, setInputValue] = useState("");
   const sortedOptions = options.sort(function (a, b) {
     return `${a.serviceName}`.localeCompare(`${b.serviceName}`);
   });
-
-  const namePlural = name + "s";
 
   const filterOptions = createFilterOptions({
     stringify: (option: DropdownItem) =>
       `${option.primaryLabel} ${option.serviceName}`,
   });
 
-  const handleChange = (selected: DropdownItem[]) => {
+  const handleChange = (
+    selected: DropdownItem[],
+    field: ControllerRenderProps<LimitsFormValues, any>
+  ) => {
     const inputList = selected.map((item: DropdownItem) => {
       return { limitName: item.primaryLabel, serviceName: item.serviceName! };
     });
-
-    dispatch(inputActions.replaceLimits(inputList));
+    setValue(selected);
+    field.onChange(inputList);
   };
 
   return (
-    <Autocomplete
-      multiple
-      disableCloseOnSelect
-      PopperComponent={StyledPopper}
-      ListboxComponent={ListboxComponent}
-      options={sortedOptions}
-      filterOptions={filterOptions}
-      groupBy={(option) => `${option.serviceName}`}
-      getOptionLabel={(option) => option.primaryLabel}
-      onChange={(_event, newValue) => {
-        handleChange(newValue);
+    <Controller
+      control={control}
+      name={name}
+      rules={{
+        required: false,
       }}
-      renderOption={(props, option, { selected }) => (
-        <li {...props} style={{ padding: 0, height: "100%" }}>
-          <Checkbox size="small" checked={selected} />
-          <ListItemText
-            primary={option.primaryLabel}
-            secondary={
-              option.primaryLabel != option.secondaryLabel &&
-              option.secondaryLabel
-            }
-            sx={{ mt: 0, mb: 0 }}
-            primaryTypographyProps={{
-              sx: {
-                wordBreak: "break-word",
-                lineHeight: 1.25,
-                whiteSpace: "initial",
-              },
-            }}
-            secondaryTypographyProps={{
-              sx: {
-                wordBreak: "break-word",
-                lineHeight: 1.25,
-                whiteSpace: "initial",
-              },
-            }}
-          />
-        </li>
-      )}
-      renderGroup={(params) => params as unknown as React.ReactNode}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          label={capitalizeFirstLetter(name)}
-          placeholder={`Choose ${namePlural}`}
+      defaultValue={[]}
+      render={({ field }) => (
+        <Autocomplete
+          {...field}
+          multiple
+          disableCloseOnSelect
+          PopperComponent={StyledPopper}
+          ListboxComponent={ListboxComponent}
+          options={sortedOptions}
+          filterOptions={filterOptions}
+          groupBy={(option) => `${option.serviceName}`}
+          getOptionLabel={(option) => option.primaryLabel}
+          onChange={(_event, newValue) => {
+            handleChange(newValue, field);
+          }}
+          renderOption={(props, option, { selected }) => (
+            <li {...props} style={{ padding: 0, height: "100%" }}>
+              <Checkbox size="small" checked={selected} />
+              <ListItemText
+                primary={option.primaryLabel}
+                secondary={
+                  option.primaryLabel != option.secondaryLabel &&
+                  option.secondaryLabel
+                }
+                sx={{ mt: 0, mb: 0 }}
+                primaryTypographyProps={{
+                  sx: {
+                    wordBreak: "break-word",
+                    lineHeight: 1.25,
+                    whiteSpace: "initial",
+                  },
+                }}
+                secondaryTypographyProps={{
+                  sx: {
+                    wordBreak: "break-word",
+                    lineHeight: 1.25,
+                    whiteSpace: "initial",
+                  },
+                }}
+              />
+            </li>
+          )}
+          renderGroup={(params) => params as unknown as React.ReactNode}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label={capitalizeFirstLetter(name)}
+              placeholder={`Choose ${name}`}
+            />
+          )}
+          fullWidth={true}
+          value={value}
+          inputValue={inputValue}
+          onInputChange={(_event, newInputValue) =>
+            setInputValue(newInputValue)
+          }
         />
       )}
-      sx={{ width: "100%" }}
     />
   );
 }

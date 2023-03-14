@@ -1,7 +1,6 @@
 import { limits } from "common";
 import { ResourceAvailabilityObject, UniqueLimit } from "common";
 import { useAppSelector } from "../../hooks/useAppSelector";
-import { Names } from "../../types/types";
 import { hideResourceAvailability } from "../../utils/hideResourceAvailability";
 import { LimitRow } from "./LimitRow";
 import { Typography } from "@mui/material";
@@ -12,7 +11,7 @@ const getColumnNameForLimit = (
     | limits.models.LimitDefinitionSummary.ScopeType.Region,
   resourceAvailabilityObject: ResourceAvailabilityObject
 ) => {
-  if (scope === Names.AD.toString())
+  if (scope === "AD")
     return resourceAvailabilityObject.availabilityDomain || "AD name missing";
   return "REGION";
 };
@@ -34,7 +33,7 @@ export const Row = ({ uniqueLimit }: Props) => {
   const showDeprecated = useAppSelector((state) => state.input.showDeprecated);
 
   if (
-    uniqueLimit.scope === Names.AD.toString() &&
+    uniqueLimit.scope === "AD" &&
     uniqueLimit.resourceAvailability.length === 0
   ) {
     return (

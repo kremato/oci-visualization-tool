@@ -9,8 +9,8 @@
   "author": "Jakub",
   "license": "AGPL-3.0",
   "dependencies": {
-    "oci-common": "^2.50.4",
-    "oci-identity": "^2.50.4",
-    "oci-limits": "^2.50.4"
+    "oci-common": "^2.53.0",
+    "oci-identity": "^2.53.0",
+    "oci-limits": "^2.53.0"
   }
 }
