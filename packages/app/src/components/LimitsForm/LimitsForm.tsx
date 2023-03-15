@@ -18,6 +18,8 @@ export const LimitsForm = () => {
 
   useEffect(() => {
     if (formData) {
+      /* console.log("FORM DATA:");
+      console.log(formData); */
       fetchLimitsData(formData);
     }
   }, [formData]);
@@ -26,10 +28,11 @@ export const LimitsForm = () => {
     <Box
       component={"form"}
       onSubmit={handleSubmit((data) => {
-        console.log("SETTIN DATA");
-        console.log(data);
+        /* console.log("SETTIN DATA");
+        console.log(data); */
         setFormData(data);
       })}
+      noValidate
       width={"100%"}
     >
       <Stack direction={"row"} width={"100%"}>

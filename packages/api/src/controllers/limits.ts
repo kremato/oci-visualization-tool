@@ -65,6 +65,7 @@ export const store = async (req: Request, res: Response) => {
   for (const compartment of filteredCompartments) {
     for (const region of filteredRegions) {
       for (const service of filteredServices) {
+        await listServiceLimitsPerService(service.name, region.regionName);
         let limitDefinitionSummaries = cache.limitDefinitionsPerRegionPerService
           .get(region)
           ?.get(service.name);
@@ -96,7 +97,7 @@ export const store = async (req: Request, res: Response) => {
         )
           cache.serviceLimitMap.set(
             service.name,
-            await listServiceLimitsPerService(service.name)
+            await listServiceLimitsPerService(service.name, region.regionName)
           );
 
         if (newRequest(initialPostLimitsCount)) {
@@ -123,7 +124,7 @@ export const store = async (req: Request, res: Response) => {
     if (newRequest(initialPostLimitsCount)) {
       return oldRequestFailureResponse(res);
     }
-
+    console.log("loading limits");
     const promises = loadLimitArguments
       .splice(0, 20)
       .map((item) => loadUniqueLimit(...item));

@@ -1,9 +1,14 @@
 import { useState } from "react";
 import { ControllerRenderProps } from "react-hook-form";
-import { DropdownItem, LimitsFormValues } from "../types/types";
+import {
+  DropdownItem,
+  LimitsFormEntries,
+  LimitsFormValues,
+} from "../types/types";
 import { filterOptionsBuilder } from "../utils/filterOptionsBuilder";
 
 export const useAutocomplete = (
+  name: string,
   options: DropdownItem[],
   ...filterOptions: (keyof DropdownItem)[]
 ) => {
@@ -16,8 +21,9 @@ export const useAutocomplete = (
     selected: DropdownItem[],
     field: ControllerRenderProps<LimitsFormValues, any>
   ) => {
-    const inputList = selected.map((item: DropdownItem) => {
-      return { limitName: item.primaryLabel, serviceName: item.serviceName! };
+    const inputList = selected.map((item) => {
+      if (name === LimitsFormEntries.Compartments) return item.secondaryLabel;
+      return item.primaryLabel;
     });
     setValue(selected);
     field.onChange(inputList);
@@ -29,7 +35,8 @@ export const useAutocomplete = (
   return {
     value,
     inputValue,
-    filterOptions: optionsFilter,
+    setInputValue,
+    //filterOptions: optionsFilter,
     handleChange,
     onInputChange,
   };

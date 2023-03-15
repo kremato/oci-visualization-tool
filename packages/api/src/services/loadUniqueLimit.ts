@@ -42,9 +42,11 @@ const getAvailabilityObject = async (
   const quota = getResourceAvailibilityForUndefinedAndMaxValue(
     resourceAvailability.effectiveQuotaValue
   );
+
   const serviceLimit = serviceLimits.find(
     (limit) =>
-      limit.availabilityDomain === availabilityDomain?.name &&
+      (limit.availabilityDomain === undefined) ===
+        (availabilityDomain?.name === undefined) &&
       limit.name === limitDefinitionSummary.name
   );
 

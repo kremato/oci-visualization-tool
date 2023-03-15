@@ -6,7 +6,8 @@ import { log } from "../utils/log";
 import path from "path";
 
 export const listServiceLimitsPerService = async (
-  serviceName: string
+  serviceName: string,
+  region: string
 ): Promise<MyLimitValueSummary[]> => {
   const client = new limits.LimitsClient({
     authenticationDetailsProvider: Provider.getInstance().provider,
@@ -16,7 +17,7 @@ export const listServiceLimitsPerService = async (
     serviceName: serviceName,
     limit: 1000,
   };
-
+  client.regionId = "us-ashburn-1";
   let logJSON = "";
   let opc: string | undefined = undefined;
   let response: MyLimitValueSummary[] = [];
@@ -48,6 +49,6 @@ export const listServiceLimitsPerService = async (
     opc = listLimitValuesResponse.opcNextPage;
   } while (opc);
 
-  outputToFile("test/listLimitValues.txt", logJSON);
+  outputToFile(`test/listLimitValues${region}.txt`, logJSON);
   return response;
 };

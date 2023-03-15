@@ -36,7 +36,7 @@ const socketApi = (): {
   isOpen: () => boolean | undefined;
   getMessage: () => SocketMessageData | undefined;
 } => {
-  console.log(`socketApi invoked`);
+  /* console.log(`socketApi invoked`); */
   let socket: WebSocket | undefined = undefined;
   let isOpen: boolean | undefined = undefined;
   let progressMessage: SocketMessageData | undefined = undefined;
@@ -49,14 +49,15 @@ const socketApi = (): {
     };
 
     socket.onmessage = (message) => {
-      console.log(`message from the server ${message}`);
-      console.log(message.data);
+      /* console.log(`message from the server ${message}`);
+      console.log(message.data); */
       progressMessage = JSON.parse(message.data);
       updateMessageListeners();
     };
 
     socket.onclose = (event) => {
-      store.dispatch(inputActions.updateShowProgressBar(false));
+      //store.dispatch(inputActions.updateShowProgressBar(false));
+      store.dispatch(inputActions.updateProgressStatus(undefined));
       if (event.code !== 1006) {
         return;
       }

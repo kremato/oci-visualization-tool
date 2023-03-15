@@ -10,6 +10,5 @@ export const getProvider =
         configurationFilePath,
         profile
       );
-
     return provider;
   };

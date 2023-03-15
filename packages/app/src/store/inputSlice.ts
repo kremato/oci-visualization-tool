@@ -1,10 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ApiStatus } from "../types/types";
 
+type ProgressStatus = "progressBar" | "success" | "failure" | undefined;
+
 const inputSlice = createSlice({
   name: "input",
   initialState: {
     showProgressBar: false,
+    progressStatus: undefined as ProgressStatus,
     apiStatus: "loading" as ApiStatus,
     sumADResources: false,
     expandAll: false,
@@ -19,6 +22,9 @@ const inputSlice = createSlice({
   reducers: {
     updateShowProgressBar(state, action: PayloadAction<boolean>) {
       state.showProgressBar = action.payload;
+    },
+    updateProgressStatus(state, action: PayloadAction<ProgressStatus>) {
+      state.progressStatus = action.payload;
     },
     updateApiStatus(state, action: PayloadAction<ApiStatus>) {
       state.apiStatus = action.payload;

@@ -85,5 +85,6 @@ export class Cache {
 
   clear(): void {
     this.limitCache.clear();
+    this.serviceLimitMap.clear();
   }
 }

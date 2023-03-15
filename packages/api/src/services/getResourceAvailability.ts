@@ -12,8 +12,8 @@ export const getResourceAvailability = async (
 ): Promise<limits.models.ResourceAvailability | undefined> => {
   if (
     !limitDefinitionSummary.name ||
-    (availabilityDomain !== undefined && !availabilityDomain.name) ||
-    !limitDefinitionSummary.serviceName
+    !limitDefinitionSummary.serviceName ||
+    (availabilityDomain !== undefined && availabilityDomain.name === undefined)
   ) {
     log(
       filePath,
@@ -31,7 +31,7 @@ export const getResourceAvailability = async (
       /* availabilityDomain: availabilityDomain.name parameter is only added to the
        request object in case availabilityDomain is defined */
       ...(availabilityDomain && {
-        availabilityDomain: availabilityDomain.name!,
+        availabilityDomain: availabilityDomain.name,
       }),
     };
   let resourceAvailability: limits.models.ResourceAvailability | undefined =
