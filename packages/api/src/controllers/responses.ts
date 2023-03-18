@@ -11,7 +11,14 @@ export const successResponse = (response: Response, data: any) => {
 export const oldRequestFailureResponse = (response: Response) => {
   return response.status(409).send({
     data: {},
-    message: "more recent request was already submitted",
+    message: "more recent request was submitted",
+  });
+};
+
+export const badTokenResponse = (response: Response) => {
+  return response.status(422).send({
+    data: {},
+    message: "token specified in the path is not found",
   });
 };
 

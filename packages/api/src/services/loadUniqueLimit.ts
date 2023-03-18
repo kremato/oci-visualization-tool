@@ -9,6 +9,7 @@ import { getLimitsClient } from "../clients/getLimitsClient";
 import { getAvailabilityDomainsPerRegion } from "./getAvailabilityDomainsPerRegion";
 import { getResourceAvailability } from "./getResourceAvailability";
 import { Cache } from "./cache";
+import type { MyLimitValueSummary } from "../types/types";
 
 const maxValue = Number.MAX_SAFE_INTEGER;
 
@@ -21,7 +22,7 @@ const getAvailabilityObject = async (
   compartmentId: string,
   limitDefinitionSummary: MyLimitDefinitionSummary,
   limitsClient: limits.LimitsClient,
-  serviceLimits: limits.models.LimitValueSummary[],
+  serviceLimits: MyLimitValueSummary[],
   availabilityDomain?: identity.models.AvailabilityDomain
 ): Promise<ResourceAvailabilityObject | undefined> => {
   const resourceAvailability = await getResourceAvailability(
@@ -45,9 +46,9 @@ const getAvailabilityObject = async (
 
   const serviceLimit = serviceLimits.find(
     (limit) =>
-      (limit.availabilityDomain === undefined) ===
-        (availabilityDomain?.name === undefined) &&
-      limit.name === limitDefinitionSummary.name
+      limit.availabilityDomain === availabilityDomain?.name &&
+      limit.name === limitDefinitionSummary.name &&
+      limit.scopeType === limitDefinitionSummary.scopeType
   );
 
   return {
@@ -65,7 +66,7 @@ export const loadUniqueLimit = async (
   compartment: identity.models.Compartment,
   region: identity.models.RegionSubscription,
   limitDefinitionSummary: MyLimitDefinitionSummary,
-  serviceLimits: limits.models.LimitValueSummary[]
+  serviceLimits: MyLimitValueSummary[]
 ): Promise<UniqueLimit> => {
   const limitsClient = getLimitsClient();
   limitsClient.regionId = region.regionName;

@@ -17,7 +17,7 @@ export const listServiceLimitsPerService = async (
     serviceName: serviceName,
     limit: 1000,
   };
-  client.regionId = "us-ashburn-1";
+  client.regionId = region;
   let logJSON = "";
   let opc: string | undefined = undefined;
   let response: MyLimitValueSummary[] = [];
@@ -43,7 +43,7 @@ export const listServiceLimitsPerService = async (
 
     response = response.concat(
       listLimitValuesResponse.items.filter(
-        (serviceLimit) => serviceLimit.name
+        (serviceLimit) => serviceLimit.name && serviceLimit.scopeType
       ) as MyLimitValueSummary[]
     );
     opc = listLimitValuesResponse.opcNextPage;

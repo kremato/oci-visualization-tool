@@ -4,6 +4,8 @@ import path from "path";
 import { log } from "../utils/log";
 import { Provider } from "./provider";
 
+const filePath = path.basename(__filename);
+
 // List of available servies for the root compartment/tenancy.
 // Services with an undefined name or description are filtered out
 export const listServices = async (): Promise<MyServiceSummary[]> => {
@@ -13,11 +15,12 @@ export const listServices = async (): Promise<MyServiceSummary[]> => {
     compartmentId: Provider.getInstance().provider.getTenantId(),
   };
 
-  const iterator = limitsClient.listServicesRecordIterator(listServicesRequest);
+  const serviceSummaries = (
+    await limitsClient.listServices(listServicesRequest)
+  ).items;
+  const filteredSummaries: MyServiceSummary[] = [];
 
-  const summaries: MyServiceSummary[] = [];
-  const filePath = path.basename(__filename);
-  for await (let serviceSummary of iterator) {
+  for (const serviceSummary of serviceSummaries) {
     if (serviceSummary.name === undefined) {
       log(filePath, "service with 'undefined' name filtered out.");
       continue;
@@ -26,8 +29,8 @@ export const listServices = async (): Promise<MyServiceSummary[]> => {
       log(filePath, "service with 'undefined' description filtered out.");
       continue;
     }
-    summaries.push(serviceSummary as MyServiceSummary);
+    filteredSummaries.push(serviceSummary as MyServiceSummary);
   }
 
-  return summaries;
+  return filteredSummaries;
 };

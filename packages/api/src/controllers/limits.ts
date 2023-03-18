@@ -10,15 +10,16 @@ import { outputToFile } from "../utils/outputToFile";
 import path from "path";
 import { log } from "../utils/log";
 import { loadResponseTree } from "../services/loadResponseTree";
-import { socket } from "..";
 import { storeLimitsSchema } from "../utils/validationSchemas";
 import {
+  badTokenResponse,
   oldRequestFailureResponse,
   successResponse,
   validationError,
 } from "./responses";
 import type { ValidationError } from "yup";
-import { newRequest } from "../utils/newRequest";
+import { registeredClients } from "./configuration";
+import EventEmitter from "events";
 
 // returns a list of of limits grouped by limit name(each group has its own list)
 export const list = (_req: Request, res: Response) => {
@@ -27,7 +28,15 @@ export const list = (_req: Request, res: Response) => {
   ]);
 };
 
+export const closingSessionEmmiter = new EventEmitter();
+
 export const store = async (req: Request, res: Response) => {
+  const token = req.params["id"];
+
+  if (token === undefined || !registeredClients.has(token)) {
+    return badTokenResponse(res);
+  }
+
   let data: InputData;
   try {
     data = (await storeLimitsSchema.validate(req.body)) as InputData;
@@ -37,8 +46,11 @@ export const store = async (req: Request, res: Response) => {
 
   const cache = Cache.getInstance();
 
-  const initialPostLimitsCount = cache.token.count;
-  cache.token.count += 1;
+  closingSessionEmmiter.emit(token);
+  let newRequest = false;
+  closingSessionEmmiter.once(token, () => {
+    newRequest = true;
+  });
 
   if (data.invalidateCache) {
     Cache.getInstance().clear();
@@ -65,15 +77,14 @@ export const store = async (req: Request, res: Response) => {
   for (const compartment of filteredCompartments) {
     for (const region of filteredRegions) {
       for (const service of filteredServices) {
-        await listServiceLimitsPerService(service.name, region.regionName);
-        let limitDefinitionSummaries = cache.limitDefinitionsPerRegionPerService
-          .get(region)
-          ?.get(service.name);
+        let limitDefinitionSummaries = cache.limitDefinitionsPerService.get(
+          service.name
+        );
 
         if (!limitDefinitionSummaries) {
           log(
             path.basename(__filename),
-            `no limitDefinitionSummaries found for ${region.regionName} or ${service.name}`
+            `no limitDefinitionSummaries found for ${service.name} service`
           );
           failedServices.push(service.name);
           continue;
@@ -92,15 +103,18 @@ export const store = async (req: Request, res: Response) => {
 
         // check for service limit values
         if (
-          !cache.serviceLimitMap.has(service.name) &&
-          !newRequest(initialPostLimitsCount)
-        )
-          cache.serviceLimitMap.set(
-            service.name,
-            await listServiceLimitsPerService(service.name, region.regionName)
-          );
+          !cache.serviceLimitMap.get(region)!.has(service.name) &&
+          !newRequest
+        ) {
+          cache.serviceLimitMap
+            .get(region)!
+            .set(
+              service.name,
+              await listServiceLimitsPerService(service.name, region.regionName)
+            );
+        }
 
-        if (newRequest(initialPostLimitsCount)) {
+        if (newRequest) {
           return oldRequestFailureResponse(res);
         }
 
@@ -109,7 +123,7 @@ export const store = async (req: Request, res: Response) => {
             compartment,
             region,
             LimitDefinitionSummary,
-            cache.serviceLimitMap.get(service.name)!,
+            cache.serviceLimitMap.get(region)!.get(service.name)!,
           ]);
           countLimitDefinitionSummaries++;
         }
@@ -121,7 +135,7 @@ export const store = async (req: Request, res: Response) => {
   const rootServiceTree = createResponseTreeNode("rootServices");
   let countLoadedLimits = 0;
   while (loadLimitArguments.length > 0) {
-    if (newRequest(initialPostLimitsCount)) {
+    if (newRequest) {
       return oldRequestFailureResponse(res);
     }
     console.log("loading limits");
@@ -133,7 +147,7 @@ export const store = async (req: Request, res: Response) => {
     const uniqueLimits = await Promise.all(promises);
     const endTime = performance.now();
     for (const limit of uniqueLimits) {
-      if (!newRequest(initialPostLimitsCount)) cache.addLimit(limit);
+      if (!newRequest) cache.addLimit(limit);
       loadResponseTree(limit, rootCompartmentTree, "compartment");
       loadResponseTree(limit, rootServiceTree, "service");
     }
@@ -142,8 +156,8 @@ export const store = async (req: Request, res: Response) => {
 
     /* send progress update only if promise fetching took more than half a second
     so the client is not overwhelmed and synchronization issues dont arise */
-    if (!newRequest(initialPostLimitsCount) && endTime - startTime >= 500) {
-      socket?.send(
+    if (!newRequest && endTime - startTime >= 500) {
+      registeredClients.get(token)?.send(
         JSON.stringify({
           failedServices,
           countLoadedLimits,
@@ -160,7 +174,7 @@ export const store = async (req: Request, res: Response) => {
     JSON.stringify([rootCompartmentTree, rootServiceTree])
   );
 
-  return newRequest(initialPostLimitsCount)
+  return newRequest
     ? oldRequestFailureResponse(res)
     : successResponse(res, [rootCompartmentTree, rootServiceTree]);
 };
