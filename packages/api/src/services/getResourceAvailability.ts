@@ -1,14 +1,16 @@
 import type { identity, limits } from "common";
 import path from "path";
+import { getLimitsClient } from "../clients/getLimitsClient";
+import type { MyAvailabilityDomain } from "../types/types";
 import { log } from "../utils/log";
 
 const filePath = path.basename(__filename);
 
 export const getResourceAvailability = async (
-  limitsClient: limits.LimitsClient,
   compartmentId: string,
   limitDefinitionSummary: limits.models.LimitDefinitionSummary,
-  availabilityDomain?: identity.models.AvailabilityDomain
+  region: identity.models.RegionSubscription,
+  availabilityDomain?: identity.models.AvailabilityDomain | MyAvailabilityDomain
 ): Promise<limits.models.ResourceAvailability | undefined> => {
   if (
     !limitDefinitionSummary.name ||
@@ -36,17 +38,22 @@ export const getResourceAvailability = async (
     };
   let resourceAvailability: limits.models.ResourceAvailability | undefined =
     undefined;
+  const limitsClient = getLimitsClient();
+  limitsClient.regionId = region.regionName;
   try {
     const getResourceAvailabilityResponse =
       await limitsClient.getResourceAvailability(
         getResourceAvailabilityRequest
       );
+    //console.log("getResourceAvailability1");
     resourceAvailability = getResourceAvailabilityResponse.resourceAvailability;
   } catch (error) {
     log(
       filePath,
-      `unable to getResourceAvailability for a ${limitDefinitionSummary}${
-        availabilityDomain ? ` with an ${availabilityDomain}` : ""
+      `unable to getResourceAvailability for ${
+        limitDefinitionSummary.name
+      } limit in a ${limitDefinitionSummary.serviceName} service${
+        availabilityDomain ? `, within ${availabilityDomain.name}` : ""
       }`
     );
   }

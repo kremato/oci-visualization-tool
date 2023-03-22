@@ -1,9 +1,8 @@
 import type { MyLimitDefinitionSummary, identity } from "common";
 import type { Request, Response } from "express";
 import { Cache } from "../services/cache";
-import type { InputData, MyLimitValueSummary } from "../types/types";
+import type { InputData } from "../types/types";
 import { createResponseTreeNode } from "../utils/createResponseTreeNode";
-import { listServiceLimitsPerService } from "../services/listServiceLimitsPerService";
 import { loadUniqueLimit } from "../services/loadUniqueLimit";
 import { sortLimits } from "../utils/sortLimits";
 import { outputToFile } from "../utils/outputToFile";
@@ -39,18 +38,18 @@ export const store = async (req: Request, res: Response) => {
 
   let data: InputData;
   try {
-    data = (await storeLimitsSchema.validate(req.body)) as InputData;
+    data = await storeLimitsSchema.validate(req.body);
   } catch (error) {
     return validationError(res, error as ValidationError);
   }
-
-  const cache = Cache.getInstance();
 
   closingSessionEmmiter.emit(token);
   let newRequest = false;
   closingSessionEmmiter.once(token, () => {
     newRequest = true;
   });
+
+  const cache = Cache.getInstance();
 
   if (data.invalidateCache) {
     Cache.getInstance().clear();
@@ -69,8 +68,7 @@ export const store = async (req: Request, res: Response) => {
   const loadLimitArguments: [
     identity.models.Compartment,
     identity.models.RegionSubscription,
-    MyLimitDefinitionSummary,
-    MyLimitValueSummary[]
+    MyLimitDefinitionSummary
   ][] = [];
   let countLimitDefinitionSummaries = 0;
   const failedServices: string[] = [];
@@ -101,29 +99,11 @@ export const store = async (req: Request, res: Response) => {
           );
         }
 
-        // check for service limit values
-        if (
-          !cache.serviceLimitMap.get(region)!.has(service.name) &&
-          !newRequest
-        ) {
-          cache.serviceLimitMap
-            .get(region)!
-            .set(
-              service.name,
-              await listServiceLimitsPerService(service.name, region.regionName)
-            );
-        }
-
-        if (newRequest) {
-          return oldRequestFailureResponse(res);
-        }
-
         for (const LimitDefinitionSummary of limitDefinitionSummaries) {
           loadLimitArguments.push([
             compartment,
             region,
             LimitDefinitionSummary,
-            cache.serviceLimitMap.get(region)!.get(service.name)!,
           ]);
           countLimitDefinitionSummaries++;
         }
@@ -134,20 +114,16 @@ export const store = async (req: Request, res: Response) => {
   const rootCompartmentTree = createResponseTreeNode("rootCompartments");
   const rootServiceTree = createResponseTreeNode("rootServices");
   let countLoadedLimits = 0;
-  while (loadLimitArguments.length > 0) {
-    if (newRequest) {
-      return oldRequestFailureResponse(res);
-    }
+  while (loadLimitArguments.length > 0 && !newRequest) {
     console.log("loading limits");
     const promises = loadLimitArguments
-      .splice(0, 20)
+      .splice(0, 30)
       .map((item) => loadUniqueLimit(...item));
-
     const startTime = performance.now();
     const uniqueLimits = await Promise.all(promises);
     const endTime = performance.now();
     for (const limit of uniqueLimits) {
-      if (!newRequest) cache.addLimit(limit);
+      cache.addUniqueLimit(limit);
       loadResponseTree(limit, rootCompartmentTree, "compartment");
       loadResponseTree(limit, rootServiceTree, "service");
     }

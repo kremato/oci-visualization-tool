@@ -6,10 +6,10 @@ import {
   limits,
 } from "common";
 import { getLimitsClient } from "../clients/getLimitsClient";
-import { getAvailabilityDomainsPerRegion } from "./getAvailabilityDomainsPerRegion";
 import { getResourceAvailability } from "./getResourceAvailability";
 import { Cache } from "./cache";
-import type { MyLimitValueSummary } from "../types/types";
+import type { MyAvailabilityDomain, MyLimitValueSummary } from "../types/types";
+import { listServiceLimits } from "./listServiceLimits";
 
 const maxValue = Number.MAX_SAFE_INTEGER;
 
@@ -18,17 +18,16 @@ const getResourceAvailibilityForUndefinedAndMaxValue = (
 ) =>
   property !== undefined && property <= maxValue ? property.toString() : "n/a";
 
-const getAvailabilityObject = async (
+const getResourceObject = async (
   compartmentId: string,
   limitDefinitionSummary: MyLimitDefinitionSummary,
-  limitsClient: limits.LimitsClient,
-  serviceLimits: MyLimitValueSummary[],
-  availabilityDomain?: identity.models.AvailabilityDomain
+  region: identity.models.RegionSubscription,
+  availabilityDomain?: identity.models.AvailabilityDomain | MyAvailabilityDomain
 ): Promise<ResourceAvailabilityObject | undefined> => {
   const resourceAvailability = await getResourceAvailability(
-    limitsClient,
     compartmentId,
     limitDefinitionSummary,
+    region,
     availabilityDomain
   );
 
@@ -44,18 +43,24 @@ const getAvailabilityObject = async (
     resourceAvailability.effectiveQuotaValue
   );
 
-  const serviceLimit = serviceLimits.find(
-    (limit) =>
-      limit.availabilityDomain === availabilityDomain?.name &&
-      limit.name === limitDefinitionSummary.name &&
-      limit.scopeType === limitDefinitionSummary.scopeType
-  );
+  let serviceLimits: MyLimitValueSummary[] = (await listServiceLimits(
+    limitDefinitionSummary.serviceName,
+    limitDefinitionSummary.name,
+    region
+  )) as MyLimitValueSummary[];
 
+  const summary = serviceLimits.find(
+    (summary) =>
+      summary.availabilityDomain === availabilityDomain &&
+      summary.name === limitDefinitionSummary.scopeType &&
+      summary.name === limitDefinitionSummary.name
+  );
+  const serviceLimit = getResourceAvailibilityForUndefinedAndMaxValue(
+    summary?.value
+  );
   return {
     availabilityDomain: availabilityDomain ? availabilityDomain.name : "REGION",
-    serviceLimit: getResourceAvailibilityForUndefinedAndMaxValue(
-      serviceLimit?.value
-    ),
+    serviceLimit,
     available,
     used,
     quota,
@@ -65,8 +70,7 @@ const getAvailabilityObject = async (
 export const loadUniqueLimit = async (
   compartment: identity.models.Compartment,
   region: identity.models.RegionSubscription,
-  limitDefinitionSummary: MyLimitDefinitionSummary,
-  serviceLimits: MyLimitValueSummary[]
+  limitDefinitionSummary: MyLimitDefinitionSummary
 ): Promise<UniqueLimit> => {
   const limitsClient = getLimitsClient();
   limitsClient.regionId = region.regionName;
@@ -87,32 +91,28 @@ export const loadUniqueLimit = async (
 
   const cache = Cache.getInstance();
 
-  const limitSetUniqueLimit = cache.hasLimit(newUniqueLimit);
+  const cachedUniqueLimit = cache.hasUniqueLimit(newUniqueLimit);
   // if limit is already present, skip fetching and just add the limit to the response
-  if (limitSetUniqueLimit) {
-    return limitSetUniqueLimit;
+  if (cachedUniqueLimit) {
+    return cachedUniqueLimit;
   }
 
   if (
     limitDefinitionSummary.scopeType ===
     limits.models.LimitDefinitionSummary.ScopeType.Ad
   ) {
-    if (!cache.availabilityDomainsPerRegion.has(region))
-      cache.availabilityDomainsPerRegion.set(
-        region,
-        await getAvailabilityDomainsPerRegion(region)
-      );
-    const availabilityDomains = cache.availabilityDomainsPerRegion.get(region)!;
+    const availabilityDomains = cache.getAvailabilityDomains(region);
     for (const availabilityDomain of availabilityDomains) {
-      const availabilityObject = await getAvailabilityObject(
+      const availabilityObject = await getResourceObject(
         compartment.id,
         limitDefinitionSummary,
-        limitsClient,
-        serviceLimits,
+        region,
         availabilityDomain
       );
 
-      if (availabilityObject) resourceAvailabilityList.push(availabilityObject);
+      if (availabilityObject) {
+        resourceAvailabilityList.push(availabilityObject);
+      }
     }
   }
 
@@ -120,11 +120,10 @@ export const loadUniqueLimit = async (
     limitDefinitionSummary.scopeType ===
     limits.models.LimitDefinitionSummary.ScopeType.Region
   ) {
-    const availabilityObject = await getAvailabilityObject(
+    const availabilityObject = await getResourceObject(
       compartment.id,
       limitDefinitionSummary,
-      limitsClient,
-      serviceLimits
+      region
     );
 
     if (availabilityObject) resourceAvailabilityList.push(availabilityObject);

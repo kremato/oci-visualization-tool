@@ -8,8 +8,6 @@ export class Provider {
 
   private constructor() {
     this.provider = getProvider();
-    //console.log(`AHOJ: ${common.Region.AP_SYDNEY_1.regionId}`);
-    //this.provider.setRegion(common.Region.AP_SYDNEY_1.regionId);
   }
 
   static getInstance() {

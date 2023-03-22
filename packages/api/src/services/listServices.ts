@@ -1,14 +1,11 @@
 import { getLimitsClient } from "../clients/getLimitsClient";
-import type { MyServiceSummary, limits } from "common";
-import path from "path";
-import { log } from "../utils/log";
+import type { limits } from "common";
 import { Provider } from "./provider";
 
-const filePath = path.basename(__filename);
-
 // List of available servies for the root compartment/tenancy.
-// Services with an undefined name or description are filtered out
-export const listServices = async (): Promise<MyServiceSummary[]> => {
+export const listServices = async (): Promise<
+  limits.models.ServiceSummary[]
+> => {
   const limitsClient = getLimitsClient();
   const listServicesRequest: limits.requests.ListServicesRequest = {
     // must be tenancy
@@ -18,18 +15,10 @@ export const listServices = async (): Promise<MyServiceSummary[]> => {
   const serviceSummaries = (
     await limitsClient.listServices(listServicesRequest)
   ).items;
-  const filteredSummaries: MyServiceSummary[] = [];
+  const filteredSummaries: limits.models.ServiceSummary[] = [];
 
   for (const serviceSummary of serviceSummaries) {
-    if (serviceSummary.name === undefined) {
-      log(filePath, "service with 'undefined' name filtered out.");
-      continue;
-    }
-    if (serviceSummary.description === undefined) {
-      log(filePath, "service with 'undefined' description filtered out.");
-      continue;
-    }
-    filteredSummaries.push(serviceSummary as MyServiceSummary);
+    filteredSummaries.push(serviceSummary);
   }
 
   return filteredSummaries;

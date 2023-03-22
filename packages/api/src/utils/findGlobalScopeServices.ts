@@ -1,7 +1,7 @@
 import { limits } from "common";
 import { getLimitDefinitionsPerProperty } from "../services/getLimitDefinitionsPerProperty";
 
-export const findGloballyScopedServices = async (
+export const findGloballyScopedServices = (
   limiDefinitionsSummaries: limits.models.LimitDefinitionSummary[]
 ) => {
   const limitDefinitionsPerService = getLimitDefinitionsPerProperty(
