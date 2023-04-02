@@ -9,19 +9,29 @@ import { useForm } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import { fetchLimitsData } from "../../utils/fetchLimitsData";
 import { LimitsFormEntries, LimitsFormValues } from "../../types/types";
+import store from "../../store/store";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { fetchToken } from "../../store/tokenActionCreators";
 
 export const LimitsForm = () => {
   const { handleSubmit, control } = useForm<LimitsFormValues>();
+  const dispatch = useAppDispatch();
   const [formData, setFormData] = useState<LimitsFormValues | undefined>(
     undefined
   );
 
   useEffect(() => {
-    if (formData) {
-      /* console.log("FORM DATA:");
-      console.log(formData); */
+    if (formData === undefined) return;
+
+    const fetchFormData = async () => {
+      if (store.getState().token.token === undefined) {
+        await dispatch(fetchToken());
+        // TODO: what if it goes wrong
+      }
       fetchLimitsData(formData);
-    }
+    };
+
+    fetchFormData();
   }, [formData]);
 
   return (

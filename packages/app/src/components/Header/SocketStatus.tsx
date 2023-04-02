@@ -6,8 +6,8 @@ export const SocketStatus = () => {
 
   return (
     <Chip
-      label={socketStatus ? "Socket is up" : "Socket is reconnecting..."}
-      color={socketStatus ? "success" : "warning"}
+      label={socketStatus ? "Socket is up" : "Socket is down"}
+      color={socketStatus ? "success" : "error"}
     />
   );
 };

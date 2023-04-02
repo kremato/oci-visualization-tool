@@ -1,9 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ResponseTreeNode } from "common";
+import { UniqueLimitTreeNode } from "../types/types";
 
 interface NodeState {
-  serviceNodes: ResponseTreeNode[];
-  compartmentNodes: ResponseTreeNode[];
+  serviceNodes: UniqueLimitTreeNode[];
+  compartmentNodes: UniqueLimitTreeNode[];
 }
 
 const initialState: NodeState = {
@@ -15,10 +15,13 @@ const nodeSlice = createSlice({
   name: "nodes",
   initialState,
   reducers: {
-    replaceServiceNodes(state, action: PayloadAction<ResponseTreeNode[]>) {
+    replaceServiceNodes(state, action: PayloadAction<UniqueLimitTreeNode[]>) {
       state.serviceNodes = action.payload;
     },
-    replaceCompartmentNodes(state, action: PayloadAction<ResponseTreeNode[]>) {
+    replaceCompartmentNodes(
+      state,
+      action: PayloadAction<UniqueLimitTreeNode[]>
+    ) {
       state.compartmentNodes = action.payload;
     },
   },

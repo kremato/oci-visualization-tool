@@ -1,5 +1,5 @@
 import { limits } from "common";
-import { ResourceAvailabilityObject, UniqueLimit } from "common";
+import { ResourceObject, UniqueLimit } from "common";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { hideResourceAvailability } from "../../utils/hideResourceAvailability";
 import { LimitRow } from "./LimitRow";
@@ -9,10 +9,9 @@ const getColumnNameForLimit = (
   scope:
     | limits.models.LimitDefinitionSummary.ScopeType.Ad
     | limits.models.LimitDefinitionSummary.ScopeType.Region,
-  resourceAvailabilityObject: ResourceAvailabilityObject
+  resource: ResourceObject
 ) => {
-  if (scope === "AD")
-    return resourceAvailabilityObject.availabilityDomain || "AD name missing";
+  if (scope === "AD") return resource.availabilityDomain || "AD name missing";
   return "REGION";
 };
 
@@ -32,10 +31,7 @@ export const Row = ({ uniqueLimit }: Props) => {
   );
   const showDeprecated = useAppSelector((state) => state.input.showDeprecated);
 
-  if (
-    uniqueLimit.scope === "AD" &&
-    uniqueLimit.resourceAvailability.length === 0
-  ) {
+  if (uniqueLimit.scope === "AD" && uniqueLimit.resources.length === 0) {
     return (
       <tr>
         <Typography>No data for {uniqueLimit.limitName}</Typography>
@@ -45,7 +41,7 @@ export const Row = ({ uniqueLimit }: Props) => {
 
   if (
     (uniqueLimit.isDeprecated && !showDeprecated) ||
-    hideResourceAvailability(uniqueLimit.resourceAvailabilitySum, hideParams)
+    hideResourceAvailability(uniqueLimit.resourceSum, hideParams)
   ) {
     return <></>;
   }
@@ -53,7 +49,7 @@ export const Row = ({ uniqueLimit }: Props) => {
   const rows = [];
 
   if (!sumADResources) {
-    for (const resourceAvailability of uniqueLimit.resourceAvailability) {
+    for (const resourceAvailability of uniqueLimit.resources) {
       if (hideResourceAvailability(resourceAvailability, hideParams)) continue;
       const row = (
         <LimitRow
@@ -71,19 +67,16 @@ export const Row = ({ uniqueLimit }: Props) => {
 
   if (
     sumADResources &&
-    !hideResourceAvailability(uniqueLimit.resourceAvailabilitySum, hideParams)
+    !hideResourceAvailability(uniqueLimit.resourceSum, hideParams)
   ) {
     const row = (
       <LimitRow
-        key={uniqueLimit.resourceAvailabilitySum.availabilityDomain}
-        name={getColumnNameForLimit(
-          uniqueLimit.scope,
-          uniqueLimit.resourceAvailabilitySum
-        )}
-        serviceLimit={uniqueLimit.resourceAvailabilitySum.serviceLimit}
-        availability={uniqueLimit.resourceAvailabilitySum.available}
-        used={uniqueLimit.resourceAvailabilitySum.used}
-        quota={uniqueLimit.resourceAvailabilitySum.quota}
+        key={uniqueLimit.resourceSum.availabilityDomain}
+        name={getColumnNameForLimit(uniqueLimit.scope, uniqueLimit.resourceSum)}
+        serviceLimit={uniqueLimit.resourceSum.serviceLimit}
+        availability={uniqueLimit.resourceSum.available}
+        used={uniqueLimit.resourceSum.used}
+        quota={uniqueLimit.resourceSum.quota}
       />
     );
     rows.push(row);

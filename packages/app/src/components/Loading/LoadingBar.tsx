@@ -49,6 +49,12 @@ export const LoadingBar = () => {
         : 0
     );
   }, [message]);
+  /*
+    if api is up && socket is down:
+      display kolecko
+
+    if socket is up
+  */
 
   return (
     <>

@@ -9,7 +9,7 @@ const createCSVRows = (
   path: string[]
 ): string[][] => {
   const rows: string[][] = [];
-  for (const resourceObject of uniqueLimit.resourceAvailability) {
+  for (const resourceObject of uniqueLimit.resources) {
     const row = [
       ...path,
       uniqueLimit.limitName,

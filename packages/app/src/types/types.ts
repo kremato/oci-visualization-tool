@@ -1,3 +1,5 @@
+import { UniqueLimit } from "common";
+
 export interface DropdownItem {
   primaryLabel: string;
   secondaryLabel: string;
@@ -26,4 +28,10 @@ export interface LimitsFormValues {
   [LimitsFormEntries.Services]: string[];
   [LimitsFormEntries.Limits]: { limitName: string; serviceName: string }[];
   [LimitsFormEntries.InvalidateCache]: boolean;
+}
+
+export interface UniqueLimitTreeNode {
+  name: string;
+  children: UniqueLimitTreeNode[];
+  limits?: UniqueLimit[];
 }

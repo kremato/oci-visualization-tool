@@ -32,40 +32,49 @@ export interface SocketMessageData {
   countLimitDefinitionSummaries: number;
 }
 
+// TODO:
+//const port = process.env.prodution ? import.meta.env.VITE_API : process.
+
 const socketApi = (): {
   isOpen: () => boolean | undefined;
   getMessage: () => SocketMessageData | undefined;
+  restart: () => void;
 } => {
-  /* console.log(`socketApi invoked`); */
+  console.log(`socketApi invoked`);
   let socket: WebSocket | undefined = undefined;
   let isOpen: boolean | undefined = undefined;
   let progressMessage: SocketMessageData | undefined = undefined;
-  const startSocket = () => {
-    socket = new WebSocket("ws://localhost:8546");
 
+  const startSocket = () => {
+    const token = store.getState().token.token;
+    if (token === undefined) {
+      console.log(`token is undefined, returning`);
+      return;
+    }
+    const searchParams = new URLSearchParams({
+      token: token,
+    });
+    console.log(store.getState().token.token);
+    console.log(`URL : ${"ws://localhost:8546?" + searchParams}`);
+    socket = new WebSocket("ws://localhost:8546?" + searchParams);
     socket.onopen = (_event) => {
+      console.log(`socket is open, token: ${token}`);
       isOpen = true;
       updateStatusListeners();
     };
 
     socket.onmessage = (message) => {
-      /* console.log(`message from the server ${message}`);
-      console.log(message.data); */
+      console.log(`message from the server ${message}`);
+      console.log(message.data);
       progressMessage = JSON.parse(message.data);
       updateMessageListeners();
     };
 
     socket.onclose = (event) => {
-      //store.dispatch(inputActions.updateShowProgressBar(false));
+      console.log(`socket is closing, code: ${event.code}; token: ${token}`);
       store.dispatch(inputActions.updateProgressStatus(undefined));
-      if (event.code !== 1006) {
-        return;
-      }
       isOpen = false;
       updateStatusListeners();
-      setTimeout(() => {
-        startSocket();
-      }, socketReconnectDelayInMiliseconds);
     };
   };
 
@@ -74,6 +83,10 @@ const socketApi = (): {
   return {
     isOpen: () => isOpen,
     getMessage: () => progressMessage,
+    restart: () => {
+      socket?.close();
+      startSocket();
+    },
   };
 };
 
