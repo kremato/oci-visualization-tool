@@ -9,7 +9,7 @@ const filePath = path.basename(__filename);
 export const getResourceAvailability = async (
   compartmentId: string,
   limitDefinitionSummary: limits.models.LimitDefinitionSummary,
-  region: identity.models.RegionSubscription,
+  regionId: string,
   availabilityDomain?: identity.models.AvailabilityDomain | MyAvailabilityDomain
 ): Promise<limits.models.ResourceAvailability | undefined> => {
   if (
@@ -39,13 +39,12 @@ export const getResourceAvailability = async (
   let resourceAvailability: limits.models.ResourceAvailability | undefined =
     undefined;
   const limitsClient = getLimitsClient();
-  limitsClient.regionId = region.regionName;
+  limitsClient.regionId = regionId;
   try {
     const getResourceAvailabilityResponse =
       await limitsClient.getResourceAvailability(
         getResourceAvailabilityRequest
       );
-    //console.log("getResourceAvailability1");
     resourceAvailability = getResourceAvailabilityResponse.resourceAvailability;
   } catch (error) {
     log(

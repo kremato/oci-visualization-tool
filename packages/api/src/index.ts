@@ -1,16 +1,16 @@
 import express, { Express } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+//import * as controllers from "./controllers";
+import { WebSocketServer } from "ws";
+import * as url from "url";
 import {
   configuration,
   compartments,
+  limits,
   regions,
   services,
-  limits,
 } from "./controllers";
-import { WebSocketServer } from "ws";
-import * as url from "url";
-import { registeredClients } from "./controllers/configuration";
 
 dotenv.config();
 const app: Express = express();
@@ -32,12 +32,16 @@ wss.on("connection", (ws, req) => {
 
   const { token } = url.parse(req.url, true).query;
 
-  if (!token || Array.isArray(token) || !registeredClients.has(token)) {
+  if (
+    !token ||
+    Array.isArray(token) ||
+    configuration.registeredClients.has(token)
+  ) {
     ws.close(1008);
     return;
   }
 
-  registeredClients.set(token, ws);
+  configuration.registeredClients.set(token, ws);
 });
 
 app.get("/registration-token", configuration.onSignup);

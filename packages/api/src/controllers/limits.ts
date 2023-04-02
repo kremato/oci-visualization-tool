@@ -1,14 +1,11 @@
-import type { MyLimitDefinitionSummary, identity } from "common";
+import type { MyLimitDefinitionSummary, identity, UniqueLimit } from "common";
 import type { Request, Response } from "express";
 import { Cache } from "../services/cache";
 import type { InputData } from "../types/types";
-import { createResponseTreeNode } from "../utils/createResponseTreeNode";
 import { loadUniqueLimit } from "../services/loadUniqueLimit";
-import { sortLimits } from "../utils/sortLimits";
 import { outputToFile } from "../utils/outputToFile";
 import path from "path";
 import { log } from "../utils/log";
-import { loadResponseTree } from "../services/loadResponseTree";
 import { storeLimitsSchema } from "../utils/validationSchemas";
 import {
   badTokenResponse,
@@ -20,11 +17,11 @@ import type { ValidationError } from "yup";
 import { registeredClients } from "./configuration";
 import EventEmitter from "events";
 
-// returns a list of of limits grouped by limit name(each group has its own list)
 export const list = (_req: Request, res: Response) => {
-  return successResponse(res, [
-    ...Cache.getInstance().limitDefinitionsPerLimitName.values(),
-  ]);
+  return successResponse(
+    res,
+    Cache.getInstance().getLimitDefinitionsGroupedByLimitName
+  );
 };
 
 export const closingSessionEmmiter = new EventEmitter();
@@ -43,6 +40,7 @@ export const store = async (req: Request, res: Response) => {
     return validationError(res, error as ValidationError);
   }
 
+  //const token = req.params["id"]!;
   closingSessionEmmiter.emit(token);
   let newRequest = false;
   closingSessionEmmiter.once(token, () => {
@@ -55,19 +53,19 @@ export const store = async (req: Request, res: Response) => {
     Cache.getInstance().clear();
   }
 
-  const filteredCompartments = cache.compartments.filter((compartment) => {
+  const filteredCompartments = cache.getCompartments().filter((compartment) => {
     return data.compartments.includes(compartment.id);
   });
-  const filteredRegions = cache.regionSubscriptions.filter((region) => {
+  const filteredRegions = cache.getRegions().filter((region) => {
     return data.regions.includes(region.regionName);
   });
-  const filteredServices = cache.serviceSubscriptions.filter((service) => {
+  const filteredServices = cache.getServices().filter((service) => {
     return data.services.includes(service.name);
   });
 
   const loadLimitArguments: [
     identity.models.Compartment,
-    identity.models.RegionSubscription,
+    string,
     MyLimitDefinitionSummary
   ][] = [];
   let countLimitDefinitionSummaries = 0;
@@ -75,7 +73,7 @@ export const store = async (req: Request, res: Response) => {
   for (const compartment of filteredCompartments) {
     for (const region of filteredRegions) {
       for (const service of filteredServices) {
-        let limitDefinitionSummaries = cache.limitDefinitionsPerService.get(
+        let limitDefinitionSummaries = cache.getLimitDefinitionsPerService(
           service.name
         );
 
@@ -102,7 +100,7 @@ export const store = async (req: Request, res: Response) => {
         for (const LimitDefinitionSummary of limitDefinitionSummaries) {
           loadLimitArguments.push([
             compartment,
-            region,
+            region.regionName,
             LimitDefinitionSummary,
           ]);
           countLimitDefinitionSummaries++;
@@ -111,9 +109,8 @@ export const store = async (req: Request, res: Response) => {
     }
   }
 
-  const rootCompartmentTree = createResponseTreeNode("rootCompartments");
-  const rootServiceTree = createResponseTreeNode("rootServices");
   let countLoadedLimits = 0;
+  const loadedLimits: UniqueLimit[] = [];
   while (loadLimitArguments.length > 0 && !newRequest) {
     console.log("loading limits");
     const promises = loadLimitArguments
@@ -124,8 +121,7 @@ export const store = async (req: Request, res: Response) => {
     const endTime = performance.now();
     for (const limit of uniqueLimits) {
       cache.addUniqueLimit(limit);
-      loadResponseTree(limit, rootCompartmentTree, "compartment");
-      loadResponseTree(limit, rootServiceTree, "service");
+      loadedLimits.push(limit);
     }
 
     countLoadedLimits += uniqueLimits.length;
@@ -143,14 +139,9 @@ export const store = async (req: Request, res: Response) => {
     }
   }
 
-  sortLimits(rootCompartmentTree);
-  sortLimits(rootServiceTree);
-  outputToFile(
-    "test/postLimitsResponse.txt",
-    JSON.stringify([rootCompartmentTree, rootServiceTree])
-  );
+  outputToFile("test/postLimitsResponse.txt", JSON.stringify(loadedLimits));
 
   return newRequest
     ? oldRequestFailureResponse(res)
-    : successResponse(res, [rootCompartmentTree, rootServiceTree]);
+    : successResponse(res, loadedLimits);
 };

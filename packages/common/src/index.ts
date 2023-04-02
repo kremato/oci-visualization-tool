@@ -27,13 +27,7 @@ export interface MyLimitDefinitionSummary
 export interface LimitDefinitionsPerProperty
   extends StringHash<MyLimitDefinitionSummary[]> {}
 
-export interface ResponseTreeNode {
-  name: string;
-  children: ResponseTreeNode[];
-  limits?: UniqueLimit[];
-}
-
-export interface ResourceAvailabilityObject {
+export interface ResourceObject {
   availabilityDomain: string | undefined;
   serviceLimit: string;
   available: string;
@@ -42,17 +36,17 @@ export interface ResourceAvailabilityObject {
 }
 
 export interface UniqueLimit {
+  limitName: string;
   serviceName: string;
   compartmentId: string;
+  compartmentName: string;
   scope:
     | limits.models.LimitDefinitionSummary.ScopeType.Ad
     | limits.models.LimitDefinitionSummary.ScopeType.Region;
   regionId: string;
   isDeprecated?: boolean;
-  limitName: string;
-  compartmentName: string;
-  resourceAvailability: ResourceAvailabilityObject[];
-  resourceAvailabilitySum: ResourceAvailabilityObject;
+  resources: ResourceObject[];
+  resourceSum: ResourceObject;
 }
 
 export * as identity from "oci-identity";

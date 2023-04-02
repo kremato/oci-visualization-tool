@@ -1,4 +1,3 @@
-import type { identity } from "common";
 import type { MyAvailabilityDomain } from "../types/types";
 import { filterAvailabilityDomains } from "../utils/filterAvailabilityDomains";
 import { filterLimitDefinitionSummaries } from "../utils/filterLimitsDefinitionSummaries";
@@ -30,13 +29,11 @@ export const getStartupData = async () => {
     await filterLimitDefinitionSummaries(limiDefinitionSummaries),
     "serviceName"
   );
-  const availabilityDomainsPerRegion: Map<
-    identity.models.RegionSubscription,
-    MyAvailabilityDomain[]
-  > = new Map();
+  const availabilityDomainsPerRegion: Map<string, MyAvailabilityDomain[]> =
+    new Map();
   regionSubscriptions.forEach(async (region) => {
     availabilityDomainsPerRegion.set(
-      region,
+      region.regionName,
       await filterAvailabilityDomains(
         await getAvailabilityDomainsPerRegion(region)
       )
