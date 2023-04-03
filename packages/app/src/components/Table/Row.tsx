@@ -64,7 +64,7 @@ export const Row = ({ uniqueLimit }: Props) => {
   ) {
     const row = (
       <LimitRow
-        key={Math.random()}
+        key={uniqueLimit.resourceSum.scope}
         name={getColumnNameForLimit(uniqueLimit.resourceSum)}
         serviceLimit={uniqueLimit.resourceSum.serviceLimit}
         availability={uniqueLimit.resourceSum.available}
