@@ -1,23 +1,40 @@
 import express, { Express } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-//import * as controllers from "./controllers";
+import * as controllers from "./controllers";
 import { WebSocketServer } from "ws";
 import * as url from "url";
-import {
-  configuration,
-  compartments,
-  limits,
-  regions,
-  services,
-} from "./controllers";
+import { checkRegistrationToken } from "./middleware/checkRegistrationToken";
+import { validateStoreLimitsBody } from "./middleware/validateStoreLimitsBody";
+import { emitClosingSession } from "./middleware/emitClosingSession";
 
 dotenv.config();
 const app: Express = express();
 app.use(cors());
 app.use(express.json());
 
-const httpServer = app.listen(process.env["PORT"], configuration.onStart);
+const httpServer = app.listen(
+  process.env["PORT"],
+  controllers.configuration.start
+);
+
+app.get("/registration-token", controllers.configuration.signup);
+app.get("/compartments", controllers.compartments.list);
+app.get("/region-subscriptions", controllers.regions.listRegionSubscriptions);
+app.get("/services", controllers.services.list);
+app.get("/limits", controllers.limits.list);
+app.post(
+  "/limits/:id",
+  checkRegistrationToken,
+  validateStoreLimitsBody,
+  emitClosingSession,
+  controllers.limits.store
+);
+app.get("/", controllers.configuration.ping);
+app.use((_, res) => {
+  res.status(404).send("NOT FOUND");
+});
+
 const wss = new WebSocketServer({
   server: httpServer,
 });
@@ -35,22 +52,11 @@ wss.on("connection", (ws, req) => {
   if (
     !token ||
     Array.isArray(token) ||
-    configuration.registeredClients.has(token)
+    !controllers.configuration.registeredClients.has(token)
   ) {
     ws.close(1008);
     return;
   }
 
-  configuration.registeredClients.set(token, ws);
-});
-
-app.get("/registration-token", configuration.onSignup);
-app.get("/compartments", compartments.list);
-app.get("/region-subscriptions", regions.listRegionSubscriptions);
-app.get("/services", services.list);
-app.get("/limits", limits.list);
-app.post("/limits/:id", limits.store);
-app.get("/", configuration.onPing);
-app.use((_req, res) => {
-  res.status(404).send("NOT FOUND");
+  controllers.configuration.registeredClients.set(token, ws);
 });

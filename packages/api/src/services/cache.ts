@@ -19,7 +19,7 @@ export class Cache {
   private uniqueLimitCache: Map<string, UniqueLimit> = new Map();
   private compartments: identity.models.Compartment[] = [];
   private regionSubscriptions: identity.models.RegionSubscription[] = [];
-  private serviceSubscriptions: MyServiceSummary[] = [];
+  private services: MyServiceSummary[] = [];
   private limitDefinitionsPerLimitName: LimitDefinitionsPerProperty<MyLimitDefinitionSummary> =
     new Map();
   private limitDefinitionsPerService: Map<string, MyLimitDefinitionSummary[]> =
@@ -32,7 +32,7 @@ export class Cache {
       const startupData = await getStartupData();
       this.compartments = startupData.compartments;
       this.regionSubscriptions = startupData.regionSubscriptions;
-      this.serviceSubscriptions = startupData.serviceSubscriptions;
+      this.services = startupData.serviceSubscriptions;
       this.limitDefinitionsPerLimitName =
         startupData.limitDefinitionsPerLimitName;
       this.limitDefinitionsPerService = startupData.limitDefinitionsPerService;
@@ -61,26 +61,22 @@ export class Cache {
   }
 
   getAvailabilityDomains(regionId: string): MyAvailabilityDomain[] {
-    return this.availabilityDomainsPerRegion.get(regionId) || [];
+    return (
+      structuredClone(this.availabilityDomainsPerRegion.get(regionId)) || []
+    );
   }
 
   getCompartments(): identity.models.Compartment[] {
     return structuredClone(this.compartments);
   }
 
-  getRegions(): identity.models.RegionSubscription[] {
+  getSubscribedRegions(): identity.models.RegionSubscription[] {
     return structuredClone(this.regionSubscriptions);
   }
 
   // returns a list of of limits grouped by limit name(each group has its own list)
   getLimitDefinitionsGroupedByLimitName() {
     return [...structuredClone(this.limitDefinitionsPerLimitName.values())];
-  }
-
-  getLimitDefinitionsPerLimitName(
-    limitName: string
-  ): MyLimitDefinitionSummary[] | undefined {
-    return structuredClone(this.limitDefinitionsPerLimitName.get(limitName));
   }
 
   getLimitDefinitionsPerService(
@@ -90,7 +86,7 @@ export class Cache {
   }
 
   getServices(): MyServiceSummary[] {
-    return structuredClone(this.serviceSubscriptions);
+    return structuredClone(this.services);
   }
 
   addUniqueLimit(uniqueLimit: UniqueLimit): void {

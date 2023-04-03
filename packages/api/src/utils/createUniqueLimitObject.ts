@@ -1,6 +1,6 @@
 import type { identity, MyLimitDefinitionSummary, UniqueLimit } from "common";
 
-export const createUniqueLimit = (
+export const createUniqueLimitObject = (
   compartment: identity.models.Compartment,
   limitDefinitionSummary: MyLimitDefinitionSummary,
   regionId: string

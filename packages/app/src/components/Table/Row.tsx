@@ -1,18 +1,11 @@
-import { limits } from "common";
 import { ResourceObject, UniqueLimit } from "common";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { hideResourceAvailability } from "../../utils/hideResourceAvailability";
 import { LimitRow } from "./LimitRow";
 import { Typography } from "@mui/material";
 
-const getColumnNameForLimit = (
-  scope:
-    | limits.models.LimitDefinitionSummary.ScopeType.Ad
-    | limits.models.LimitDefinitionSummary.ScopeType.Region,
-  resource: ResourceObject
-) => {
-  if (scope === "AD") return resource.availabilityDomain || "AD name missing";
-  return "REGION";
+const getColumnNameForLimit = (resource: ResourceObject) => {
+  return resource.scope ? resource.scope : "n/a";
 };
 
 interface Props {
@@ -49,16 +42,16 @@ export const Row = ({ uniqueLimit }: Props) => {
   const rows = [];
 
   if (!sumADResources) {
-    for (const resourceAvailability of uniqueLimit.resources) {
-      if (hideResourceAvailability(resourceAvailability, hideParams)) continue;
+    for (const resourceObject of uniqueLimit.resources) {
+      if (hideResourceAvailability(resourceObject, hideParams)) continue;
       const row = (
         <LimitRow
-          key={resourceAvailability.availabilityDomain}
-          name={getColumnNameForLimit(uniqueLimit.scope, resourceAvailability)}
-          serviceLimit={resourceAvailability.serviceLimit}
-          availability={resourceAvailability.available}
-          used={resourceAvailability.used}
-          quota={resourceAvailability.quota}
+          key={resourceObject.scope}
+          name={getColumnNameForLimit(resourceObject)}
+          serviceLimit={resourceObject.serviceLimit}
+          availability={resourceObject.available}
+          used={resourceObject.used}
+          quota={resourceObject.quota}
         />
       );
       rows.push(row);
@@ -71,8 +64,8 @@ export const Row = ({ uniqueLimit }: Props) => {
   ) {
     const row = (
       <LimitRow
-        key={uniqueLimit.resourceSum.availabilityDomain}
-        name={getColumnNameForLimit(uniqueLimit.scope, uniqueLimit.resourceSum)}
+        key={Math.random()}
+        name={getColumnNameForLimit(uniqueLimit.resourceSum)}
         serviceLimit={uniqueLimit.resourceSum.serviceLimit}
         availability={uniqueLimit.resourceSum.available}
         used={uniqueLimit.resourceSum.used}

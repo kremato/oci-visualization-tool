@@ -1,6 +1,6 @@
 import type { identity, limits } from "common";
 import path from "path";
-import { getLimitsClient } from "../clients/getLimitsClient";
+import { getLimitsClient } from "./clients/getLimitsClient";
 import type { MyAvailabilityDomain } from "../types/types";
 import { log } from "../utils/log";
 

@@ -2,7 +2,8 @@ import Button from "@mui/material/Button";
 import DownloadIcon from "@mui/icons-material/Download";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { RootState } from "../../store/store";
-import { ResponseTreeNode, UniqueLimit } from "common";
+import { UniqueLimit } from "common";
+import { UniqueLimitTreeNode } from "../../types/types";
 
 const createCSVRows = (
   uniqueLimit: UniqueLimit,
@@ -21,7 +22,7 @@ const createCSVRows = (
 };
 
 const makePath = (
-  responseTreeNode: ResponseTreeNode,
+  responseTreeNode: UniqueLimitTreeNode,
   path: string[],
   csvLog: string[][]
 ): void => {
@@ -45,7 +46,7 @@ const makePath = (
 };
 
 const convertToCSV = (
-  responseTreeRootNodes: ResponseTreeNode[],
+  responseTreeRootNodes: UniqueLimitTreeNode[],
   csvTableHeaders: string[]
 ): string => {
   let csvLog: string[][] = [csvTableHeaders];
@@ -61,7 +62,7 @@ const convertToCSV = (
   return csvString;
 };
 
-const getChildLimits = (node: ResponseTreeNode): UniqueLimit[] => {
+const getChildLimits = (node: UniqueLimitTreeNode): UniqueLimit[] => {
   if (node.limits) {
     return node.limits;
   }
@@ -74,7 +75,7 @@ const getChildLimits = (node: ResponseTreeNode): UniqueLimit[] => {
   return limits;
 };
 
-const convertToJSON = (responseTreeRootNodes: ResponseTreeNode[]) => {
+const convertToJSON = (responseTreeRootNodes: UniqueLimitTreeNode[]) => {
   let limits: UniqueLimit[] = [];
   for (const node of responseTreeRootNodes) {
     limits = limits.concat(getChildLimits(node));
@@ -97,7 +98,7 @@ interface Props {
   buttonText: string;
   fileName: string;
   fileType: string;
-  stateCallback: (state: RootState) => ResponseTreeNode[];
+  stateCallback: (state: RootState) => UniqueLimitTreeNode[];
   parseAsCSV?: boolean;
   asCompartmentNodes?: boolean;
 }

@@ -28,7 +28,7 @@ export interface LimitDefinitionsPerProperty
   extends StringHash<MyLimitDefinitionSummary[]> {}
 
 export interface ResourceObject {
-  availabilityDomain: string | undefined;
+  scope: string | undefined;
   serviceLimit: string;
   available: string;
   used: string;

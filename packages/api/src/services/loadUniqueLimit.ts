@@ -4,9 +4,9 @@ import {
   identity,
   limits,
 } from "common";
-import { getLimitsClient } from "../clients/getLimitsClient";
+import { getLimitsClient } from "./clients/getLimitsClient";
 import { calculateResourceSum } from "../utils/calculateResourceSum";
-import { createUniqueLimit } from "../utils/createUniqueLimit";
+import { createUniqueLimitObject } from "../utils/createUniqueLimitObject";
 import { Cache } from "./cache";
 import { getResourceObject } from "./getResourceObject";
 
@@ -17,7 +17,7 @@ export const loadUniqueLimit = async (
 ): Promise<UniqueLimit> => {
   const limitsClient = getLimitsClient();
   limitsClient.regionId = regionId;
-  const newUniqueLimit: UniqueLimit = createUniqueLimit(
+  const newUniqueLimit: UniqueLimit = createUniqueLimitObject(
     compartment,
     limitDefinitionSummary,
     regionId

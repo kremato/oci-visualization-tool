@@ -1,9 +1,10 @@
-import type {
+import {
   MyLimitDefinitionSummary,
   identity,
   ResourceObject,
+  limits,
 } from "common";
-import type { MyAvailabilityDomain, MyLimitValueSummary } from "../types/types";
+import type { MyAvailabilityDomain } from "../types/types";
 import { getResourceAvailability } from "./getResourceAvailability";
 import { listServiceLimits } from "./listServiceLimits";
 
@@ -39,11 +40,16 @@ export const getResourceObject = async (
     resourceAvailability.effectiveQuotaValue
   );
 
-  let serviceLimits: MyLimitValueSummary[] = (await listServiceLimits(
+  const scopeType =
+    limitDefinitionSummary.scopeType === "AD"
+      ? limits.requests.ListLimitValuesRequest.ScopeType.Ad
+      : limits.requests.ListLimitValuesRequest.ScopeType.Region;
+  let serviceLimits = await listServiceLimits(
     limitDefinitionSummary.serviceName,
     limitDefinitionSummary.name,
-    regionId
-  )) as MyLimitValueSummary[];
+    regionId,
+    scopeType
+  );
 
   const summary = serviceLimits.find(
     (summary) =>
@@ -55,7 +61,11 @@ export const getResourceObject = async (
     summary?.value
   );
   return {
-    availabilityDomain: availabilityDomain ? availabilityDomain.name : "REGION",
+    scope:
+      limitDefinitionSummary.scopeType ===
+      limits.models.LimitDefinitionSummary.ScopeType.Ad
+        ? availabilityDomain?.name
+        : regionId,
     serviceLimit,
     available,
     used,

@@ -1,26 +1,24 @@
 import { limits, UniqueLimit } from "common";
 
+const addTotal = (value: string): number => {
+  return value === "n/a" ? 0 : Number(value);
+};
+
 export const calculateResourceSum = (uniqueLimit: UniqueLimit) => {
   let totalServiceLimit = 0;
   let totalAvailable = 0;
   let totalUsed = 0;
   let totalQuota = 0;
   for (const resourceObject of uniqueLimit.resources) {
-    totalServiceLimit +=
-      resourceObject.serviceLimit === "n/a"
-        ? 0
-        : Number(resourceObject.serviceLimit);
-    totalAvailable +=
-      resourceObject.available === "n/a" ? 0 : Number(resourceObject.available);
-    totalUsed +=
-      resourceObject.used === "n/a" ? 0 : Number(resourceObject.used);
-    totalQuota +=
-      resourceObject.quota === "n/a" ? 0 : Number(resourceObject.quota);
+    totalServiceLimit += addTotal(resourceObject.serviceLimit);
+    totalAvailable += addTotal(resourceObject.available);
+    totalUsed += addTotal(resourceObject.used);
+    totalQuota += addTotal(resourceObject.quota);
   }
-  uniqueLimit.resourceSum.availabilityDomain =
+  uniqueLimit.resourceSum.scope =
     uniqueLimit.scope === limits.models.LimitDefinitionSummary.ScopeType.Ad
       ? "SUM"
-      : "REGION";
+      : uniqueLimit.regionId;
   uniqueLimit.resourceSum.serviceLimit = totalServiceLimit.toString();
   uniqueLimit.resourceSum.available = totalAvailable.toString();
   uniqueLimit.resourceSum.used = totalUsed.toString();

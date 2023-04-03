@@ -16,7 +16,7 @@ export const LimitRow = ({
   quota,
 }: Props) => {
   return (
-    <tr key={"SUM"}>
+    <tr key={Math.random().toString() + name}>
       <td>
         <Typography>{name}</Typography>
       </td>

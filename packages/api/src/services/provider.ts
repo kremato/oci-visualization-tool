@@ -1,4 +1,4 @@
-import { getProvider } from "../clients/getProvider";
+import { getProvider } from "./clients/getProvider";
 import type { common } from "common";
 
 // Singleton

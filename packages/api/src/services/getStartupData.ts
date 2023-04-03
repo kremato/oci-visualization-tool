@@ -13,7 +13,7 @@ import { listServices } from "./listServices";
 export const getStartupData = async () => {
   const compartments = await listCompartments();
   const regionSubscriptions = await listRegionSubscriptions();
-  const limiDefinitionSummaries = await await listLimitDefinitionSummaries();
+  const limiDefinitionSummaries = await listLimitDefinitionSummaries();
   const globallyScopedServices = findGloballyScopedServices(
     limiDefinitionSummaries
   );

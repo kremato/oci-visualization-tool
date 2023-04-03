@@ -1,19 +1,15 @@
 import type { MyLimitDefinitionSummary, identity, UniqueLimit } from "common";
 import type { Request, Response } from "express";
 import { Cache } from "../services/cache";
-import type { InputData } from "../types/types";
+import type { InputData, TypedRequest } from "../types/types";
 import { loadUniqueLimit } from "../services/loadUniqueLimit";
 import { outputToFile } from "../utils/outputToFile";
 import path from "path";
 import { log } from "../utils/log";
-import { storeLimitsSchema } from "../utils/validationSchemas";
 import {
-  badTokenResponse,
   oldRequestFailureResponse,
   successResponse,
-  validationError,
-} from "./responses";
-import type { ValidationError } from "yup";
+} from "../utils/expressResponses";
 import { registeredClients } from "./configuration";
 import EventEmitter from "events";
 
@@ -26,28 +22,19 @@ export const list = (_req: Request, res: Response) => {
 
 export const closingSessionEmmiter = new EventEmitter();
 
-export const store = async (req: Request, res: Response) => {
-  const token = req.params["id"];
-
-  if (token === undefined || !registeredClients.has(token)) {
-    return badTokenResponse(res);
-  }
-
-  let data: InputData;
-  try {
-    data = await storeLimitsSchema.validate(req.body);
-  } catch (error) {
-    return validationError(res, error as ValidationError);
-  }
-
-  //const token = req.params["id"]!;
-  closingSessionEmmiter.emit(token);
+// make sure proper middleware is run before the use of a TypedRequest
+export const store = async (
+  req: TypedRequest<InputData, { id: string }>,
+  res: Response
+) => {
+  const token = req.params.id;
+  const data = req.body;
+  const cache = Cache.getInstance();
   let newRequest = false;
+
   closingSessionEmmiter.once(token, () => {
     newRequest = true;
   });
-
-  const cache = Cache.getInstance();
 
   if (data.invalidateCache) {
     Cache.getInstance().clear();
@@ -56,7 +43,7 @@ export const store = async (req: Request, res: Response) => {
   const filteredCompartments = cache.getCompartments().filter((compartment) => {
     return data.compartments.includes(compartment.id);
   });
-  const filteredRegions = cache.getRegions().filter((region) => {
+  const filteredRegions = cache.getSubscribedRegions().filter((region) => {
     return data.regions.includes(region.regionName);
   });
   const filteredServices = cache.getServices().filter((service) => {
@@ -126,8 +113,8 @@ export const store = async (req: Request, res: Response) => {
 
     countLoadedLimits += uniqueLimits.length;
 
-    /* send progress update only if promise fetching took more than half a second
-    so the client is not overwhelmed and synchronization issues dont arise */
+    /* send progress update only if promise fetching took more
+    than half a second so the client is not overwhelmed */
     if (!newRequest && endTime - startTime >= 500) {
       registeredClients.get(token)?.send(
         JSON.stringify({

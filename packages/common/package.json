@@ -4,13 +4,14 @@
   "main": "dist/index.js",
   "types": "src/index.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc --ignoreDeprecations 5.0"
   },
   "author": "Jakub",
   "license": "AGPL-3.0",
   "dependencies": {
     "oci-common": "^2.53.0",
     "oci-identity": "^2.53.0",
-    "oci-limits": "^2.53.0"
+    "oci-limits": "^2.53.0",
+    "typescript": "^4.8.4"
   }
 }

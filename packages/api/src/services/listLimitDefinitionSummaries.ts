@@ -1,6 +1,6 @@
 import type { limits } from "common";
 import path from "path";
-import { getLimitsClient } from "../clients/getLimitsClient";
+import { getLimitsClient } from "./clients/getLimitsClient";
 import { log } from "../utils/log";
 import { outputToFile } from "../utils/outputToFile";
 import { Provider } from "./provider";

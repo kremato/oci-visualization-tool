@@ -1,14 +1,13 @@
-import type { common, identity } from "common";
+import type { identity } from "common";
 import path from "path";
-import { getIdentityClient } from "../clients/getIdentityClient";
+import { getIdentityClient } from "./clients/getIdentityClient";
 import { log } from "../utils/log";
 import { Provider } from "./provider";
 
 export const getAvailabilityDomainsPerRegion = async (
-  region: identity.models.RegionSubscription,
-  clientConfiguration?: common.ClientConfiguration
+  region: identity.models.RegionSubscription
 ): Promise<identity.models.AvailabilityDomain[]> => {
-  const identityClient = getIdentityClient(clientConfiguration);
+  const identityClient = getIdentityClient();
 
   identityClient.regionId = region.regionName;
   const request: identity.requests.ListAvailabilityDomainsRequest = {

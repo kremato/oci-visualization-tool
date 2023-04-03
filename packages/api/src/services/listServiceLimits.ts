@@ -11,8 +11,10 @@ export const listServiceLimits = async (
   serviceName: string,
   limitName: string,
   regionId: string,
+  scopeType?: limits.requests.ListLimitValuesRequest.ScopeType,
   availabilityDomain?: identity.models.AvailabilityDomain | MyAvailabilityDomain
 ): Promise<limits.models.LimitValueSummary[]> => {
+  limits.requests.ListLimitValuesRequest.ScopeType.Ad.toString();
   const client = new limits.LimitsClient({
     authenticationDetailsProvider: Provider.getInstance().provider,
   });
@@ -21,6 +23,9 @@ export const listServiceLimits = async (
     compartmentId: Provider.getInstance().provider.getTenantId(),
     serviceName: serviceName,
     name: limitName,
+    ...(scopeType && {
+      scopeType: scopeType,
+    }),
     ...(availabilityDomain && {
       availabilityDomain: availabilityDomain.name,
     }),

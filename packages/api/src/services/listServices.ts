@@ -1,4 +1,4 @@
-import { getLimitsClient } from "../clients/getLimitsClient";
+import { getLimitsClient } from "./clients/getLimitsClient";
 import type { limits } from "common";
 import { Provider } from "./provider";
 
