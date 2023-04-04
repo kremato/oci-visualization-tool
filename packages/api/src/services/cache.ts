@@ -7,43 +7,39 @@ import type {
 } from "common";
 import type {
   LimitDefinitionsPerProperty,
-  ServiceToServiceLimits,
-  Token,
+  MyAvailabilityDomain,
 } from "../types/types";
 import { log } from "../utils/log";
+import { getStartupData } from "./getStartupData";
 
 // Singleton
 export class Cache {
+  public readonly Ready: Promise<any>;
   private static instance: Cache;
-  private limitCache: Map<string, UniqueLimit>;
-  public compartments: identity.models.Compartment[];
-  public regionSubscriptions: identity.models.RegionSubscription[];
-  public serviceSubscriptions: MyServiceSummary[];
-  public limitDefinitionsPerLimitName: LimitDefinitionsPerProperty;
-  public limitDefinitionsPerRegionPerService: Map<
-    identity.models.RegionSubscription,
-    Map<string, MyLimitDefinitionSummary[]>
-  >;
-  /* stores service limits for each service, this is needed because
-  limits.responses.GetResourceAvailabilityResponse does not include
-  information about service limits */
-  public serviceLimitMap: ServiceToServiceLimits;
-  public availabilityDomainsPerRegion: Map<
-    identity.models.RegionSubscription,
-    identity.models.AvailabilityDomain[]
-  >;
-  public token: Token;
+  private uniqueLimitCache: Map<string, UniqueLimit> = new Map();
+  private compartments: identity.models.Compartment[] = [];
+  private regionSubscriptions: identity.models.RegionSubscription[] = [];
+  private services: MyServiceSummary[] = [];
+  private limitDefinitionsPerLimitName: LimitDefinitionsPerProperty<MyLimitDefinitionSummary> =
+    new Map();
+  private limitDefinitionsPerService: Map<string, MyLimitDefinitionSummary[]> =
+    new Map();
+  private availabilityDomainsPerRegion: Map<string, MyAvailabilityDomain[]> =
+    new Map();
 
   private constructor() {
-    this.limitCache = new Map();
-    this.compartments = [];
-    this.regionSubscriptions = [];
-    this.serviceSubscriptions = [];
-    this.limitDefinitionsPerLimitName = new Map();
-    this.limitDefinitionsPerRegionPerService = new Map();
-    this.serviceLimitMap = new Map();
-    this.availabilityDomainsPerRegion = new Map();
-    this.token = { count: 0 };
+    this.Ready = new Promise(async (resolve, _reject) => {
+      const startupData = await getStartupData();
+      this.compartments = startupData.compartments;
+      this.regionSubscriptions = startupData.regionSubscriptions;
+      this.services = startupData.serviceSubscriptions;
+      this.limitDefinitionsPerLimitName =
+        startupData.limitDefinitionsPerLimitName;
+      this.limitDefinitionsPerService = startupData.limitDefinitionsPerService;
+      this.availabilityDomainsPerRegion =
+        startupData.availabilityDomainsPerRegion;
+      resolve(undefined);
+    });
   }
 
   static getInstance(): Cache {
@@ -56,34 +52,66 @@ export class Cache {
 
   toLimitString(uniqueLimit: UniqueLimit): string {
     return `
-    ${uniqueLimit.compartmentId}
-    ${uniqueLimit.regionId}
-    ${uniqueLimit.scope}
-    ${uniqueLimit.serviceName}
     ${uniqueLimit.limitName}
+    ${uniqueLimit.serviceName}
+    ${uniqueLimit.compartmentId}
+    ${uniqueLimit.scope}
+    ${uniqueLimit.regionId}
     `;
   }
 
-  addLimit(uniqueLimit: UniqueLimit): void {
-    if (uniqueLimit.resourceAvailability.length === 0) {
+  getAvailabilityDomains(regionId: string): MyAvailabilityDomain[] {
+    return (
+      structuredClone(this.availabilityDomainsPerRegion.get(regionId)) || []
+    );
+  }
+
+  getCompartments(): identity.models.Compartment[] {
+    return structuredClone(this.compartments);
+  }
+
+  getSubscribedRegions(): identity.models.RegionSubscription[] {
+    return structuredClone(this.regionSubscriptions);
+  }
+
+  // returns a list of of limits grouped by limit name(each group has its own list)
+  getLimitDefinitionsGroupedByLimitName() {
+    return [...structuredClone(this.limitDefinitionsPerLimitName.values())];
+  }
+
+  getLimitDefinitionsPerService(
+    serviceName: string
+  ): MyLimitDefinitionSummary[] | undefined {
+    return structuredClone(this.limitDefinitionsPerService.get(serviceName));
+  }
+
+  getServices(): MyServiceSummary[] {
+    return structuredClone(this.services);
+  }
+
+  addUniqueLimit(uniqueLimit: UniqueLimit): void {
+    if (uniqueLimit.resources.length === 0) {
       log(
         path.basename(__filename),
-        `Adding UniqueLimit with resourceAvailibility.length === 0
-        into LimitSet is not advised, operation refused`
+        `Adding UniqueLimit with no resources into cache is not advised, operation refused.
+        ${this.toLimitString(uniqueLimit)}`
       );
       return;
     }
 
-    if (this.hasLimit(uniqueLimit)) return;
+    if (this.hasUniqueLimit(uniqueLimit)) return;
 
-    this.limitCache.set(this.toLimitString(uniqueLimit), uniqueLimit);
+    this.uniqueLimitCache.set(
+      this.toLimitString(uniqueLimit),
+      structuredClone(uniqueLimit)
+    );
   }
 
-  hasLimit(item: UniqueLimit): UniqueLimit | undefined {
-    return this.limitCache.get(this.toLimitString(item));
+  hasUniqueLimit(item: UniqueLimit): UniqueLimit | undefined {
+    return structuredClone(this.uniqueLimitCache.get(this.toLimitString(item)));
   }
 
   clear(): void {
-    this.limitCache.clear();
+    this.uniqueLimitCache.clear();
   }
 }

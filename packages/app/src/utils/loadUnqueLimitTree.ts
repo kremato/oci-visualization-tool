@@ -1,17 +1,14 @@
-import type { ResponseTreeNode, UniqueLimit } from "common";
-import path from "path";
-import { log } from "../utils/log";
-
-const filePath = path.basename(__filename);
+import type { UniqueLimit } from "common";
+import { UniqueLimitTreeNode } from "../types/types";
 
 const addNode = (
   limitPath: string[],
   uniqueLimit: UniqueLimit,
-  node: ResponseTreeNode
+  node: UniqueLimitTreeNode
 ) => {
   if (limitPath.length === 0) {
     if (node.children.length !== 0)
-      log(filePath, `pushing UniqueLimits into node.limits in a non leaf!`);
+      console.log(`pushing UniqueLimits into node.limits in a non leaf!`);
 
     if (!node.limits) {
       node["limits"] = [uniqueLimit];
@@ -30,7 +27,7 @@ const addNode = (
     }
   }
 
-  const child: ResponseTreeNode = Object.create(null);
+  const child: UniqueLimitTreeNode = Object.create(null);
   child["name"] = currentStop;
   child.children = [];
   node.children.push(child);
@@ -38,9 +35,9 @@ const addNode = (
   addNode(limitPath, uniqueLimit, child);
 };
 
-export const loadResponseTree = (
+export const loadUniqueLimitTree = (
   uniqueLimit: UniqueLimit,
-  root: ResponseTreeNode,
+  root: UniqueLimitTreeNode,
   type: "compartment" | "service"
 ) => {
   let limitPath =

@@ -1,115 +1,53 @@
 import {
   UniqueLimit,
   MyLimitDefinitionSummary,
-  ResourceAvailabilityObject,
   identity,
   limits,
 } from "common";
-import { getLimitsClient } from "../clients/getLimitsClient";
-import { getAvailabilityDomainsPerRegion } from "./getAvailabilityDomainsPerRegion";
-import { getResourceAvailability } from "./getResourceAvailability";
+import { getLimitsClient } from "./clients/getLimitsClient";
+import { calculateResourceSum } from "../utils/calculateResourceSum";
+import { createUniqueLimitObject } from "../utils/createUniqueLimitObject";
 import { Cache } from "./cache";
-
-const maxValue = Number.MAX_SAFE_INTEGER;
-
-const getResourceAvailibilityForUndefinedAndMaxValue = (
-  property: number | undefined
-) =>
-  property !== undefined && property <= maxValue ? property.toString() : "n/a";
-
-const getAvailabilityObject = async (
-  compartmentId: string,
-  limitDefinitionSummary: MyLimitDefinitionSummary,
-  limitsClient: limits.LimitsClient,
-  serviceLimits: limits.models.LimitValueSummary[],
-  availabilityDomain?: identity.models.AvailabilityDomain
-): Promise<ResourceAvailabilityObject | undefined> => {
-  const resourceAvailability = await getResourceAvailability(
-    limitsClient,
-    compartmentId,
-    limitDefinitionSummary,
-    availabilityDomain
-  );
-
-  if (!resourceAvailability) return;
-
-  const available = getResourceAvailibilityForUndefinedAndMaxValue(
-    resourceAvailability.available
-  );
-  const used = getResourceAvailibilityForUndefinedAndMaxValue(
-    resourceAvailability.used
-  );
-  const quota = getResourceAvailibilityForUndefinedAndMaxValue(
-    resourceAvailability.effectiveQuotaValue
-  );
-  const serviceLimit = serviceLimits.find(
-    (limit) =>
-      limit.availabilityDomain === availabilityDomain?.name &&
-      limit.name === limitDefinitionSummary.name
-  );
-
-  return {
-    availabilityDomain: availabilityDomain ? availabilityDomain.name : "REGION",
-    serviceLimit: getResourceAvailibilityForUndefinedAndMaxValue(
-      serviceLimit?.value
-    ),
-    available,
-    used,
-    quota,
-  };
-};
+import { getResourceObject } from "./getResourceObject";
 
 export const loadUniqueLimit = async (
   compartment: identity.models.Compartment,
-  region: identity.models.RegionSubscription,
-  limitDefinitionSummary: MyLimitDefinitionSummary,
-  serviceLimits: limits.models.LimitValueSummary[]
+  regionId: string,
+  limitDefinitionSummary: MyLimitDefinitionSummary
 ): Promise<UniqueLimit> => {
   const limitsClient = getLimitsClient();
-  limitsClient.regionId = region.regionName;
-  const resourceAvailabilityList: ResourceAvailabilityObject[] = [];
-  const newUniqueLimit: UniqueLimit = {
-    serviceName: limitDefinitionSummary.serviceName,
-    compartmentId: compartment.id,
-    scope: limitDefinitionSummary.scopeType,
-    regionId: region.regionName,
-    limitName: limitDefinitionSummary.name,
-    compartmentName: compartment.name,
-    resourceAvailability: resourceAvailabilityList,
-    resourceAvailabilitySum: Object.create(null),
-  };
-
-  if (limitDefinitionSummary.isDeprecated !== undefined)
-    newUniqueLimit.isDeprecated = limitDefinitionSummary.isDeprecated;
+  limitsClient.regionId = regionId;
+  const newUniqueLimit: UniqueLimit = createUniqueLimitObject(
+    compartment,
+    limitDefinitionSummary,
+    regionId
+  );
 
   const cache = Cache.getInstance();
 
-  const limitSetUniqueLimit = cache.hasLimit(newUniqueLimit);
   // if limit is already present, skip fetching and just add the limit to the response
-  if (limitSetUniqueLimit) {
-    return limitSetUniqueLimit;
+  const cachedUniqueLimit = cache.hasUniqueLimit(newUniqueLimit);
+  if (cachedUniqueLimit) {
+    return cachedUniqueLimit;
   }
 
+  const resources = newUniqueLimit.resources;
   if (
     limitDefinitionSummary.scopeType ===
     limits.models.LimitDefinitionSummary.ScopeType.Ad
   ) {
-    if (!cache.availabilityDomainsPerRegion.has(region))
-      cache.availabilityDomainsPerRegion.set(
-        region,
-        await getAvailabilityDomainsPerRegion(region)
-      );
-    const availabilityDomains = cache.availabilityDomainsPerRegion.get(region)!;
+    const availabilityDomains = cache.getAvailabilityDomains(regionId);
     for (const availabilityDomain of availabilityDomains) {
-      const availabilityObject = await getAvailabilityObject(
+      const resourceObject = await getResourceObject(
         compartment.id,
         limitDefinitionSummary,
-        limitsClient,
-        serviceLimits,
+        regionId,
         availabilityDomain
       );
 
-      if (availabilityObject) resourceAvailabilityList.push(availabilityObject);
+      if (resourceObject) {
+        resources.push(resourceObject);
+      }
     }
   }
 
@@ -117,36 +55,16 @@ export const loadUniqueLimit = async (
     limitDefinitionSummary.scopeType ===
     limits.models.LimitDefinitionSummary.ScopeType.Region
   ) {
-    const availabilityObject = await getAvailabilityObject(
+    const resourceObject = await getResourceObject(
       compartment.id,
       limitDefinitionSummary,
-      limitsClient,
-      serviceLimits
+      regionId
     );
 
-    if (availabilityObject) resourceAvailabilityList.push(availabilityObject);
+    if (resourceObject) resources.push(resourceObject);
   }
 
-  let totalServiceLimit = 0;
-  let totalAvailable = 0;
-  let totalUsed = 0;
-  let totalQuota = 0;
-  for (const limit of newUniqueLimit.resourceAvailability) {
-    totalServiceLimit +=
-      limit.serviceLimit === "n/a" ? 0 : Number(limit.serviceLimit);
-    totalAvailable += limit.available === "n/a" ? 0 : Number(limit.available);
-    totalUsed += limit.used === "n/a" ? 0 : Number(limit.used);
-    totalQuota += limit.quota === "n/a" ? 0 : Number(limit.quota);
-  }
-  newUniqueLimit.resourceAvailabilitySum.availabilityDomain =
-    newUniqueLimit.scope === limits.models.LimitDefinitionSummary.ScopeType.Ad
-      ? "SUM"
-      : "REGION";
-  newUniqueLimit.resourceAvailabilitySum.serviceLimit =
-    totalServiceLimit.toString();
-  newUniqueLimit.resourceAvailabilitySum.available = totalAvailable.toString();
-  newUniqueLimit.resourceAvailabilitySum.used = totalUsed.toString();
-  newUniqueLimit.resourceAvailabilitySum.quota = totalQuota.toString();
+  calculateResourceSum(newUniqueLimit);
 
   return newUniqueLimit;
 };

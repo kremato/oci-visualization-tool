@@ -1,8 +1,9 @@
 {
-  "extends": "@tsconfig/node16-strictest/tsconfig.json",
+  "extends": "@tsconfig/node18-strictest/tsconfig",
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
-    "sourceMap": true
+    "sourceMap": true,
+    "esModuleInterop": true
   }
 }

@@ -20,7 +20,6 @@ export const App = () => {
         </Grid>
         <AccordionsSubgrid />
       </Grid>
-      ;
     </div>
   );
 };

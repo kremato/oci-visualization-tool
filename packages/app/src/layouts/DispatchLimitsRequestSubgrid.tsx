@@ -5,6 +5,8 @@ import { useForm } from "react-hook-form";
 import { LimitsForm } from "../components/LimitsForm/LimitsForm";
 
 export const DispatchLimitsRequestSubgrid = () => {
+  useEffect(() => {}, []);
+
   return (
     <Grid container item xs={12}>
       <LimitsForm />

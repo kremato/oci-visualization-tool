@@ -7,6 +7,7 @@ import { useAppSelector } from "../../hooks/useAppSelector";
 import { useSocketMessage } from "../../hooks/useSocketMessage";
 import { useSocketStatus } from "../../hooks/useSocketStatus";
 import { useEffect, useState } from "react";
+import { DownloadFinished } from "./DownloadFinished";
 
 const LinearProgressWithLabel = (
   props: LinearProgressProps & { value: number }
@@ -24,6 +25,51 @@ const LinearProgressWithLabel = (
 );
 
 export const LoadingBar = () => {
+  const message = useSocketMessage();
+  const socketIsUp = useSocketStatus();
+  const [progressValue, setProgressValue] = useState(0);
+  const showProgressBar = useAppSelector(
+    (state) => state.input.showProgressBar
+  );
+  const progressStatus = useAppSelector((state) => state.input.progressStatus);
+
+  useEffect(() => {
+    console.log(`Setting progress value to 0!`);
+    setProgressValue(0);
+  }, [progressStatus]);
+
+  useEffect(() => {
+    setProgressValue(
+      message
+        ? Math.floor(
+            (message.countLoadedLimits /
+              message.countLimitDefinitionSummaries) *
+              100
+          )
+        : 0
+    );
+  }, [message]);
+  /*
+    if api is up && socket is down:
+      display kolecko
+
+    if socket is up
+  */
+
+  return (
+    <>
+      {progressStatus === "success" && <DownloadFinished success={true} />}
+      {progressStatus === "failure" && <DownloadFinished success={false} />}
+      {socketIsUp && progressStatus === "progressBar" && (
+        <Box sx={{ width: "100%" }}>
+          <LinearProgressWithLabel value={progressValue} />
+        </Box>
+      )}
+    </>
+  );
+};
+
+/* export const LoadingBar = () => {
   const message = useSocketMessage();
   const socketIsUp = useSocketStatus();
   const [progressValue, setProgressValue] = useState(0);
@@ -56,4 +102,4 @@ export const LoadingBar = () => {
       )}
     </>
   );
-};
+}; */

@@ -209,6 +209,7 @@ export default function VirtualizedDropdown({ name, options, control }: Props) {
               {...params}
               label={capitalizeFirstLetter(name)}
               placeholder={`Choose ${name}`}
+              helperText="This field is optional"
             />
           )}
           fullWidth={true}

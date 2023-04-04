@@ -16,7 +16,7 @@ export const LimitRow = ({
   quota,
 }: Props) => {
   return (
-    <tr key={"SUM"}>
+    <tr key={name}>
       <td>
         <Typography>{name}</Typography>
       </td>
