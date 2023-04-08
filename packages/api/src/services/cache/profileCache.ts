@@ -8,14 +8,14 @@ import type {
 import type {
   LimitDefinitionsPerProperty,
   MyAvailabilityDomain,
-} from "../types/types";
-import { log } from "../utils/log";
-import { getStartupData } from "./getStartupData";
+} from "../../types/types";
+import { log } from "../../utils/log";
+import { getStartupData } from "../getStartupData";
 
 // Singleton
-export class Cache {
+export class ProfileCache {
   public readonly Ready: Promise<any>;
-  private static instance: Cache;
+  private static instance: ProfileCache;
   private uniqueLimitCache: Map<string, UniqueLimit> = new Map();
   private compartments: identity.models.Compartment[] = [];
   private regionSubscriptions: identity.models.RegionSubscription[] = [];
@@ -42,11 +42,11 @@ export class Cache {
     });
   }
 
-  static getInstance(): Cache {
+  static getInstance(): ProfileCache {
     if (this.instance) {
       return this.instance;
     }
-    this.instance = new Cache();
+    this.instance = new ProfileCache();
     return this.instance;
   }
 

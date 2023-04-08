@@ -1,4 +1,4 @@
-import { Cache } from "../services/cache";
+import { ProfileCache } from "../services/cache/profileCache";
 import {
   apiIsNotReadyResponse,
   successResponse,
@@ -24,7 +24,7 @@ export const start = async (): Promise<void> => {
       common.OciSdkDefaultRetryConfiguration.retryCondition(error),
   };
   /* Wait for cache to fetch startup data */
-  await Cache.getInstance().Ready;
+  await ProfileCache.getInstance().Ready;
   apiIsReady = true;
   console.log("[api]: api is ready");
 };

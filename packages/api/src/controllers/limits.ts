@@ -1,6 +1,6 @@
 import type { MyLimitDefinitionSummary, identity, UniqueLimit } from "common";
 import type { Request, Response } from "express";
-import { Cache } from "../services/cache";
+import { ProfileCache } from "../services/cache/profileCache";
 import type { InputData, TypedRequest } from "../types/types";
 import { loadUniqueLimit } from "../services/loadUniqueLimit";
 import { outputToFile } from "../utils/outputToFile";
@@ -16,7 +16,7 @@ import EventEmitter from "events";
 export const list = (_req: Request, res: Response) => {
   return successResponse(
     res,
-    Cache.getInstance().getLimitDefinitionsGroupedByLimitName
+    ProfileCache.getInstance().getLimitDefinitionsGroupedByLimitName
   );
 };
 
@@ -29,7 +29,7 @@ export const store = async (
 ) => {
   const token = req.params.id;
   const data = req.body;
-  const cache = Cache.getInstance();
+  const cache = ProfileCache.getInstance();
   let newRequest = false;
 
   closingSessionEmmiter.once(token, () => {
@@ -37,7 +37,7 @@ export const store = async (
   });
 
   if (data.invalidateCache) {
-    Cache.getInstance().clear();
+    ProfileCache.getInstance().clear();
   }
 
   const filteredCompartments = cache.getCompartments().filter((compartment) => {

@@ -19,6 +19,7 @@ const httpServer = app.listen(
 );
 
 app.get("/registration-token", controllers.configuration.signup);
+app.get("/profiles", controllers.profiles.profiles);
 app.get("/compartments", controllers.compartments.list);
 app.get("/region-subscriptions", controllers.regions.listRegionSubscriptions);
 app.get("/services", controllers.services.list);

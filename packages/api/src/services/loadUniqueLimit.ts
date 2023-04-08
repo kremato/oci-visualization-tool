@@ -7,7 +7,7 @@ import {
 import { getLimitsClient } from "./clients/getLimitsClient";
 import { calculateResourceSum } from "../utils/calculateResourceSum";
 import { createUniqueLimitObject } from "../utils/createUniqueLimitObject";
-import { Cache } from "./cache";
+import { ProfileCache } from "./cache/profileCache";
 import { getResourceObject } from "./getResourceObject";
 
 export const loadUniqueLimit = async (
@@ -23,7 +23,7 @@ export const loadUniqueLimit = async (
     regionId
   );
 
-  const cache = Cache.getInstance();
+  const cache = ProfileCache.getInstance();
 
   // if limit is already present, skip fetching and just add the limit to the response
   const cachedUniqueLimit = cache.hasUniqueLimit(newUniqueLimit);

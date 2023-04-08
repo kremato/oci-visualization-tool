@@ -2,12 +2,14 @@ import { configureStore } from "@reduxjs/toolkit";
 import inputSlice from "./inputSlice";
 import nodeSlice from "./nodeSlice";
 import tokenSlice from "./tokenSlice";
+import profileSlice from "./profileSlice";
 
 const store = configureStore({
   reducer: {
     nodes: nodeSlice.reducer,
     input: inputSlice.reducer,
     token: tokenSlice.reducer,
+    profile: profileSlice.reducer,
   },
 });
 

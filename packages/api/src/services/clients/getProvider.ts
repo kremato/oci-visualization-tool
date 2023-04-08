@@ -10,5 +10,15 @@ export const getProvider =
         configurationFilePath,
         profile
       );
+    console.log(provider.getProfileCredentials()?.configurationsByProfile);
+    const configProfile =
+      provider.getProfileCredentials()?.configurationsByProfile;
+    if (configProfile)
+      for (const [profileName, entries] of configProfile.entries()) {
+        console.log(profileName);
+        for (const [entry, entryValue] of entries.entries()) {
+          console.log(`${entry}: ${entryValue}`);
+        }
+      }
     return provider;
   };
