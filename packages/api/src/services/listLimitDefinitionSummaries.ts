@@ -3,18 +3,18 @@ import path from "path";
 import { getLimitsClient } from "./clients/getLimitsClient";
 import { log } from "../utils/log";
 import { outputToFile } from "../utils/outputToFile";
-import { Provider } from "./provider";
+import { getProvider } from "./clients/getProvider";
 
 const filePath = path.basename(__filename);
 
-export const listLimitDefinitionSummaries = async (): Promise<
-  limits.models.LimitDefinitionSummary[]
-> => {
-  const limitsClient = getLimitsClient();
+export const listLimitDefinitionSummaries = async (
+  profile: string
+): Promise<limits.models.LimitDefinitionSummary[]> => {
+  const limitsClient = getLimitsClient(profile);
   const listLimitDefinitionsRequest: limits.requests.ListLimitDefinitionsRequest =
     {
       // must be tenancy
-      compartmentId: Provider.getInstance().provider.getTenantId(),
+      compartmentId: getProvider(profile).getTenantId(),
     };
 
   let logJSON: string = "";

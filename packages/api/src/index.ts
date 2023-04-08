@@ -7,6 +7,7 @@ import * as url from "url";
 import { checkRegistrationToken } from "./middleware/checkRegistrationToken";
 import { validateStoreLimitsBody } from "./middleware/validateStoreLimitsBody";
 import { emitClosingSession } from "./middleware/emitClosingSession";
+import { checkProfileQuery } from "./middleware/checkProfileQuery";
 
 dotenv.config();
 const app: Express = express();
@@ -20,18 +21,23 @@ const httpServer = app.listen(
 
 app.get("/registration-token", controllers.configuration.signup);
 app.get("/profiles", controllers.profiles.profiles);
-app.get("/compartments", controllers.compartments.list);
-app.get("/region-subscriptions", controllers.regions.listRegionSubscriptions);
-app.get("/services", controllers.services.list);
-app.get("/limits", controllers.limits.list);
+app.get("/compartments", checkProfileQuery, controllers.compartments.list);
+app.get(
+  "/region-subscriptions",
+  checkProfileQuery,
+  controllers.regions.listRegionSubscriptions
+);
+app.get("/services", checkProfileQuery, controllers.services.list);
+app.get("/limits", checkProfileQuery, controllers.limits.list);
 app.post(
   "/limits/:id",
   checkRegistrationToken,
+  checkProfileQuery,
   validateStoreLimitsBody,
   emitClosingSession,
   controllers.limits.store
 );
-app.get("/", controllers.configuration.ping);
+app.get("/", checkProfileQuery, controllers.configuration.ping);
 app.use((_, res) => {
   res.status(404).send("NOT FOUND");
 });

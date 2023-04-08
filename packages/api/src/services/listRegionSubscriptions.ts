@@ -1,16 +1,17 @@
 import { identity } from "common";
-import { Provider } from "./provider";
+import { getProvider } from "./clients/getProvider";
 
-export const listRegionSubscriptions = async (): Promise<
-  identity.models.RegionSubscription[]
-> => {
+export const listRegionSubscriptions = async (
+  profile: string
+): Promise<identity.models.RegionSubscription[]> => {
+  const authenticationDetailsProvider = getProvider(profile);
   const client = new identity.IdentityClient({
-    authenticationDetailsProvider: Provider.getInstance().provider,
+    authenticationDetailsProvider,
   });
 
   const listRegionSubscriptionsRequest: identity.requests.ListRegionSubscriptionsRequest =
     {
-      tenancyId: Provider.getInstance().provider.getTenantId(),
+      tenancyId: authenticationDetailsProvider.getTenantId(),
     };
 
   const listRegionSubscriptionsResponse = await client.listRegionSubscriptions(

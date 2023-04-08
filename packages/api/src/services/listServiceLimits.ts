@@ -2,12 +2,13 @@ import { identity, limits } from "common";
 import path from "path";
 import type { MyAvailabilityDomain } from "../types/types";
 import { log } from "../utils/log";
-import { Provider } from "./provider";
+import { getProvider } from "./clients/getProvider";
 
 /* The function retrieves a catalog of service limits associated with a specific
 limit and service name. If the limit is AD scoped and the region includes multiple
 ADs, the resulting list can have multiple entries, each corresponding to a particular AD .*/
 export const listServiceLimits = async (
+  profile: string,
   serviceName: string,
   limitName: string,
   regionId: string,
@@ -15,12 +16,13 @@ export const listServiceLimits = async (
   availabilityDomain?: identity.models.AvailabilityDomain | MyAvailabilityDomain
 ): Promise<limits.models.LimitValueSummary[]> => {
   limits.requests.ListLimitValuesRequest.ScopeType.Ad.toString();
+  const authenticationDetailsProvider = getProvider(profile);
   const client = new limits.LimitsClient({
-    authenticationDetailsProvider: Provider.getInstance().provider,
+    authenticationDetailsProvider,
   });
   client.regionId = regionId;
   const listLimitValuesRequest: limits.requests.ListLimitValuesRequest = {
-    compartmentId: Provider.getInstance().provider.getTenantId(),
+    compartmentId: authenticationDetailsProvider.getTenantId(),
     serviceName: serviceName,
     name: limitName,
     ...(scopeType && {

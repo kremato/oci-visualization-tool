@@ -4,7 +4,7 @@ import type {
   myAvailabilityDomainSchema,
   storeLimitsSchema,
 } from "../utils/validationSchemas";
-import type { ParamsDictionary } from "express-serve-static-core";
+import type { ParamsDictionary, Query } from "express-serve-static-core";
 
 export interface LimitDefinitionsPerProperty<
   T extends limits.models.LimitDefinitionSummary
@@ -13,8 +13,9 @@ export interface InputData extends InferType<typeof storeLimitsSchema> {}
 export interface MyAvailabilityDomain
   extends InferType<typeof myAvailabilityDomainSchema>,
     Omit<identity.models.AvailabilityDomain, "name"> {}
-export interface TypedRequest<T, U extends ParamsDictionary>
+export interface TypedRequest<T, U extends ParamsDictionary, K extends Query>
   extends Express.Request {
   body: T;
   params: U;
+  query: K;
 }

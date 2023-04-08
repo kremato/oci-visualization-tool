@@ -1,9 +1,9 @@
 import { identity } from "common";
-import { Provider } from "../provider";
+import { getProvider } from "./getProvider";
 
-export const getIdentityClient = (): identity.IdentityClient => {
+export const getIdentityClient = (profile: string): identity.IdentityClient => {
   const identityClient = new identity.IdentityClient({
-    authenticationDetailsProvider: Provider.getInstance().provider,
+    authenticationDetailsProvider: getProvider(profile),
   });
 
   return identityClient;

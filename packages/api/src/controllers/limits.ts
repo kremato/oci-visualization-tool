@@ -1,6 +1,6 @@
 import type { MyLimitDefinitionSummary, identity, UniqueLimit } from "common";
-import type { Request, Response } from "express";
-import { ProfileCache } from "../services/cache/profileCache";
+import type { /* Request, */ Response } from "express";
+/* import { ProfileCache } from "../services/cache/profileCache"; */
 import type { InputData, TypedRequest } from "../types/types";
 import { loadUniqueLimit } from "../services/loadUniqueLimit";
 import { outputToFile } from "../utils/outputToFile";
@@ -12,11 +12,17 @@ import {
 } from "../utils/expressResponses";
 import { registeredClients } from "./configuration";
 import EventEmitter from "events";
+import { Cache } from "../services/cache/cache";
+import type { ProfileCache } from "../services/cache/profileCache";
 
-export const list = (_req: Request, res: Response) => {
+export const list = (
+  req: TypedRequest<any, any, { profile: string }>,
+  res: Response
+) => {
   return successResponse(
     res,
-    ProfileCache.getInstance().getLimitDefinitionsGroupedByLimitName
+    /* ProfileCache.getInstance().getLimitDefinitionsGroupedByLimitName() */
+    Cache.getInstance().getProfileCache(req.query.profile) || []
   );
 };
 
@@ -24,12 +30,12 @@ export const closingSessionEmmiter = new EventEmitter();
 
 // make sure proper middleware is run before the use of a TypedRequest
 export const store = async (
-  req: TypedRequest<InputData, { id: string }>,
+  req: TypedRequest<InputData, { id: string }, { profile: string }>,
   res: Response
 ) => {
   const token = req.params.id;
   const data = req.body;
-  const cache = ProfileCache.getInstance();
+  const cache = Cache.getInstance().getProfileCache(req.query.profile)!;
   let newRequest = false;
 
   closingSessionEmmiter.once(token, () => {
@@ -37,7 +43,7 @@ export const store = async (
   });
 
   if (data.invalidateCache) {
-    ProfileCache.getInstance().clear();
+    cache.clear();
   }
 
   const filteredCompartments = cache.getCompartments().filter((compartment) => {
@@ -51,6 +57,7 @@ export const store = async (
   });
 
   const loadLimitArguments: [
+    ProfileCache,
     identity.models.Compartment,
     string,
     MyLimitDefinitionSummary
@@ -86,6 +93,7 @@ export const store = async (
 
         for (const LimitDefinitionSummary of limitDefinitionSummaries) {
           loadLimitArguments.push([
+            Cache.getInstance().getProfileCache(req.query.profile)!,
             compartment,
             region.regionName,
             LimitDefinitionSummary,

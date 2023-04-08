@@ -22,6 +22,13 @@ export const badTokenResponse = (response: Response) => {
   });
 };
 
+export const badProfileResponse = (response: Response) => {
+  return response.status(400).send({
+    data: {},
+    message: "wrong profile query string",
+  });
+};
+
 export const validationError = (
   response: Response,
   validationError: ValidationError
@@ -32,9 +39,9 @@ export const validationError = (
   });
 };
 
-export const apiIsNotReadyResponse = (response: Response) => {
+export const profileIsNotReadyResponse = (response: Response) => {
   return response.status(503).send({
     data: {},
-    message: "api is not ready",
+    message: "profile is not ready",
   });
 };

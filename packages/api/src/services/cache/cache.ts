@@ -1,17 +1,24 @@
-import { Provider } from "../provider";
-import type { ProfileCache } from "./profileCache";
+import { common } from "common";
+import { ProfileCache } from "./profileCache";
+
+const startupProfile = process.env["PROFILE"] || null;
 
 // Singleton
 export class Cache {
-  private profiles: Map<string, ProfileCache>;
+  private profiles: string[] = [];
+  private profileCaches: Map<string, ProfileCache>;
   private static instance: Cache;
 
   private constructor() {
+    this.profileCaches = new Map();
+    const configFileReader =
+      common.ConfigFileReader.parseDefault(startupProfile);
     const profiles =
-      Provider.getInstance().provider.getProfileCredentials()
-        ?.configurationsByProfile.keys() || [];
-
-    for
+      configFileReader.profileCredentials.configurationsByProfile.keys();
+    for (const profile of profiles) {
+      this.profiles.push(profile);
+      this.profileCaches.set(profile, new ProfileCache(profile));
+    }
   }
 
   static getInstance(): Cache {
@@ -20,5 +27,13 @@ export class Cache {
     }
     this.instance = new Cache();
     return this.instance;
+  }
+
+  getProfileCache(profile: string): ProfileCache | undefined {
+    return this.profileCaches.get(profile);
+  }
+
+  getProfiles(): string[] {
+    return structuredClone(this.profiles);
   }
 }

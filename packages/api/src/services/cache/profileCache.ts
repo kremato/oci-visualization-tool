@@ -10,12 +10,11 @@ import type {
   MyAvailabilityDomain,
 } from "../../types/types";
 import { log } from "../../utils/log";
-import { getStartupData } from "../getStartupData";
+import { getCacheStartupData } from "../getCacheStartupData";
 
-// Singleton
 export class ProfileCache {
   public readonly Ready: Promise<any>;
-  private static instance: ProfileCache;
+  readonly profile: string;
   private uniqueLimitCache: Map<string, UniqueLimit> = new Map();
   private compartments: identity.models.Compartment[] = [];
   private regionSubscriptions: identity.models.RegionSubscription[] = [];
@@ -27,9 +26,10 @@ export class ProfileCache {
   private availabilityDomainsPerRegion: Map<string, MyAvailabilityDomain[]> =
     new Map();
 
-  private constructor() {
+  constructor(profile: string) {
+    this.profile = profile;
     this.Ready = new Promise(async (resolve, _reject) => {
-      const startupData = await getStartupData();
+      const startupData = await getCacheStartupData(profile);
       this.compartments = startupData.compartments;
       this.regionSubscriptions = startupData.regionSubscriptions;
       this.services = startupData.serviceSubscriptions;
@@ -40,14 +40,6 @@ export class ProfileCache {
         startupData.availabilityDomainsPerRegion;
       resolve(undefined);
     });
-  }
-
-  static getInstance(): ProfileCache {
-    if (this.instance) {
-      return this.instance;
-    }
-    this.instance = new ProfileCache();
-    return this.instance;
   }
 
   toLimitString(uniqueLimit: UniqueLimit): string {
@@ -76,7 +68,7 @@ export class ProfileCache {
 
   // returns a list of of limits grouped by limit name(each group has its own list)
   getLimitDefinitionsGroupedByLimitName() {
-    return [...structuredClone(this.limitDefinitionsPerLimitName.values())];
+    return structuredClone([...this.limitDefinitionsPerLimitName.values()]);
   }
 
   getLimitDefinitionsPerService(

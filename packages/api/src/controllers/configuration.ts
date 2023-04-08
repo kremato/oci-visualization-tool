@@ -1,15 +1,14 @@
-import { ProfileCache } from "../services/cache/profileCache";
 import {
-  apiIsNotReadyResponse,
+  profileIsNotReadyResponse,
   successResponse,
 } from "../utils/expressResponses";
 import type { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import type WebSocket from "ws";
 import { common } from "common";
+import { Cache } from "../services/cache/cache";
+import type { TypedRequest } from "../types/types";
 
-let apiIsReady = false;
-/*  */
 export const registeredClients = new Map<
   string,
   WebSocket.WebSocket | undefined
@@ -23,15 +22,28 @@ export const start = async (): Promise<void> => {
       !(error.statusCode >= 500) &&
       common.OciSdkDefaultRetryConfiguration.retryCondition(error),
   };
-  /* Wait for cache to fetch startup data */
-  await ProfileCache.getInstance().Ready;
-  apiIsReady = true;
+  /* Get cache so the constructor is fired and startup data is loaded */
+  Cache.getInstance();
   console.log("[api]: api is ready");
 };
 
-export const ping = (_req: Request, res: Response) => {
-  if (!apiIsReady) {
-    return apiIsNotReadyResponse(res);
+export const ping = async (
+  req: TypedRequest<any, any, { profile: string }>,
+  res: Response
+) => {
+  let promiseReject: (reason?: any) => void;
+  setTimeout(() => {
+    if (typeof promiseReject !== "undefined") promiseReject();
+  }, 300);
+  const cacheIsReady = new Promise(async (resolve, reject) => {
+    promiseReject = reject;
+    await Cache.getInstance().getProfileCache(req.query.profile)!.Ready;
+    resolve(undefined);
+  });
+  try {
+    await cacheIsReady;
+  } catch {
+    return profileIsNotReadyResponse(res);
   }
   return successResponse(res, {});
 };
