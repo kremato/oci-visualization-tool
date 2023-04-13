@@ -52,7 +52,8 @@ export class Cache {
     try {
       configFile = common.ConfigFileReader.parseDefault(envProfile);
     } catch {
-      console.log(
+      log(
+        path.basename(__filename),
         `Could not parse the config file with ${envProfile} profile.`
       );
       configFile = common.ConfigFileReader.parseDefault(null);
@@ -90,10 +91,19 @@ export class Cache {
         continue;
       }
 
-      const privateKey = readFileSync(
-        common.ConfigFileReader.expandUserHome(key_file),
-        "utf8"
-      );
+      let privateKey: string;
+      try {
+        privateKey = readFileSync(
+          common.ConfigFileReader.expandUserHome(key_file),
+          "utf8"
+        );
+      } catch {
+        console.log(
+          path.basename(__filename),
+          `Unable to read private key contents from ${key_file} for ${profileName} profile.`
+        );
+        continue;
+      }
 
       const simpleProvider = new common.SimpleAuthenticationDetailsProvider(
         tenancy,

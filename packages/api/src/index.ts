@@ -1,16 +1,17 @@
-import express, { Express } from "express";
+import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import * as controllers from "./controllers";
 import { WebSocketServer } from "ws";
 import * as url from "url";
-import { checkRegistrationToken } from "./middleware/checkRegistrationToken";
+/* import { checkRegistrationToken } from "./middleware/checkRegistrationToken";
 import { validateStoreLimitsBody } from "./middleware/validateStoreLimitsBody";
 import { emitClosingSession } from "./middleware/emitClosingSession";
-import { checkProfileQuery } from "./middleware/checkProfileQuery";
+import { checkProfileQuery } from "./middleware/checkProfileQuery"; */
+import * as routes from "./routes";
 
 dotenv.config();
-const app: Express = express();
+const app = express();
 app.use(cors());
 app.use(express.json());
 
@@ -19,21 +20,27 @@ const httpServer = app.listen(
   controllers.configuration.start
 );
 
-app.get("/registration-token", controllers.configuration.signup);
-app.get("/profiles", controllers.profiles.list);
+app.use("/registration-token", routes.registration.router);
+/* app.get("/registration-token", controllers.configuration.signup); */
+app.use("/profiles", routes.profiles.router);
+/* app.get("/profiles", controllers.profiles.list);
 app.get(
   "/profiles/status",
   checkProfileQuery,
   controllers.profiles.profileStatus
-);
-app.get("/compartments", checkProfileQuery, controllers.compartments.list);
-app.get(
+); */
+app.use("/compartments", routes.compartments.router);
+/* app.get("/compartments", checkProfileQuery, controllers.compartments.list); */
+app.use("/region-subscriptions", routes.regions.router);
+/* app.get(
   "/region-subscriptions",
   checkProfileQuery,
   controllers.regions.listRegionSubscriptions
-);
-app.get("/services", checkProfileQuery, controllers.services.list);
-app.get("/limits", checkProfileQuery, controllers.limits.list);
+); */
+app.use("/services", routes.services.router);
+/* app.get("/services", checkProfileQuery, controllers.services.list); */
+app.use("/limits", routes.limits.router);
+/* app.get("/limits", checkProfileQuery, controllers.limits.list);
 app.post(
   "/limits/:id",
   checkRegistrationToken,
@@ -41,7 +48,7 @@ app.post(
   validateStoreLimitsBody,
   emitClosingSession,
   controllers.limits.store
-);
+); */
 app.use((_, res) => {
   res.status(404).send("NOT FOUND");
 });
