@@ -4,6 +4,7 @@ import { getLimitsClient } from "./clients/getLimitsClient";
 import { log } from "../utils/log";
 import { outputToFile } from "../utils/outputToFile";
 import { getProvider } from "./clients/getProvider";
+import { Cache } from "./cache/cache";
 
 const filePath = path.basename(__filename);
 
@@ -14,7 +15,9 @@ export const listLimitDefinitionSummaries = async (
   const listLimitDefinitionsRequest: limits.requests.ListLimitDefinitionsRequest =
     {
       // must be tenancy
-      compartmentId: getProvider(profile).getTenantId(),
+      compartmentId: (
+        Cache.getProvider(profile) || getProvider(profile)
+      ).getTenantId(),
     };
 
   let logJSON: string = "";

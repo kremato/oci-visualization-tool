@@ -3,6 +3,7 @@ import path from "path";
 import { getIdentityClient } from "./clients/getIdentityClient";
 import { log } from "../utils/log";
 import { getProvider } from "./clients/getProvider";
+import { Cache } from "./cache/cache";
 
 export const getAvailabilityDomainsPerRegion = async (
   profile: string,
@@ -12,7 +13,9 @@ export const getAvailabilityDomainsPerRegion = async (
 
   identityClient.regionId = region.regionName;
   const request: identity.requests.ListAvailabilityDomainsRequest = {
-    compartmentId: getProvider(profile).getTenantId(),
+    compartmentId: (
+      Cache.getProvider(profile) || getProvider(profile)
+    ).getTenantId(),
   };
 
   let availibilityDomains: identity.models.AvailabilityDomain[] = [];

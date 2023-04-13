@@ -4,15 +4,15 @@ import { getIdentityClient } from "./clients/getIdentityClient";
 import { log } from "../utils/log";
 import path from "path";
 import { getProvider } from "./clients/getProvider";
+import { Cache } from "./cache/cache";
 
 export const listCompartments = async (
   profile: string
 ): Promise<identity.models.Compartment[]> => {
   const identityClient = getIdentityClient(profile);
-
-  const tenancy = getProvider(profile).getTenantId();
+  const provider = Cache.getProvider(profile) || getProvider(profile);
   const listCompartmentsRequest: identity.requests.ListCompartmentsRequest = {
-    compartmentId: tenancy,
+    compartmentId: provider.getTenantId(),
     compartmentIdInSubtree: true,
   };
 
@@ -29,7 +29,10 @@ export const listCompartments = async (
     );
   }
 
-  const tenancyCompartment = await getCompartment(tenancy, identityClient);
+  const tenancyCompartment = await getCompartment(
+    provider.getTenantId(),
+    identityClient
+  );
 
   if (tenancyCompartment) compartments.unshift(tenancyCompartment);
 

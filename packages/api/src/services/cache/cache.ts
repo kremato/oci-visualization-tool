@@ -1,23 +1,27 @@
 import { common } from "common";
 import { ProfileCache } from "./profileCache";
+import { log } from "../../utils/log";
+import path from "path";
+import { readFileSync } from "fs";
 
-const startupProfile = process.env["PROFILE"] || null;
+const envProfile = process.env["PROFILE"] || "DEFAULT";
 
 // Singleton
 export class Cache {
   private profiles: string[] = [];
   private profileCaches: Map<string, ProfileCache>;
   private static instance: Cache;
+  private static providers = new Map<
+    string,
+    common.SimpleAuthenticationDetailsProvider
+  >();
 
   private constructor() {
+    Cache.loadProviders();
     this.profileCaches = new Map();
-    const configFileReader =
-      common.ConfigFileReader.parseDefault(startupProfile);
-    const profiles =
-      configFileReader.profileCredentials.configurationsByProfile.keys();
-    for (const profile of profiles) {
-      this.profiles.push(profile);
-      this.profileCaches.set(profile, new ProfileCache(profile));
+    for (const profileName of Cache.providers.keys()) {
+      this.profiles.push(profileName);
+      this.profileCaches.set(profileName, new ProfileCache(profileName));
     }
   }
 
@@ -35,5 +39,72 @@ export class Cache {
 
   getProfiles(): string[] {
     return structuredClone(this.profiles);
+  }
+
+  static getProvider(
+    profile: string
+  ): common.SimpleAuthenticationDetailsProvider | undefined {
+    return this.providers.get(profile);
+  }
+
+  private static loadProviders() {
+    let configFile;
+    try {
+      configFile = common.ConfigFileReader.parseDefault(envProfile);
+    } catch {
+      console.log(
+        `Could not parse the config file with ${envProfile} profile.`
+      );
+      configFile = common.ConfigFileReader.parseDefault(null);
+    }
+
+    for (const [
+      profileName,
+      profileEntries,
+    ] of configFile.profileCredentials.configurationsByProfile.entries()) {
+      const user = profileEntries.get("user");
+      const fingerprint = profileEntries.get("fingerprint");
+      const tenancy = profileEntries.get("tenancy");
+      const region = profileEntries.get("region");
+      const key_file = profileEntries.get("key_file");
+
+      if (!key_file || !common.ConfigFileReader.fileExists(key_file)) {
+        log(
+          path.basename(__filename),
+          `key_file entry for ${profileName} profile is either missing or the key_file does not exist at path ${key_file}`
+        );
+        continue;
+      }
+      if (!user || !fingerprint || !tenancy || !region) {
+        log(
+          path.basename(__filename),
+          `One of the following config file entries is either empty or is missing user: ${user}, fingerprint: ${fingerprint}, tenancy: ${tenancy}, region: ${region}`
+        );
+        continue;
+      }
+      if (common.Region.fromRegionId(region) === undefined) {
+        log(
+          path.basename(__filename),
+          `region: ${region} is not a valid region`
+        );
+        continue;
+      }
+
+      const privateKey = readFileSync(
+        common.ConfigFileReader.expandUserHome(key_file),
+        "utf8"
+      );
+
+      const simpleProvider = new common.SimpleAuthenticationDetailsProvider(
+        tenancy,
+        user,
+        fingerprint,
+        privateKey,
+        null,
+        common.Region.fromRegionId(region)
+      );
+
+      this.providers.set(profileName, simpleProvider);
+    }
   }
 }

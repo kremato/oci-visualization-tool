@@ -47,6 +47,7 @@ export const getResourceObject = async (
       ? limits.requests.ListLimitValuesRequest.ScopeType.Ad
       : limits.requests.ListLimitValuesRequest.ScopeType.Region;
   let serviceLimits = await listServiceLimits(
+    profile,
     limitDefinitionSummary.serviceName,
     limitDefinitionSummary.name,
     regionId,

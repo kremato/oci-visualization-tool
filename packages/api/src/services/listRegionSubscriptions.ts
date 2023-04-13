@@ -1,10 +1,12 @@
 import { identity } from "common";
 import { getProvider } from "./clients/getProvider";
+import { Cache } from "./cache/cache";
 
 export const listRegionSubscriptions = async (
   profile: string
 ): Promise<identity.models.RegionSubscription[]> => {
-  const authenticationDetailsProvider = getProvider(profile);
+  const authenticationDetailsProvider =
+    Cache.getProvider(profile) || getProvider(profile);
   const client = new identity.IdentityClient({
     authenticationDetailsProvider,
   });

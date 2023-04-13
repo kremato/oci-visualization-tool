@@ -20,7 +20,12 @@ const httpServer = app.listen(
 );
 
 app.get("/registration-token", controllers.configuration.signup);
-app.get("/profiles", controllers.profiles.profiles);
+app.get("/profiles", controllers.profiles.list);
+app.get(
+  "/profiles/status",
+  checkProfileQuery,
+  controllers.profiles.profileStatus
+);
 app.get("/compartments", checkProfileQuery, controllers.compartments.list);
 app.get(
   "/region-subscriptions",
@@ -37,7 +42,6 @@ app.post(
   emitClosingSession,
   controllers.limits.store
 );
-app.get("/", checkProfileQuery, controllers.configuration.ping);
 app.use((_, res) => {
   res.status(404).send("NOT FOUND");
 });

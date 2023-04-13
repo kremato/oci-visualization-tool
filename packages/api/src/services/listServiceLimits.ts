@@ -3,6 +3,7 @@ import path from "path";
 import type { MyAvailabilityDomain } from "../types/types";
 import { log } from "../utils/log";
 import { getProvider } from "./clients/getProvider";
+import { Cache } from "./cache/cache";
 
 /* The function retrieves a catalog of service limits associated with a specific
 limit and service name. If the limit is AD scoped and the region includes multiple
@@ -16,7 +17,8 @@ export const listServiceLimits = async (
   availabilityDomain?: identity.models.AvailabilityDomain | MyAvailabilityDomain
 ): Promise<limits.models.LimitValueSummary[]> => {
   limits.requests.ListLimitValuesRequest.ScopeType.Ad.toString();
-  const authenticationDetailsProvider = getProvider(profile);
+  const authenticationDetailsProvider =
+    Cache.getProvider(profile) || getProvider(profile);
   const client = new limits.LimitsClient({
     authenticationDetailsProvider,
   });

@@ -22,7 +22,9 @@ export const list = (
   return successResponse(
     res,
     /* ProfileCache.getInstance().getLimitDefinitionsGroupedByLimitName() */
-    Cache.getInstance().getProfileCache(req.query.profile) || []
+    Cache.getInstance()
+      .getProfileCache(req.query.profile)
+      ?.getLimitDefinitionsGroupedByLimitName() || []
   );
 };
 
