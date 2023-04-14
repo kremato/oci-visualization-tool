@@ -6,7 +6,7 @@ export interface DropdownItem {
   serviceName?: string;
 }
 
-export type ApiStatus = "up" | "down" | "loading";
+export type ApiStatus = "ready" | "down" | "loading";
 
 export type ApiDropdownDataEndpoints =
   | "compartments"

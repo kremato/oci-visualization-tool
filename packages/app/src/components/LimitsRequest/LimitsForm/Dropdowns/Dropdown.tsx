@@ -5,13 +5,13 @@ import {
   Autocomplete,
   createFilterOptions,
 } from "@mui/material";
-import { capitalizeFirstLetter } from "../utils/capitalizeFirstLetter";
-import { DropdownItem } from "../types/types";
+import { capitalizeFirstLetter } from "../../../../utils/capitalizeFirstLetter";
+import { DropdownItem } from "../../../../types/types";
 import { useState } from "react";
 import { Control, Controller, ControllerRenderProps } from "react-hook-form";
-import { LimitsFormEntries, LimitsFormValues } from "../types/types";
-import { filterOptionsBuilder } from "../utils/filterOptionsBuilder";
-import { useAutocomplete } from "../hooks/useAutocomplete";
+import { LimitsFormEntries, LimitsFormValues } from "../../../../types/types";
+import { filterOptionsBuilder } from "../../../../utils/filterOptionsBuilder";
+import { useAutocomplete } from "../../../../hooks/useAutocomplete";
 
 interface Props {
   name: LimitsFormEntries;

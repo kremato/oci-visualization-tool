@@ -9,16 +9,15 @@ const envProfile = process.env["PROFILE"] || "DEFAULT";
 // Singleton
 export class Cache {
   private profiles: string[] = [];
-  private profileCaches: Map<string, ProfileCache>;
-  private static instance: Cache;
+  private profileCaches: Map<string, ProfileCache> = new Map();
   private static providers = new Map<
     string,
     common.SimpleAuthenticationDetailsProvider
   >();
+  private static instance: Cache;
 
   private constructor() {
     Cache.loadProviders();
-    this.profileCaches = new Map();
     for (const profileName of Cache.providers.keys()) {
       this.profiles.push(profileName);
       this.profileCaches.set(profileName, new ProfileCache(profileName));

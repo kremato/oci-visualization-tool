@@ -1,8 +1,8 @@
-import VirtualizedDropdown from "../../../layouts/DropdownWithReactWindow";
-import { useDropdownItemsData } from "../../../hooks/useDropdownItemsData";
+import VirtualizedDropdown from "./DropdownWithReactWindow";
+import { useDropdownItemsData } from "../../../../hooks/useDropdownItemsData";
 import { MyLimitDefinitionSummary } from "common";
 import { Control } from "react-hook-form";
-import { LimitsFormEntries, LimitsFormValues } from "../../../types/types";
+import { LimitsFormEntries, LimitsFormValues } from "../../../../types/types";
 
 interface Props {
   control: Control<LimitsFormValues, any>;

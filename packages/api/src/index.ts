@@ -4,10 +4,6 @@ import cors from "cors";
 import * as controllers from "./controllers";
 import { WebSocketServer } from "ws";
 import * as url from "url";
-/* import { checkRegistrationToken } from "./middleware/checkRegistrationToken";
-import { validateStoreLimitsBody } from "./middleware/validateStoreLimitsBody";
-import { emitClosingSession } from "./middleware/emitClosingSession";
-import { checkProfileQuery } from "./middleware/checkProfileQuery"; */
 import * as routes from "./routes";
 
 dotenv.config();
@@ -21,34 +17,11 @@ const httpServer = app.listen(
 );
 
 app.use("/registration-token", routes.registration.router);
-/* app.get("/registration-token", controllers.configuration.signup); */
 app.use("/profiles", routes.profiles.router);
-/* app.get("/profiles", controllers.profiles.list);
-app.get(
-  "/profiles/status",
-  checkProfileQuery,
-  controllers.profiles.profileStatus
-); */
 app.use("/compartments", routes.compartments.router);
-/* app.get("/compartments", checkProfileQuery, controllers.compartments.list); */
 app.use("/region-subscriptions", routes.regions.router);
-/* app.get(
-  "/region-subscriptions",
-  checkProfileQuery,
-  controllers.regions.listRegionSubscriptions
-); */
 app.use("/services", routes.services.router);
-/* app.get("/services", checkProfileQuery, controllers.services.list); */
 app.use("/limits", routes.limits.router);
-/* app.get("/limits", checkProfileQuery, controllers.limits.list);
-app.post(
-  "/limits/:id",
-  checkRegistrationToken,
-  checkProfileQuery,
-  validateStoreLimitsBody,
-  emitClosingSession,
-  controllers.limits.store
-); */
 app.use((_, res) => {
   res.status(404).send("NOT FOUND");
 });

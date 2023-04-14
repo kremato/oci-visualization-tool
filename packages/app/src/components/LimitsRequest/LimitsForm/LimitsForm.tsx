@@ -7,11 +7,11 @@ import { SendButton } from "./SendButton";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Controller } from "react-hook-form";
-import { fetchLimitsData } from "../../utils/fetchLimitsData";
-import { LimitsFormEntries, LimitsFormValues } from "../../types/types";
-import store from "../../store/store";
-import { useAppDispatch } from "../../hooks/useAppDispatch";
-import { fetchToken } from "../../store/tokenActionCreators";
+import { fetchLimitsData } from "../../../utils/fetchLimitsData";
+import { LimitsFormEntries, LimitsFormValues } from "../../../types/types";
+import store from "../../../store/store";
+import { useAppDispatch } from "../../../hooks/useAppDispatch";
+import { fetchToken } from "../../../store/tokenActionCreators";
 
 export const LimitsForm = () => {
   const { handleSubmit, control } = useForm<LimitsFormValues>();
@@ -26,7 +26,6 @@ export const LimitsForm = () => {
     const fetchFormData = async () => {
       if (store.getState().token.token === undefined) {
         await dispatch(fetchToken());
-        // TODO: what if it goes wrong
       }
       fetchLimitsData(formData);
     };
@@ -38,8 +37,6 @@ export const LimitsForm = () => {
     <Box
       component={"form"}
       onSubmit={handleSubmit((data) => {
-        /* console.log("SETTIN DATA");
-        console.log(data); */
         setFormData(data);
       })}
       noValidate

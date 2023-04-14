@@ -1,6 +1,6 @@
 import { ResourceObject, UniqueLimit } from "common";
 import { useAppSelector } from "../../hooks/useAppSelector";
-import { hideResourceAvailability } from "../../utils/hideResourceAvailability";
+import { hideResourceLimit } from "../../utils/hideResourceLimit";
 import { LimitRow } from "./LimitRow";
 import { Typography } from "@mui/material";
 
@@ -16,7 +16,7 @@ export const Row = ({ uniqueLimit }: Props) => {
   const sumADResources = useAppSelector((state) => state.input.sumADResources);
   const hideParams = useAppSelector<[boolean, boolean, boolean, boolean]>(
     (state) => [
-      state.input.hideNoServiceLimits,
+      state.input.hideNoServiceLimit,
       state.input.hideNoAvailability,
       state.input.hideNoUsed,
       state.input.hideNoQuota,
@@ -34,7 +34,7 @@ export const Row = ({ uniqueLimit }: Props) => {
 
   if (
     (uniqueLimit.isDeprecated && !showDeprecated) ||
-    hideResourceAvailability(uniqueLimit.resourceSum, hideParams)
+    hideResourceLimit(uniqueLimit.resourceSum, hideParams)
   ) {
     return <></>;
   }
@@ -43,7 +43,7 @@ export const Row = ({ uniqueLimit }: Props) => {
 
   if (!sumADResources) {
     for (const resourceObject of uniqueLimit.resources) {
-      if (hideResourceAvailability(resourceObject, hideParams)) continue;
+      if (hideResourceLimit(resourceObject, hideParams)) continue;
       const row = (
         <LimitRow
           key={resourceObject.scope}
@@ -60,7 +60,7 @@ export const Row = ({ uniqueLimit }: Props) => {
 
   if (
     sumADResources &&
-    !hideResourceAvailability(uniqueLimit.resourceSum, hideParams)
+    !hideResourceLimit(uniqueLimit.resourceSum, hideParams)
   ) {
     const row = (
       <LimitRow

@@ -1,9 +1,9 @@
-import { ResponseTreeNode } from "common";
+import { UniqueLimitTreeNode } from "../../types/types";
 import { AccordionWrapper } from "./AccordionWrapper";
 import { Table } from "../Table/Table";
 
 interface Props {
-  node: ResponseTreeNode;
+  node: UniqueLimitTreeNode;
 }
 
 export const NestedAccordions = ({ node }: Props) => {

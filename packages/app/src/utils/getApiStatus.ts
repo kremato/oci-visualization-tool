@@ -6,7 +6,7 @@ export const getApiStatus = async (): Promise<ApiStatus> => {
     const response = await fetch(request);
     if (response.status === 503) return "loading";
     if (!response.ok) return "down";
-    return "up";
+    return "ready";
   } catch (e) {
     console.log(e);
     return "down";

@@ -1,4 +1,4 @@
-import { inputActions } from "../store/inputSlice";
+import { statusActions } from "../store/statusSlice";
 import store from "../store/store";
 
 const socketStatusListeners = new Set<() => void>();
@@ -38,6 +38,7 @@ export interface SocketMessageData {
 const socketApi = (): {
   isOpen: () => boolean | undefined;
   getMessage: () => SocketMessageData | undefined;
+  setProgressMessage: (message: SocketMessageData) => void;
   restart: () => void;
 } => {
   console.log(`socketApi invoked`);
@@ -72,10 +73,15 @@ const socketApi = (): {
 
     socket.onclose = (event) => {
       console.log(`socket is closing, code: ${event.code}; token: ${token}`);
-      store.dispatch(inputActions.updateProgressStatus(undefined));
+      store.dispatch(statusActions.updateProgressStatus("hideProgressBar"));
       isOpen = false;
       updateStatusListeners();
     };
+  };
+
+  const setProgressMessage = (message: SocketMessageData) => {
+    progressMessage = message;
+    updateMessageListeners();
   };
 
   startSocket();
@@ -83,6 +89,7 @@ const socketApi = (): {
   return {
     isOpen: () => isOpen,
     getMessage: () => progressMessage,
+    setProgressMessage,
     restart: () => {
       socket?.close();
       startSocket();

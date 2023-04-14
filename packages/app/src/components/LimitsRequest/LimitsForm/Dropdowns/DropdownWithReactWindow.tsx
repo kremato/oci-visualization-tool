@@ -7,13 +7,13 @@ import Popper from "@mui/material/Popper";
 import { useTheme, styled } from "@mui/material/styles";
 import { VariableSizeList, ListChildComponentProps } from "react-window";
 import Typography from "@mui/material/Typography";
-import { DropdownItem } from "../types/types";
+import { DropdownItem } from "../../../../types/types";
 import { ListItemText, Checkbox } from "@mui/material";
-import { capitalizeFirstLetter } from "../utils/capitalizeFirstLetter";
+import { capitalizeFirstLetter } from "../../../../utils/capitalizeFirstLetter";
 import { useState } from "react";
 import { createFilterOptions } from "@mui/material/Autocomplete";
 import { Control, Controller, ControllerRenderProps } from "react-hook-form";
-import { LimitsFormEntries, LimitsFormValues } from "../types/types";
+import { LimitsFormEntries, LimitsFormValues } from "../../../../types/types";
 
 const LISTBOX_PADDING = 8; // px
 
