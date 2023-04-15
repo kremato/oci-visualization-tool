@@ -1,25 +1,11 @@
 import * as React from "react";
-import TextField from "@mui/material/TextField";
-import Autocomplete, { autocompleteClasses } from "@mui/material/Autocomplete";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import ListSubheader from "@mui/material/ListSubheader";
-import Popper from "@mui/material/Popper";
 import { useTheme, styled } from "@mui/material/styles";
 import { VariableSizeList, ListChildComponentProps } from "react-window";
 import Typography from "@mui/material/Typography";
-import { DropdownItem } from "../../../../types/types";
-import { ListItemText, Checkbox } from "@mui/material";
-import { capitalizeFirstLetter } from "../../../../utils/capitalizeFirstLetter";
-import { useState } from "react";
-import { createFilterOptions } from "@mui/material/Autocomplete";
-import {
-  Control,
-  Controller,
-  ControllerFieldState,
-  ControllerRenderProps,
-} from "react-hook-form";
-import { LimitsFormEntries, LimitsFormValues } from "../../../../types/types";
-import { useControlledAutocomplete } from "../../../../hooks/useControlledAutocomplete";
+
+/* Code below adopted from  https://github.com/mui/material-ui/blob/v5.12.0/docs/data/material/components/autocomplete/Virtualize.tsx */
 
 const LISTBOX_PADDING = 8; // px
 

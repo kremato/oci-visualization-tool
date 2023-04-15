@@ -1,8 +1,8 @@
-import VirtualizedDropdown from "./DropdownWithReactWindow";
 import { useDropdownItemsData } from "../../../../hooks/useDropdownItemsData";
 import { MyLimitDefinitionSummary } from "common";
 import { Control } from "react-hook-form";
 import { LimitsFormEntries, LimitsFormValues } from "../../../../types/types";
+import { Dropdown } from "./Dropdown";
 
 interface Props {
   control: Control<LimitsFormValues, any>;
@@ -23,9 +23,8 @@ export const LimitsDropdown = ({ control }: Props) => {
       });
     }
   );
-
   return (
-    <VirtualizedDropdown
+    <Dropdown
       name={LimitsFormEntries.Limits}
       options={options}
       control={control}

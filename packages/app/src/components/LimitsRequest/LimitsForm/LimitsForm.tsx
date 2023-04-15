@@ -15,7 +15,9 @@ import { fetchToken } from "../../../store/tokenActionCreators";
 import { useAppSelector } from "../../../hooks/useAppSelector";
 
 export const LimitsForm = () => {
-  const { handleSubmit, control, reset } = useForm<LimitsFormValues>();
+  const { handleSubmit, control, reset } = useForm<LimitsFormValues>({
+    defaultValues: { limits: [] },
+  });
   const dispatch = useAppDispatch();
   const currentProfile = useAppSelector((state) => state.profile.profile);
   const [formData, setFormData] = useState<LimitsFormValues | undefined>(
