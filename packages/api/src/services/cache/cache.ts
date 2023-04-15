@@ -68,7 +68,12 @@ export class Cache {
       const region = profileEntries.get("region");
       const key_file = profileEntries.get("key_file");
 
-      if (!key_file || !common.ConfigFileReader.fileExists(key_file)) {
+      if (
+        !key_file ||
+        !common.ConfigFileReader.fileExists(
+          common.ConfigFileReader.expandUserHome(key_file)
+        )
+      ) {
         log(
           path.basename(__filename),
           `key_file entry for ${profileName} profile is either missing or the key_file does not exist at path ${key_file}`
