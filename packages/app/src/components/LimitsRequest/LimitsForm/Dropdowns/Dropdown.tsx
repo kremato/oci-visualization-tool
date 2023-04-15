@@ -11,7 +11,8 @@ import { useState } from "react";
 import { Control, Controller, ControllerRenderProps } from "react-hook-form";
 import { LimitsFormEntries, LimitsFormValues } from "../../../../types/types";
 import { filterOptionsBuilder } from "../../../../utils/filterOptionsBuilder";
-import { useAutocomplete } from "../../../../hooks/useAutocomplete";
+import { useControlledAutocomplete } from "../../../../hooks/useControlledAutocomplete";
+import { ControlledAutocomplete } from "./ControlledAutocomplete";
 
 interface Props {
   name: LimitsFormEntries;
@@ -22,12 +23,6 @@ interface Props {
 export const Dropdown = ({ name, options, control }: Props) => {
   /* const [value, setValue] = useState<DropdownItem[]>([]);
   const [inputValue, setInputValue] = useState(""); */
-  const { ...rest } = useAutocomplete(
-    name,
-    options,
-    "primaryLabel",
-    "secondaryLabel"
-  );
 
   /* console.log(name);
   console.log(options); */
@@ -44,7 +39,7 @@ export const Dropdown = ({ name, options, control }: Props) => {
     field.onChange(inputList);
   }; */
 
-  const filterOptions = filterOptionsBuilder("primaryLabel", "secondaryLabel");
+  //const filterOptions = filterOptionsBuilder("primaryLabel", "secondaryLabel");
 
   return (
     <Controller
@@ -54,63 +49,11 @@ export const Dropdown = ({ name, options, control }: Props) => {
         required: `Please enter ${name}`,
       }}
       render={({ field, fieldState }) => (
-        <Autocomplete
-          {...field}
-          multiple
-          disableCloseOnSelect
+        <ControlledAutocomplete
+          field={field}
+          fieldState={fieldState}
+          name={name}
           options={options}
-          filterOptions={filterOptions}
-          isOptionEqualToValue={(option, value) =>
-            option.primaryLabel === value.primaryLabel &&
-            option.secondaryLabel === value.secondaryLabel
-          }
-          onChange={(_event, newValue) => {
-            rest.handleChange(newValue, field);
-          }}
-          getOptionLabel={(option) =>
-            name === LimitsFormEntries.Limits
-              ? option.primaryLabel + option.serviceName
-              : option.primaryLabel
-          }
-          renderOption={(props, option, { selected }) => (
-            <li {...props} style={{ padding: 0 }}>
-              <Checkbox size="small" checked={selected} />
-              <ListItemText
-                primary={
-                  name === LimitsFormEntries.Limits
-                    ? `${option.primaryLabel} [${option.serviceName}]`
-                    : option.primaryLabel
-                }
-                secondary={
-                  option.primaryLabel != option.secondaryLabel &&
-                  option.secondaryLabel
-                }
-                sx={{ mt: 0, mb: 0 }}
-                primaryTypographyProps={{
-                  sx: { wordBreak: "break-word", lineHeight: 1.25 },
-                }}
-                secondaryTypographyProps={{
-                  sx: { wordBreak: "break-word", lineHeight: 1.25 },
-                }}
-              />
-            </li>
-          )}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label={capitalizeFirstLetter(name)}
-              placeholder={`Choose ${name}`}
-              error={fieldState.error !== undefined}
-              helperText={fieldState.error?.message}
-              required
-            />
-          )}
-          fullWidth={true}
-          value={rest.value}
-          inputValue={rest.inputValue}
-          onInputChange={(_event, newInputValue) =>
-            rest.setInputValue(newInputValue)
-          }
         />
       )}
     />

@@ -1,6 +1,6 @@
 import { Avatar, Button, Menu, MenuItem } from "@mui/material";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import fetcher from "../../utils/fetcher";
 import useSWR from "swr";
 import { useAppSelector } from "../../hooks/useAppSelector";
@@ -9,7 +9,6 @@ import { profileActions } from "../../store/profileSlice";
 
 export const ProfileMenu = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
   const currentProfile = useAppSelector((state) => state.profile.profile);
   const dispatch = useAppDispatch();
   let { data, error, isLoading } = useSWR<string[]>(
@@ -17,11 +16,13 @@ export const ProfileMenu = () => {
     fetcher
   );
 
-  if (!data || error || isLoading) data = [];
+  useEffect(() => {
+    if (currentProfile === undefined && data && data.length > 0) {
+      dispatch(profileActions.replaceProfile(data[0]));
+    }
+  }, [data, currentProfile]);
 
-  if (currentProfile === undefined && data.length > 0) {
-    dispatch(profileActions.replaceProfile(data[0]));
-  }
+  if (!data || error || isLoading) data = [];
 
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {

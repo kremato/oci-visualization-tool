@@ -14,6 +14,52 @@ import { useState } from "react";
 import { createFilterOptions } from "@mui/material/Autocomplete";
 import { Control, Controller, ControllerRenderProps } from "react-hook-form";
 import { LimitsFormEntries, LimitsFormValues } from "../../../../types/types";
+import { useControlledAutocomplete } from "../../../../hooks/useControlledAutocomplete";
+import { ReactWindowControlledAutocomplete } from "./ReactWindowControlledAutocomplete";
+
+interface Props {
+  name: LimitsFormEntries;
+  options: DropdownItem[];
+  control: Control<LimitsFormValues, any>;
+}
+
+export default function VirtualizedDropdown({ name, options, control }: Props) {
+  return (
+    <Controller
+      control={control}
+      name={name}
+      rules={{
+        required: false,
+      }}
+      defaultValue={[]}
+      render={({ field }) => (
+        <ReactWindowControlledAutocomplete
+          field={field}
+          name={name}
+          options={options}
+        />
+      )}
+    />
+  );
+}
+
+/* import * as React from "react";
+import TextField from "@mui/material/TextField";
+import Autocomplete, { autocompleteClasses } from "@mui/material/Autocomplete";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import ListSubheader from "@mui/material/ListSubheader";
+import Popper from "@mui/material/Popper";
+import { useTheme, styled } from "@mui/material/styles";
+import { VariableSizeList, ListChildComponentProps } from "react-window";
+import Typography from "@mui/material/Typography";
+import { DropdownItem } from "../../../../types/types";
+import { ListItemText, Checkbox } from "@mui/material";
+import { capitalizeFirstLetter } from "../../../../utils/capitalizeFirstLetter";
+import { useState } from "react";
+import { createFilterOptions } from "@mui/material/Autocomplete";
+import { Control, Controller, ControllerRenderProps } from "react-hook-form";
+import { LimitsFormEntries, LimitsFormValues } from "../../../../types/types";
+import { useControlledAutocomplete } from "../../../../hooks/useControlledAutocomplete";
 
 const LISTBOX_PADDING = 8; // px
 
@@ -223,3 +269,4 @@ export default function VirtualizedDropdown({ name, options, control }: Props) {
     />
   );
 }
+ */

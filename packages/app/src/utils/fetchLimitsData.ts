@@ -10,6 +10,8 @@ import { statusActions } from "../store/statusSlice";
 import { reconnectingSocketApi } from "./reconnectingSocketApi";
 
 export const fetchLimitsData = async (requestBody: LimitsFormValues) => {
+  console.log("BODY");
+  console.log(requestBody);
   const profile = store.getState().profile.profile;
   const searchParams = new URLSearchParams({
     profile: profile || "",

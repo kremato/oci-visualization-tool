@@ -6,7 +6,8 @@ export const filterOptionsBuilder = (...options: (keyof DropdownItem)[]) => {
     stringify: (option: DropdownItem) => {
       return options.reduce(
         (accumulator: string, currentValue) =>
-          accumulator + ` ${option[currentValue]}`,
+          accumulator +
+          `${accumulator.length > 0 ? " " : ""}${option[currentValue]}`,
         ""
       );
     },

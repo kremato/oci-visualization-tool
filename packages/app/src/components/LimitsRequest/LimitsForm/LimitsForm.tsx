@@ -12,13 +12,19 @@ import { LimitsFormEntries, LimitsFormValues } from "../../../types/types";
 import store from "../../../store/store";
 import { useAppDispatch } from "../../../hooks/useAppDispatch";
 import { fetchToken } from "../../../store/tokenActionCreators";
+import { useAppSelector } from "../../../hooks/useAppSelector";
 
 export const LimitsForm = () => {
-  const { handleSubmit, control } = useForm<LimitsFormValues>();
+  const { handleSubmit, control, reset } = useForm<LimitsFormValues>();
   const dispatch = useAppDispatch();
+  const currentProfile = useAppSelector((state) => state.profile.profile);
   const [formData, setFormData] = useState<LimitsFormValues | undefined>(
     undefined
   );
+
+  useEffect(() => {
+    reset();
+  }, [currentProfile]);
 
   useEffect(() => {
     if (formData === undefined) return;
