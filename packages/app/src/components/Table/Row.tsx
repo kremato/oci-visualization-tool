@@ -4,7 +4,7 @@ import { hideResourceLimit } from "../../utils/hideResourceLimit";
 import { LimitRow } from "./LimitRow";
 import { Typography } from "@mui/material";
 
-const getColumnNameForLimit = (resource: ResourceObject) => {
+const getScopeForLimitsTable = (resource: ResourceObject) => {
   return resource.scope ? resource.scope : "n/a";
 };
 
@@ -47,7 +47,7 @@ export const Row = ({ uniqueLimit }: Props) => {
       const row = (
         <LimitRow
           key={resourceObject.scope}
-          name={getColumnNameForLimit(resourceObject)}
+          name={getScopeForLimitsTable(resourceObject)}
           serviceLimit={resourceObject.serviceLimit}
           availability={resourceObject.available}
           used={resourceObject.used}
@@ -65,7 +65,7 @@ export const Row = ({ uniqueLimit }: Props) => {
     const row = (
       <LimitRow
         key={uniqueLimit.resourceSum.scope}
-        name={getColumnNameForLimit(uniqueLimit.resourceSum)}
+        name={getScopeForLimitsTable(uniqueLimit.resourceSum)}
         serviceLimit={uniqueLimit.resourceSum.serviceLimit}
         availability={uniqueLimit.resourceSum.available}
         used={uniqueLimit.resourceSum.used}

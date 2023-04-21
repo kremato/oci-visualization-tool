@@ -29,15 +29,20 @@ export class ProfileCache {
   constructor(profile: string) {
     this.profile = profile;
     this.Ready = new Promise(async (resolve, _reject) => {
-      const startupData = await getCacheStartupData(profile);
-      this.compartments = startupData.compartments;
-      this.regionSubscriptions = startupData.regionSubscriptions;
-      this.services = startupData.serviceSubscriptions;
-      this.limitDefinitionsPerLimitName =
-        startupData.limitDefinitionsPerLimitName;
-      this.limitDefinitionsPerService = startupData.limitDefinitionsPerService;
-      this.availabilityDomainsPerRegion =
-        startupData.availabilityDomainsPerRegion;
+      const {
+        compartments,
+        regionSubscriptions,
+        services,
+        limitDefinitionsPerLimitName,
+        limitDefinitionsPerService,
+        availabilityDomainsPerRegion,
+      } = await getCacheStartupData(profile);
+      this.compartments = compartments;
+      this.regionSubscriptions = regionSubscriptions;
+      this.services = services;
+      this.limitDefinitionsPerLimitName = limitDefinitionsPerLimitName;
+      this.limitDefinitionsPerService = limitDefinitionsPerService;
+      this.availabilityDomainsPerRegion = availabilityDomainsPerRegion;
       resolve(undefined);
     });
   }

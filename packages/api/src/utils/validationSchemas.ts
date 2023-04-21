@@ -1,5 +1,6 @@
 import { limits } from "common";
 import * as yup from "yup";
+import type { StoreLimitsBody } from "../types/types";
 
 export const myLimitDefinitionSummarySchema = yup.object({
   name: yup.string().defined("Limit name has to be defined"),
@@ -28,7 +29,7 @@ export const myServiceSummarySchema = yup.object({
   description: yup.string().defined(),
 });
 
-export const storeLimitsSchema = yup.object({
+export const storeLimitsSchema: yup.SchemaOf<StoreLimitsBody> = yup.object({
   compartments: yup.array().of(yup.string().defined()).required(),
   regions: yup.array().of(yup.string().defined()).required(),
   services: yup.array().of(yup.string().defined()).required(),
@@ -40,6 +41,6 @@ export const storeLimitsSchema = yup.object({
         serviceName: yup.string().required(),
       })
     )
-    .required(),
-  invalidateCache: yup.boolean().required().defined(),
+    .optional(),
+  invalidateCache: yup.boolean().defined(),
 });

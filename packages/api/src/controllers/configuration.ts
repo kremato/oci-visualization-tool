@@ -12,7 +12,6 @@ export const registeredClients = new Map<
 
 export const start = async (): Promise<void> => {
   console.log(`[api]: api is running`);
-  await new Promise((resolve) => setTimeout(resolve, 5000));
   /* Set retry configuration globally */
   common.GenericRetrier.defaultRetryConfiguration = {
     retryCondition: (error) =>
@@ -24,7 +23,10 @@ export const start = async (): Promise<void> => {
   console.log("[api]: api is ready");
 };
 
-export const signup = (_req: Request, res: Response) => {
+/* Returns a registration token, this token is used in /limits/token route
+and during the websocket connection as a query parameter (first you have to
+be registered in order to listen with the socket) */
+export const registration = (_req: Request, res: Response) => {
   let uuid;
   do {
     uuid = uuidv4();

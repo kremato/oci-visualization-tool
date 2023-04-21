@@ -17,8 +17,6 @@ export const deleteSocketMessageListener = socketMessageListeners.delete.bind(
   socketMessageListeners
 );
 
-const socketReconnectDelayInMiliseconds = 5000;
-
 const updateMessageListeners = () => {
   socketMessageListeners.forEach((listener) => listener());
 };
@@ -31,9 +29,6 @@ export interface SocketMessageData {
   countLoadedLimits: number;
   countLimitDefinitionSummaries: number;
 }
-
-// TODO:
-//const port = process.env.prodution ? import.meta.env.VITE_API : process.
 
 const socketApi = (): {
   isOpen: () => boolean | undefined;

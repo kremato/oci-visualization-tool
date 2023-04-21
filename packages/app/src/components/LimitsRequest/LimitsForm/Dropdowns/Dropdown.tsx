@@ -1,5 +1,5 @@
 import { DropdownItem } from "../../../../types/types";
-import { Control, Controller, ControllerRenderProps } from "react-hook-form";
+import { Control, Controller } from "react-hook-form";
 import { LimitsFormEntries, LimitsFormValues } from "../../../../types/types";
 import { ControlledAutocomplete } from "./ControlledAutocomplete";
 

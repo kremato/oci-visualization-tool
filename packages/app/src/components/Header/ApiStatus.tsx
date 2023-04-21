@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import Chip from "@mui/material/Chip";
 import { useAppSelector } from "../../hooks/useAppSelector";
-import { getProfileStatus } from "../../utils/getProfileStatus";
+import { fetchProfileStatus } from "../../utils/fetchProfileStatus";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { fetchToken } from "../../store/tokenActionCreators";
 import { usePrevious } from "../../hooks/usePrevious";
@@ -27,7 +27,7 @@ export const ApiStatus = () => {
   }, [apiStatus]);
 
   const updateApiStatus = async () => {
-    dispatch(statusActions.updateApiStatus(await getProfileStatus()));
+    dispatch(statusActions.updateApiStatus(await fetchProfileStatus()));
   };
 
   // start profile pinging

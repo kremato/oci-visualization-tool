@@ -26,7 +26,7 @@ export interface LimitsFormValues {
   [LimitsFormEntries.Compartments]: string[];
   [LimitsFormEntries.Regions]: string[];
   [LimitsFormEntries.Services]: string[];
-  [LimitsFormEntries.Limits]: { limitName: string; serviceName: string }[];
+  [LimitsFormEntries.Limits]?: { limitName: string; serviceName: string }[];
   [LimitsFormEntries.InvalidateCache]: boolean;
 }
 

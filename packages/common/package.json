@@ -11,7 +11,10 @@
   "dependencies": {
     "oci-common": "^2.53.0",
     "oci-identity": "^2.53.0",
-    "oci-limits": "^2.53.0",
+    "oci-limits": "^2.53.0"
+  },
+  "devDependencies": {
+    "@tsconfig/node18-strictest": "^1.0.0",
     "typescript": "^4.8.4"
   }
 }

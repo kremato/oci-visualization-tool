@@ -1,7 +1,7 @@
 import store from "../store/store";
 import { ApiStatus } from "../types/types";
 
-export const getProfileStatus = async (): Promise<ApiStatus> => {
+export const fetchProfileStatus = async (): Promise<ApiStatus> => {
   try {
     const searchParams = new URLSearchParams({
       profile: store.getState().profile.profile || "",

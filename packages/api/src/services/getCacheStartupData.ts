@@ -17,7 +17,7 @@ export const getCacheStartupData = async (profile: string) => {
   const globallyScopedServices = findGloballyScopedServices(
     limiDefinitionSummaries
   );
-  const serviceSubscriptions = (
+  const services = (
     await filterServiceSummaries(await listServices(profile))
   ).filter((service) => !globallyScopedServices.includes(service.name));
 
@@ -43,7 +43,7 @@ export const getCacheStartupData = async (profile: string) => {
   return {
     compartments,
     regionSubscriptions,
-    serviceSubscriptions,
+    services,
     limitDefinitionsPerLimitName,
     limitDefinitionsPerService,
     availabilityDomainsPerRegion,
