@@ -63,7 +63,7 @@ export const LimitsForm = () => {
               )}
             />
           }
-          label={"Invalidate cache"}
+          label={"Invalidate profile cache"}
         />
         <SendButton text={"Send"} />
       </Stack>

@@ -6,6 +6,7 @@ import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { fetchToken } from "../../store/tokenActionCreators";
 import { usePrevious } from "../../hooks/usePrevious";
 import { statusActions } from "../../store/statusSlice";
+import { reconnectingSocketApi } from "../../utils/reconnectingSocketApi";
 
 const getApiStatusDelayMiliseconds = 2500;
 
@@ -34,8 +35,10 @@ export const ApiStatus = () => {
   useEffect(() => {
     // update status before the first run of the timer
     updateApiStatus();
-    const timer = setInterval(() => {
-      updateApiStatus();
+    const timer = setInterval(async () => {
+      await updateApiStatus();
+      if (apiStatus === "ready" && !reconnectingSocketApi.isOpen())
+        reconnectingSocketApi.restart();
     }, getApiStatusDelayMiliseconds);
     return () => {
       clearInterval(timer);

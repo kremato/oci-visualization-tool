@@ -11,8 +11,9 @@ COPY packages/common/ ./packages/common
 RUN npm ci
 
 # make sure vite bakes VITE_API into js during build stage
-ENV API_PORT=8546
-ENV VITE_API=http://localhost:${API_PORT}
+
+ENV VITE_API_PORT=8546
+ENV VITE_API=http://localhost:${VITE_API_PORT}
 
 RUN npm run build
 

@@ -11,13 +11,13 @@ export interface MyAvailabilityDomain
   extends InferType<typeof myAvailabilityDomainSchema>,
     Omit<identity.models.AvailabilityDomain, "name"> {}
 
-export type StoreLimitsBody = {
+export interface StoreLimitsBody {
   compartments: string[];
   regions: string[];
   services: string[];
   limits?: { limitName: string; serviceName: string }[];
   invalidateCache: boolean;
-};
+}
 
 export interface TypedRequest<T, U extends ParamsDictionary, K extends Query>
   extends Express.Request {

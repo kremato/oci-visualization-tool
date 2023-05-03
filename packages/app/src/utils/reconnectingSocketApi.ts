@@ -44,15 +44,21 @@ const socketApi = (): {
   const startSocket = () => {
     const token = store.getState().token.token;
     if (token === undefined) {
-      console.log(`token is undefined, returning`);
+      console.log(`Token is ${token}, WebSocket connection creation refused.`);
       return;
     }
     const searchParams = new URLSearchParams({
       token: token,
     });
     console.log(store.getState().token.token);
-    console.log(`URL : ${"ws://localhost:8546?" + searchParams}`);
-    socket = new WebSocket("ws://localhost:8546?" + searchParams);
+    console.log(
+      `URL : ${
+        `ws://localhost:${import.meta.env.VITE_API_PORT}?` + searchParams
+      }`
+    );
+    socket = new WebSocket(
+      `ws://localhost:${import.meta.env.VITE_API_PORT}?` + searchParams
+    );
     socket.onopen = (_event) => {
       console.log(`socket is open, token: ${token}`);
       isOpen = true;

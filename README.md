@@ -10,7 +10,7 @@ For example, there is a file with the name of **key.pem** and a file with the na
 
 ## Getting Started
 
-To run the app, clone the repository and use this command in the project root directory:
+To run the app, clone the repository and use this command in the project's root directory:
 
 ```bash
 docker-compose up -d
@@ -22,13 +22,12 @@ The command starts both the backend and the frontend. The app should be availabl
 
 ### Limits Fetch
 
-There are two options for limit fetch.
+Fetch requests are always executed against the currently selected profile. There are two options for limit fetch.
 
 1. Fill out the compartment, region, and service dropdowns. This option will retrieve all limits for every combination of compartment, region, and service. ![compartmen_region_service](/assets/images/compartment_region_service.png)
 2. Fill out the compartment, region, service, and limit dropdowns. This option will retrieve limit values for the chosen limits in every combination of compartment, region, and service(if the chosen limits belong to the chosen services). ![compartmen_region_service_limit](/assets/images/compartment_region_service_limit.png)
 
-Any other combination will result in an empty response.
-Request responses are cached so that duplicate requests are faster. However, if the "Invalide limit cache" option is checked, all cached limits are deleted, and every new request must fetch the limits from the OCI API again.
+Request responses are cached so that duplicate requests are faster. However, if the "Invalide profile cache" option is checked, all cached limits are deleted, and every new request must fetch the limits from the OCI API again.
 
 ### Accordion Display
 
@@ -50,9 +49,13 @@ services > compartments > regions > limit tables
 
 - **Sum AD resources**: if checked, sums resources for every limit in multiple Availability Domains.
 - **Show deprecated limits**: if checked, deprecated limits will also be displayed.
-- **Hide limits with no service limit/availability/used/quota**: limit with no service limit/availability/used/quota is a limit with "0" or "n/a" in the place of service limit/availability/used/quota. These options work together like a logical "and" statement. So, for example, if the limit has no quota and availability and "Hide limits with no quota" and "Hide limits with no availability" are checked, the limit will hide. However, if for the same limit, only "Hide limits with no quota" is checked out of the four options, the limit will not hide because "Hide limits with no availability" remains unchecked.
+- **Hide limits with no service limit/availability/used/quota**: limit with no service limit/availability/used/quota is a limit with "0" or "n/a" in the place of service limit/availability/used/quota.
 
 ## Export to JSON or CSV
 
-- exported JSON is in the format of a list of objects, where each object represents a limit. The limit object has a format of stringified "UniqueLimit"(interface defined in the common package)
-- in the exported CSV, each limit has its row. The columns are: COMPARTMENT,REGION,SERVICE,LIMIT,SCOPE,SERVICE LIMIT,AVAILABLE,USED,QUOTA
+Exported JSON is in the format of a list of objects, where each object represents a limit. The limit object has a format of stringified "UniqueLimit"(interface defined in the [index.ts](https://github.com/kremato/oci-visualization-tool/blob/main/packages/common/src/index.ts) in the common package). As for the exported CSV, each limit has its row.
+
+- CSV column headers for the per compartment hierarchy: `COMPARTMENTS,REGION,SERVICE,LIMIT,SCOPE,SERVICE,LIMIT,AVAILABLE,USED,QUOTA`
+
+- CSV column headers for the per service hierarchy: `SERVICE,COMPARTMENTS,REGION,LIMIT,SCOPE,SERVICE
+LIMIT,AVAILABLE,USED,QUOTA`

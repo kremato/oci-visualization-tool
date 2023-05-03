@@ -18,12 +18,12 @@ export const start = async (): Promise<void> => {
       !(error.statusCode >= 500) &&
       common.OciSdkDefaultRetryConfiguration.retryCondition(error),
   };
-  /* Instantiate cache so the constructor is fired and startup data is loaded */
+  /* Instantiate the cache so the constructor is fired and startup data is loaded */
   Cache.getInstance();
   console.log("[api]: api is ready");
 };
 
-/* Returns a registration token, this token is used in /limits/token route
+/* Returns a registration token, this token is used in limits route
 and during the websocket connection as a query parameter (first you have to
 be registered in order to listen with the socket) */
 export const registration = (_req: Request, res: Response) => {
