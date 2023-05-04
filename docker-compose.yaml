@@ -8,7 +8,7 @@ services:
     ports:
       - 8546:8546
     volumes:
-      - $HOME/.oci:/root/.oci:ro
+      - ~/.oci:/root/.oci:ro
   app:
     build:
       context: .
