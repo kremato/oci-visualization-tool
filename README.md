@@ -18,6 +18,16 @@ docker-compose up -d
 
 The command starts both the backend and the frontend. The app should be available on the **`localhost:5173`**
 
+## Troubleshooting
+
+There may be some problems with the [tilde expansion](https://github.com/docker/compose/issues/6506) in the docker-compose.yml causing the api container to stop shortly after startup. These are the possible remedies:
+
+- either make sure your user is in the [docker sudoers](https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user)
+
+- or, which is probably easier, replace ~ in the ~/.oci:/root/.oci:ro in the `docker-compose.yaml` with an absolute path, e.g., /home/myuser/.oci:/root/.oci:ro
+
+After that run `docker compose down` in the project root directory and `docker compose up -d` once again.
+
 ## Usage
 
 ### Limits Fetch
