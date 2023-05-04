@@ -4,29 +4,25 @@ import {
   identity,
   limits,
 } from "common";
-import { getLimitsClient } from "./clients/getLimitsClient";
 import { calculateResourceSum } from "../utils/calculateResourceSum";
 import { createUniqueLimitObject } from "../utils/createUniqueLimitObject";
-import { Cache } from "./cache";
+import type { ProfileCache } from "./cache/profileCache";
 import { getResourceObject } from "./getResourceObject";
 
 export const loadUniqueLimit = async (
+  profileCache: ProfileCache,
   compartment: identity.models.Compartment,
   regionId: string,
   limitDefinitionSummary: MyLimitDefinitionSummary
 ): Promise<UniqueLimit> => {
-  const limitsClient = getLimitsClient();
-  limitsClient.regionId = regionId;
   const newUniqueLimit: UniqueLimit = createUniqueLimitObject(
     compartment,
     limitDefinitionSummary,
     regionId
   );
 
-  const cache = Cache.getInstance();
-
   // if limit is already present, skip fetching and just add the limit to the response
-  const cachedUniqueLimit = cache.hasUniqueLimit(newUniqueLimit);
+  const cachedUniqueLimit = profileCache.hasUniqueLimit(newUniqueLimit);
   if (cachedUniqueLimit) {
     return cachedUniqueLimit;
   }
@@ -36,9 +32,10 @@ export const loadUniqueLimit = async (
     limitDefinitionSummary.scopeType ===
     limits.models.LimitDefinitionSummary.ScopeType.Ad
   ) {
-    const availabilityDomains = cache.getAvailabilityDomains(regionId);
+    const availabilityDomains = profileCache.getAvailabilityDomains(regionId);
     for (const availabilityDomain of availabilityDomains) {
       const resourceObject = await getResourceObject(
+        profileCache.profile,
         compartment.id,
         limitDefinitionSummary,
         regionId,
@@ -56,6 +53,7 @@ export const loadUniqueLimit = async (
     limits.models.LimitDefinitionSummary.ScopeType.Region
   ) {
     const resourceObject = await getResourceObject(
+      profileCache.profile,
       compartment.id,
       limitDefinitionSummary,
       regionId

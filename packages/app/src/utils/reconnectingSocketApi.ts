@@ -1,4 +1,4 @@
-import { inputActions } from "../store/inputSlice";
+import { statusActions } from "../store/statusSlice";
 import store from "../store/store";
 
 const socketStatusListeners = new Set<() => void>();
@@ -17,8 +17,6 @@ export const deleteSocketMessageListener = socketMessageListeners.delete.bind(
   socketMessageListeners
 );
 
-const socketReconnectDelayInMiliseconds = 5000;
-
 const updateMessageListeners = () => {
   socketMessageListeners.forEach((listener) => listener());
 };
@@ -32,12 +30,10 @@ export interface SocketMessageData {
   countLimitDefinitionSummaries: number;
 }
 
-// TODO:
-//const port = process.env.prodution ? import.meta.env.VITE_API : process.
-
 const socketApi = (): {
   isOpen: () => boolean | undefined;
   getMessage: () => SocketMessageData | undefined;
+  setProgressMessage: (message: SocketMessageData) => void;
   restart: () => void;
 } => {
   console.log(`socketApi invoked`);
@@ -48,15 +44,21 @@ const socketApi = (): {
   const startSocket = () => {
     const token = store.getState().token.token;
     if (token === undefined) {
-      console.log(`token is undefined, returning`);
+      console.log(`Token is ${token}, WebSocket connection creation refused.`);
       return;
     }
     const searchParams = new URLSearchParams({
       token: token,
     });
     console.log(store.getState().token.token);
-    console.log(`URL : ${"ws://localhost:8546?" + searchParams}`);
-    socket = new WebSocket("ws://localhost:8546?" + searchParams);
+    console.log(
+      `URL : ${
+        `ws://localhost:${import.meta.env.VITE_API_PORT}?` + searchParams
+      }`
+    );
+    socket = new WebSocket(
+      `ws://localhost:${import.meta.env.VITE_API_PORT}?` + searchParams
+    );
     socket.onopen = (_event) => {
       console.log(`socket is open, token: ${token}`);
       isOpen = true;
@@ -72,10 +74,15 @@ const socketApi = (): {
 
     socket.onclose = (event) => {
       console.log(`socket is closing, code: ${event.code}; token: ${token}`);
-      store.dispatch(inputActions.updateProgressStatus(undefined));
+      store.dispatch(statusActions.updateProgressStatus("hideProgressBar"));
       isOpen = false;
       updateStatusListeners();
     };
+  };
+
+  const setProgressMessage = (message: SocketMessageData) => {
+    progressMessage = message;
+    updateMessageListeners();
   };
 
   startSocket();
@@ -83,6 +90,7 @@ const socketApi = (): {
   return {
     isOpen: () => isOpen,
     getMessage: () => progressMessage,
+    setProgressMessage,
     restart: () => {
       socket?.close();
       startSocket();

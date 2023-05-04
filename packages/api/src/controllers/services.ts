@@ -1,7 +1,14 @@
-import type { Request, Response } from "express";
-import { Cache } from "../services/cache";
+import type { Response } from "express";
 import { successResponse } from "../utils/expressResponses";
+import type { TypedRequest } from "../types/types";
+import { Cache } from "../services/cache/cache";
 
-export const list = (_req: Request, res: Response) => {
-  return successResponse(res, Cache.getInstance().getServices());
+export const list = (
+  req: TypedRequest<any, any, { profile: string }>,
+  res: Response
+) => {
+  return successResponse(
+    res,
+    Cache.getInstance().getProfileCache(req.query.profile)!.getServices()
+  );
 };

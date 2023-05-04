@@ -1,15 +1,18 @@
 import { getLimitsClient } from "./clients/getLimitsClient";
 import type { limits } from "common";
-import { Provider } from "./provider";
+import { getProvider } from "./clients/getProvider";
+import { Cache } from "./cache/cache";
 
 // List of available servies for the root compartment/tenancy.
-export const listServices = async (): Promise<
-  limits.models.ServiceSummary[]
-> => {
-  const limitsClient = getLimitsClient();
+export const listServices = async (
+  profile: string
+): Promise<limits.models.ServiceSummary[]> => {
+  const limitsClient = getLimitsClient(profile);
   const listServicesRequest: limits.requests.ListServicesRequest = {
     // must be tenancy
-    compartmentId: Provider.getInstance().provider.getTenantId(),
+    compartmentId: (
+      Cache.getProvider(profile) || getProvider(profile)
+    ).getTenantId(),
   };
 
   const serviceSummaries = (

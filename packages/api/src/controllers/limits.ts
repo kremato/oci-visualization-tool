@@ -1,7 +1,6 @@
 import type { MyLimitDefinitionSummary, identity, UniqueLimit } from "common";
-import type { Request, Response } from "express";
-import { Cache } from "../services/cache";
-import type { InputData, TypedRequest } from "../types/types";
+import type { Response } from "express";
+import type { TypedRequest } from "../types/types";
 import { loadUniqueLimit } from "../services/loadUniqueLimit";
 import { outputToFile } from "../utils/outputToFile";
 import path from "path";
@@ -12,11 +11,19 @@ import {
 } from "../utils/expressResponses";
 import { registeredClients } from "./configuration";
 import EventEmitter from "events";
+import { Cache } from "../services/cache/cache";
+import type { ProfileCache } from "../services/cache/profileCache";
+import type { StoreLimitsBody } from "../types/types";
 
-export const list = (_req: Request, res: Response) => {
+export const list = (
+  req: TypedRequest<any, any, { profile: string }>,
+  res: Response
+) => {
   return successResponse(
     res,
-    Cache.getInstance().getLimitDefinitionsGroupedByLimitName
+    Cache.getInstance()
+      .getProfileCache(req.query.profile)
+      ?.getLimitDefinitionsGroupedByLimitName() || []
   );
 };
 
@@ -24,33 +31,34 @@ export const closingSessionEmmiter = new EventEmitter();
 
 // make sure proper middleware is run before the use of a TypedRequest
 export const store = async (
-  req: TypedRequest<InputData, { id: string }>,
+  req: TypedRequest<StoreLimitsBody, { id: string }, { profile: string }>,
   res: Response
 ) => {
   const token = req.params.id;
-  const data = req.body;
-  const cache = Cache.getInstance();
+  const body = req.body;
+  const cache = Cache.getInstance().getProfileCache(req.query.profile)!;
   let newRequest = false;
 
   closingSessionEmmiter.once(token, () => {
     newRequest = true;
   });
 
-  if (data.invalidateCache) {
-    Cache.getInstance().clear();
+  if (body.invalidateCache) {
+    cache.clear();
   }
 
   const filteredCompartments = cache.getCompartments().filter((compartment) => {
-    return data.compartments.includes(compartment.id);
+    return body.compartments.includes(compartment.id);
   });
   const filteredRegions = cache.getSubscribedRegions().filter((region) => {
-    return data.regions.includes(region.regionName);
+    return body.regions.includes(region.regionName);
   });
   const filteredServices = cache.getServices().filter((service) => {
-    return data.services.includes(service.name);
+    return body.services.includes(service.name);
   });
 
   const loadLimitArguments: [
+    ProfileCache,
     identity.models.Compartment,
     string,
     MyLimitDefinitionSummary
@@ -72,11 +80,11 @@ export const store = async (
           failedServices.push(service.name);
           continue;
         }
-
         // if specified, load only values about requested limits, not for the whole service
-        if (data.limits.length > 0) {
+        const limits = body.limits;
+        if (limits !== undefined) {
           limitDefinitionSummaries = limitDefinitionSummaries.filter((limit) =>
-            data.limits.some(
+            limits.some(
               (item) =>
                 item.limitName === limit.name &&
                 item.serviceName === limit.serviceName
@@ -86,6 +94,7 @@ export const store = async (
 
         for (const LimitDefinitionSummary of limitDefinitionSummaries) {
           loadLimitArguments.push([
+            Cache.getInstance().getProfileCache(req.query.profile)!,
             compartment,
             region.regionName,
             LimitDefinitionSummary,

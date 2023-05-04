@@ -1,24 +1,33 @@
 import { UniqueLimit } from "common";
 import { parseResponseBody } from "../utils/parseResponseBody";
-import { inputActions } from "../store/inputSlice";
 import { nodeActions } from "../store/nodeSlice";
 import store from "../store/store";
 import { LimitsFormValues } from "../types/types";
 import { createUniqueLimitTreeNode } from "./createUniqueLimitTreeNode";
 import { loadUniqueLimitTree } from "./loadUnqueLimitTree";
 import { sortLimits } from "./sortLimits";
+import { statusActions } from "../store/statusSlice";
+import { reconnectingSocketApi } from "./reconnectingSocketApi";
 
 export const fetchLimitsData = async (requestBody: LimitsFormValues) => {
-  console.log("fetchLimitsData; REQUEST BODY:");
-  /* console.log(requestBody); */
-  const progressStatus = store.getState().input.progressStatus;
+  console.log("BODY");
+  console.log(requestBody);
+  const profile = store.getState().profile.profile;
+  const searchParams = new URLSearchParams({
+    profile: profile || "",
+  });
 
-  if (progressStatus === "progressBar")
-    store.dispatch(inputActions.updateProgressStatus(undefined));
-  else store.dispatch(inputActions.updateProgressStatus("progressBar"));
+  store.dispatch(statusActions.updateProgressStatus("showProgressBar"));
+  reconnectingSocketApi.setProgressMessage({
+    failedServices: [],
+    countLoadedLimits: 0,
+    countLimitDefinitionSummaries: 0,
+  });
 
   const request = new Request(
-    `${import.meta.env.VITE_API}/limits/${store.getState().token.token || ""}`,
+    `${import.meta.env.VITE_API}/limits/${
+      store.getState().token.token || ""
+    }?` + searchParams,
     {
       method: "POST",
       body: JSON.stringify(requestBody),
@@ -34,7 +43,7 @@ export const fetchLimitsData = async (requestBody: LimitsFormValues) => {
     response = await fetch(request);
   } catch (error) {
     console.log("Failed to fetch");
-    store.dispatch(inputActions.updateProgressStatus("failure"));
+    store.dispatch(statusActions.updateProgressStatus("failure"));
     return;
   }
 
@@ -43,18 +52,16 @@ export const fetchLimitsData = async (requestBody: LimitsFormValues) => {
     data: UniqueLimit[];
   };
 
+  // new reqest was made
   if (response.status === 409) {
-    store.dispatch(inputActions.updateProgressStatus("progressBar"));
     return;
   }
 
   if (!response.ok) {
     console.log(`Return code ${response.status}: ${body.message}`);
-    store.dispatch(inputActions.updateProgressStatus("failure"));
+    store.dispatch(statusActions.updateProgressStatus("failure"));
     return;
   }
-
-  /* const [rootCompartments, rootServices] = body.data; */
 
   const rootCompartmentTree = createUniqueLimitTreeNode("rootCompartments");
   const rootServiceTree = createUniqueLimitTreeNode("rootServices");
@@ -65,7 +72,7 @@ export const fetchLimitsData = async (requestBody: LimitsFormValues) => {
   sortLimits(rootCompartmentTree);
   sortLimits(rootServiceTree);
 
-  store.dispatch(inputActions.updateProgressStatus("success"));
+  store.dispatch(statusActions.updateProgressStatus("success"));
   store.dispatch(
     nodeActions.replaceCompartmentNodes(rootCompartmentTree.children)
   );

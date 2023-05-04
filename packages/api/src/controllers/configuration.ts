@@ -1,15 +1,10 @@
-import { Cache } from "../services/cache";
-import {
-  apiIsNotReadyResponse,
-  successResponse,
-} from "../utils/expressResponses";
+import { successResponse } from "../utils/expressResponses";
 import type { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import type WebSocket from "ws";
 import { common } from "common";
+import { Cache } from "../services/cache/cache";
 
-let apiIsReady = false;
-/*  */
 export const registeredClients = new Map<
   string,
   WebSocket.WebSocket | undefined
@@ -23,20 +18,15 @@ export const start = async (): Promise<void> => {
       !(error.statusCode >= 500) &&
       common.OciSdkDefaultRetryConfiguration.retryCondition(error),
   };
-  /* Wait for cache to fetch startup data */
-  await Cache.getInstance().Ready;
-  apiIsReady = true;
+  /* Instantiate the cache so the constructor is fired and startup data is loaded */
+  Cache.getInstance();
   console.log("[api]: api is ready");
 };
 
-export const ping = (_req: Request, res: Response) => {
-  if (!apiIsReady) {
-    return apiIsNotReadyResponse(res);
-  }
-  return successResponse(res, {});
-};
-
-export const signup = (_req: Request, res: Response) => {
+/* Returns a registration token, this token is used in limits route
+and during the websocket connection as a query parameter (first you have to
+be registered in order to listen with the socket) */
+export const registration = (_req: Request, res: Response) => {
   let uuid;
   do {
     uuid = uuidv4();

@@ -23,7 +23,8 @@ COPY packages/common/package.json ./packages/common/
 
 ENV NODE_ENV=production
 
-RUN npm ci --production
+#RUN npm ci --production
+RUN npm ci --omit=dev
 
 COPY --from=builder /oci-visualization-tool/packages/api/dist ./packages/api/dist
 COPY --from=builder /oci-visualization-tool/packages/common/dist ./packages/common/dist

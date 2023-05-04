@@ -1,7 +1,16 @@
-import type { Request, Response } from "express";
-import { Cache } from "../services/cache";
+import type { Response } from "express";
 import { successResponse } from "../utils/expressResponses";
+import { Cache } from "../services/cache/cache";
+import type { TypedRequest } from "../types/types";
 
-export const listRegionSubscriptions = (_req: Request, res: Response) => {
-  return successResponse(res, Cache.getInstance().getSubscribedRegions());
+export const listRegionSubscriptions = (
+  req: TypedRequest<any, any, { profile: string }>,
+  res: Response
+) => {
+  return successResponse(
+    res,
+    Cache.getInstance()
+      .getProfileCache(req.query.profile)!
+      .getSubscribedRegions()
+  );
 };

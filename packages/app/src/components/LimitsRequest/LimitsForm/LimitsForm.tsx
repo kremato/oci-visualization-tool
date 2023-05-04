@@ -4,44 +4,39 @@ import { LimitsDropdown } from "./Dropdowns/LimitsDropdown";
 import { RegionsDropdown } from "./Dropdowns/RegionsDropdown";
 import { ServicesDropdown } from "./Dropdowns/ServicesDropdown";
 import { SendButton } from "./SendButton";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Controller } from "react-hook-form";
-import { fetchLimitsData } from "../../utils/fetchLimitsData";
-import { LimitsFormEntries, LimitsFormValues } from "../../types/types";
-import store from "../../store/store";
-import { useAppDispatch } from "../../hooks/useAppDispatch";
-import { fetchToken } from "../../store/tokenActionCreators";
+import { fetchLimitsData } from "../../../utils/fetchLimitsData";
+import { LimitsFormEntries, LimitsFormValues } from "../../../types/types";
+import store from "../../../store/store";
+import { useAppDispatch } from "../../../hooks/useAppDispatch";
+import { fetchToken } from "../../../store/tokenActionCreators";
+import { useAppSelector } from "../../../hooks/useAppSelector";
 
 export const LimitsForm = () => {
-  const { handleSubmit, control } = useForm<LimitsFormValues>();
+  const { handleSubmit, control, reset } = useForm<LimitsFormValues>();
   const dispatch = useAppDispatch();
-  const [formData, setFormData] = useState<LimitsFormValues | undefined>(
-    undefined
-  );
+  const currentProfile = useAppSelector((state) => state.profile.profile);
 
   useEffect(() => {
-    if (formData === undefined) return;
+    // it is neccessary to name all the fields that are to be reset otherwise reset() wont reset them
+    reset({ compartments: [], regions: [], services: [], limits: undefined });
+  }, [currentProfile]);
 
-    const fetchFormData = async () => {
-      if (store.getState().token.token === undefined) {
-        await dispatch(fetchToken());
-        // TODO: what if it goes wrong
-      }
-      fetchLimitsData(formData);
-    };
-
-    fetchFormData();
-  }, [formData]);
+  const submitForm = async (data: LimitsFormValues) => {
+    if (data === undefined) return;
+    if (store.getState().token.token === undefined) {
+      await dispatch(fetchToken());
+    }
+    if (data.limits?.length === 0) data.limits = undefined;
+    fetchLimitsData(data);
+  };
 
   return (
     <Box
       component={"form"}
-      onSubmit={handleSubmit((data) => {
-        /* console.log("SETTIN DATA");
-        console.log(data); */
-        setFormData(data);
-      })}
+      onSubmit={handleSubmit(submitForm)}
       noValidate
       width={"100%"}
     >
@@ -68,7 +63,7 @@ export const LimitsForm = () => {
               )}
             />
           }
-          label={"Invalidate cache"}
+          label={"Invalidate profile cache"}
         />
         <SendButton text={"Send"} />
       </Stack>

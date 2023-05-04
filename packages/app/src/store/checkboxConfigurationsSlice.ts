@@ -1,34 +1,19 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ApiStatus } from "../types/types";
 
-type ProgressStatus = "progressBar" | "success" | "failure" | undefined;
-
-const inputSlice = createSlice({
-  name: "input",
+const checkboxConfigurationsSlice = createSlice({
+  name: "checkboxConfigurations",
   initialState: {
-    showProgressBar: false,
-    progressStatus: undefined as ProgressStatus,
-    apiStatus: "loading" as ApiStatus,
     sumADResources: false,
     expandAll: false,
-    hideNoAvailability: true,
-    hideNoUsed: true,
-    hideNoQuota: true,
-    hideNoServiceLimits: true,
+    hideNoAvailability: false,
+    hideNoUsed: false,
+    hideNoQuota: false,
+    hideNoServiceLimit: true,
     showByCompartment: true,
     showByService: false,
     showDeprecated: false,
   },
   reducers: {
-    updateShowProgressBar(state, action: PayloadAction<boolean>) {
-      state.showProgressBar = action.payload;
-    },
-    updateProgressStatus(state, action: PayloadAction<ProgressStatus>) {
-      state.progressStatus = action.payload;
-    },
-    updateApiStatus(state, action: PayloadAction<ApiStatus>) {
-      state.apiStatus = action.payload;
-    },
     updateSumADResources(state, action: PayloadAction<boolean>) {
       state.sumADResources = action.payload;
     },
@@ -44,8 +29,8 @@ const inputSlice = createSlice({
     updateHideNoQuota(state, action: PayloadAction<boolean>) {
       state.hideNoQuota = action.payload;
     },
-    updateHideNoServiceLimits(state, action: PayloadAction<boolean>) {
-      state.hideNoServiceLimits = action.payload;
+    updateHideNoServiceLimit(state, action: PayloadAction<boolean>) {
+      state.hideNoServiceLimit = action.payload;
     },
     updateShowByCompartment(state, action: PayloadAction<boolean>) {
       state.showByCompartment = action.payload;
@@ -59,5 +44,6 @@ const inputSlice = createSlice({
   },
 });
 
-export const inputActions = inputSlice.actions;
-export default inputSlice;
+export const checkboxConfigurationsActions =
+  checkboxConfigurationsSlice.actions;
+export default checkboxConfigurationsSlice;

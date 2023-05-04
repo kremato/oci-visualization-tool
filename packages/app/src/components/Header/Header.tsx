@@ -1,7 +1,7 @@
 import { AppBar, Box, Toolbar, Typography, Button, Stack } from "@mui/material";
 import { SocketStatus } from "./SocketStatus";
 import { ApiStatus } from "./ApiStatus";
-import { useState } from "react";
+import { ProfileMenu } from "./ProfileMenu";
 
 export const Header = () => {
   return (
@@ -24,6 +24,7 @@ export const Header = () => {
           >
             Help
           </Button>
+          <ProfileMenu />
         </Toolbar>
       </AppBar>
     </Box>

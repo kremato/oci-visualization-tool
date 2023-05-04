@@ -1,9 +1,11 @@
 import { limits } from "common";
-import { Provider } from "../provider";
+import { getProvider } from "./getProvider";
+import { Cache } from "../cache/cache";
 
-export const getLimitsClient = (): limits.LimitsClient => {
+export const getLimitsClient = (profile: string): limits.LimitsClient => {
   const limitsClient = new limits.LimitsClient({
-    authenticationDetailsProvider: Provider.getInstance().provider,
+    authenticationDetailsProvider:
+      Cache.getProvider(profile) || getProvider(profile),
   });
   return limitsClient;
 };

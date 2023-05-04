@@ -16,12 +16,14 @@ const getResourceAvailibilityForUndefinedAndMaxValue = (
   property !== undefined && property <= maxValue ? property.toString() : "n/a";
 
 export const getResourceObject = async (
+  profile: string,
   compartmentId: string,
   limitDefinitionSummary: MyLimitDefinitionSummary,
   regionId: string,
   availabilityDomain?: identity.models.AvailabilityDomain | MyAvailabilityDomain
 ): Promise<ResourceObject | undefined> => {
   const resourceAvailability = await getResourceAvailability(
+    profile,
     compartmentId,
     limitDefinitionSummary,
     regionId,
@@ -45,6 +47,7 @@ export const getResourceObject = async (
       ? limits.requests.ListLimitValuesRequest.ScopeType.Ad
       : limits.requests.ListLimitValuesRequest.ScopeType.Region;
   let serviceLimits = await listServiceLimits(
+    profile,
     limitDefinitionSummary.serviceName,
     limitDefinitionSummary.name,
     regionId,

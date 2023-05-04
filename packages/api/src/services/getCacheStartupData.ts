@@ -10,15 +10,15 @@ import { listLimitDefinitionSummaries } from "./listLimitDefinitionSummaries";
 import { listRegionSubscriptions } from "./listRegionSubscriptions";
 import { listServices } from "./listServices";
 
-export const getStartupData = async () => {
-  const compartments = await listCompartments();
-  const regionSubscriptions = await listRegionSubscriptions();
-  const limiDefinitionSummaries = await listLimitDefinitionSummaries();
+export const getCacheStartupData = async (profile: string) => {
+  const compartments = await listCompartments(profile);
+  const regionSubscriptions = await listRegionSubscriptions(profile);
+  const limiDefinitionSummaries = await listLimitDefinitionSummaries(profile);
   const globallyScopedServices = findGloballyScopedServices(
     limiDefinitionSummaries
   );
-  const serviceSubscriptions = (
-    await filterServiceSummaries(await listServices())
+  const services = (
+    await filterServiceSummaries(await listServices(profile))
   ).filter((service) => !globallyScopedServices.includes(service.name));
 
   const limitDefinitionsPerLimitName = getLimitDefinitionsPerProperty(
@@ -35,7 +35,7 @@ export const getStartupData = async () => {
     availabilityDomainsPerRegion.set(
       region.regionName,
       await filterAvailabilityDomains(
-        await getAvailabilityDomainsPerRegion(region)
+        await getAvailabilityDomainsPerRegion(profile, region)
       )
     );
   });
@@ -43,7 +43,7 @@ export const getStartupData = async () => {
   return {
     compartments,
     regionSubscriptions,
-    serviceSubscriptions,
+    services,
     limitDefinitionsPerLimitName,
     limitDefinitionsPerService,
     availabilityDomainsPerRegion,

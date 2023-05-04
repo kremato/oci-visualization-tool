@@ -1,8 +1,8 @@
 import "./App.css";
 import { Grid } from "@mui/material";
 import { AccordionsSubgrid } from "./components/Accordions/AccordionsSubgrid";
-import { DispatchLimitsRequestSubgrid } from "./layouts/DispatchLimitsRequestSubgrid";
-import { TableOptionsSubgrid } from "./layouts/TableOptionsSubgrid";
+import { LimitsRequestSubgrid } from "./components/LimitsRequest/LimitsRequestSubgrid";
+import { TableOptionsSubgrid } from "./components/CheckboxConfigurationsSubgrid/TableOptionsSubgrid";
 import { Header } from "./components/Header/Header";
 
 export const App = () => {
@@ -10,7 +10,7 @@ export const App = () => {
     <div className="App">
       <Header />
       <Grid container p={"1rem"}>
-        <DispatchLimitsRequestSubgrid />
+        <LimitsRequestSubgrid />
         <Grid item xs={12}>
           <hr />
         </Grid>

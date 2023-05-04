@@ -1,13 +1,17 @@
 import { configureStore } from "@reduxjs/toolkit";
-import inputSlice from "./inputSlice";
+import checkboxConfigurationsSlice from "./checkboxConfigurationsSlice";
 import nodeSlice from "./nodeSlice";
 import tokenSlice from "./tokenSlice";
+import profileSlice from "./profileSlice";
+import statusSlice from "./statusSlice";
 
 const store = configureStore({
   reducer: {
     nodes: nodeSlice.reducer,
-    input: inputSlice.reducer,
+    input: checkboxConfigurationsSlice.reducer,
     token: tokenSlice.reducer,
+    status: statusSlice.reducer,
+    profile: profileSlice.reducer,
   },
 });
 

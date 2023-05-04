@@ -1,8 +1,8 @@
-import { useDropdownItemsData } from "../../../hooks/useDropdownItemsData";
-import { Dropdown } from "../../../layouts/Dropdown";
+import { useDropdownItemsData } from "../../../../hooks/useDropdownItemsData";
+import { Dropdown } from "./Dropdown";
 import type { identity } from "common";
 import { Control } from "react-hook-form";
-import { LimitsFormEntries, LimitsFormValues } from "../../../types/types";
+import { LimitsFormEntries, LimitsFormValues } from "../../../../types/types";
 
 interface Props {
   control: Control<LimitsFormValues, any>;

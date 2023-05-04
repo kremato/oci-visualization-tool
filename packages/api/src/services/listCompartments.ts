@@ -1,17 +1,18 @@
 import { getCompartment } from "./getCompartment";
 import type { identity } from "common";
 import { getIdentityClient } from "./clients/getIdentityClient";
-import { Provider } from "./provider";
 import { log } from "../utils/log";
 import path from "path";
+import { getProvider } from "./clients/getProvider";
+import { Cache } from "./cache/cache";
 
-export const listCompartments = async (): Promise<
-  identity.models.Compartment[]
-> => {
-  const identityClient = getIdentityClient();
-
+export const listCompartments = async (
+  profile: string
+): Promise<identity.models.Compartment[]> => {
+  const identityClient = getIdentityClient(profile);
+  const provider = Cache.getProvider(profile) || getProvider(profile);
   const listCompartmentsRequest: identity.requests.ListCompartmentsRequest = {
-    compartmentId: Provider.getInstance().provider.getTenantId(),
+    compartmentId: provider.getTenantId(),
     compartmentIdInSubtree: true,
   };
 
@@ -29,7 +30,7 @@ export const listCompartments = async (): Promise<
   }
 
   const tenancyCompartment = await getCompartment(
-    Provider.getInstance().provider.getTenantId(),
+    provider.getTenantId(),
     identityClient
   );
 

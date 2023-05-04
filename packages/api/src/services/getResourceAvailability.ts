@@ -7,6 +7,7 @@ import { log } from "../utils/log";
 const filePath = path.basename(__filename);
 
 export const getResourceAvailability = async (
+  profile: string,
   compartmentId: string,
   limitDefinitionSummary: limits.models.LimitDefinitionSummary,
   regionId: string,
@@ -38,7 +39,7 @@ export const getResourceAvailability = async (
     };
   let resourceAvailability: limits.models.ResourceAvailability | undefined =
     undefined;
-  const limitsClient = getLimitsClient();
+  const limitsClient = getLimitsClient(profile);
   limitsClient.regionId = regionId;
   try {
     const getResourceAvailabilityResponse =

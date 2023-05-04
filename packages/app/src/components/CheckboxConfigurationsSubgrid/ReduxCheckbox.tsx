@@ -1,8 +1,8 @@
 import { Checkbox, FormControlLabel } from "@mui/material";
-import { useAppDispatch } from "../hooks/useAppDispatch";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { ActionCreatorWithPayload } from "@reduxjs/toolkit";
-import { useAppSelector } from "../hooks/useAppSelector";
-import { RootState } from "../store/store";
+import { useAppSelector } from "../../hooks/useAppSelector";
+import { RootState } from "../../store/store";
 
 interface Props {
   label: string;

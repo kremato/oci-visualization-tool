@@ -6,7 +6,7 @@ export interface DropdownItem {
   serviceName?: string;
 }
 
-export type ApiStatus = "up" | "down" | "loading";
+export type ApiStatus = "ready" | "down" | "loading";
 
 export type ApiDropdownDataEndpoints =
   | "compartments"
@@ -26,7 +26,7 @@ export interface LimitsFormValues {
   [LimitsFormEntries.Compartments]: string[];
   [LimitsFormEntries.Regions]: string[];
   [LimitsFormEntries.Services]: string[];
-  [LimitsFormEntries.Limits]: { limitName: string; serviceName: string }[];
+  [LimitsFormEntries.Limits]?: { limitName: string; serviceName: string }[];
   [LimitsFormEntries.InvalidateCache]: boolean;
 }
 
