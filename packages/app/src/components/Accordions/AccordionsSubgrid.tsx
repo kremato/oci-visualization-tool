@@ -29,7 +29,7 @@ export const AccordionsSubgrid = () => {
             <AccordionHeader title={"Limits Per Compartment"}>
               <DownloadButton
                 buttonText="JSON"
-                fileName={"limitsPerCompartment.json"}
+                fileName={"limits.json"}
                 fileType={"text/json"}
                 stateCallback={(state) => state.nodes.compartmentNodes}
               />
@@ -49,7 +49,7 @@ export const AccordionsSubgrid = () => {
             <AccordionHeader title={"Limits Per Service"}>
               <DownloadButton
                 buttonText="JSON"
-                fileName={"limitsPerService.json"}
+                fileName={"limits.json"}
                 fileType={"text/json"}
                 stateCallback={(state) => state.nodes.serviceNodes}
               />

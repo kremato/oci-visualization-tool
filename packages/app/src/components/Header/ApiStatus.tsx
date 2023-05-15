@@ -15,7 +15,6 @@ export const ApiStatus = () => {
   const profile = useAppSelector((state) => state.profile.profile);
   const apiStatus = useAppSelector((state) => state.status.apiStatus);
   const previousApiStatus = usePrevious(apiStatus);
-  console.log(`API STATUS: ${apiStatus}`);
 
   // fetch token the moment the status is not down and previously was
   useEffect(() => {

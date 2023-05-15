@@ -31,7 +31,6 @@ export const LoadingBar = () => {
   const progressStatus = useAppSelector((state) => state.status.progressStatus);
 
   useEffect(() => {
-    console.log(`Setting progress value to 0!`);
     setProgressValue(0);
   }, [progressStatus]);
 

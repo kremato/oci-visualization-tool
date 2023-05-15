@@ -23,11 +23,13 @@ export const fetchToken = () => {
     };
 
     if (!response.ok) {
+      console.log(
+        `Unable to fetch token, http respose code is not ok, code: ${response.status}, message:`
+      );
       console.log(body.message);
       return;
     }
 
-    console.log(`Received token: ${body.data}`);
     dispatch(tokenActions.replaceToken(body.data));
     reconnectingSocketApi.restart();
   };

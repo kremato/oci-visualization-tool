@@ -31,7 +31,7 @@ const wss = new WebSocketServer({
 });
 
 wss.on("connection", (ws, req) => {
-  console.log(`Received a new connection from the client`);
+  console.log(`Received a new WS connection from the client`);
 
   if (!req.url) {
     ws.close(1008);

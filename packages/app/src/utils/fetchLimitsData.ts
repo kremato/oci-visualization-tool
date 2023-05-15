@@ -10,8 +10,6 @@ import { statusActions } from "../store/statusSlice";
 import { reconnectingSocketApi } from "./reconnectingSocketApi";
 
 export const fetchLimitsData = async (requestBody: LimitsFormValues) => {
-  console.log("BODY");
-  console.log(requestBody);
   const profile = store.getState().profile.profile;
   const searchParams = new URLSearchParams({
     profile: profile || "",
@@ -42,7 +40,7 @@ export const fetchLimitsData = async (requestBody: LimitsFormValues) => {
   try {
     response = await fetch(request);
   } catch (error) {
-    console.log("Failed to fetch");
+    console.log("Failed to fetch limits data.");
     store.dispatch(statusActions.updateProgressStatus("failure"));
     return;
   }
@@ -58,7 +56,7 @@ export const fetchLimitsData = async (requestBody: LimitsFormValues) => {
   }
 
   if (!response.ok) {
-    console.log(`Return code ${response.status}: ${body.message}`);
+    console.log(`Return code is not ok: ${response.status}: ${body.message}`);
     store.dispatch(statusActions.updateProgressStatus("failure"));
     return;
   }

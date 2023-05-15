@@ -110,7 +110,7 @@ export const store = async (
   while (loadLimitArguments.length > 0 && !newRequest) {
     console.log("loading limits");
     const promises = loadLimitArguments
-      .splice(0, 30)
+      .splice(0, 20)
       .map((item) => loadUniqueLimit(...item));
     const startTime = performance.now();
     const uniqueLimits = await Promise.all(promises);

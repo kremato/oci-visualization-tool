@@ -12,8 +12,7 @@ export const fetchProfileStatus = async (): Promise<ApiStatus> => {
     const response = await fetch(request);
     if (response.status === 503) return "loading";
     if (!response.ok) {
-      console.log("RESPONSE");
-      console.log(response);
+      console.log(`Return code is not ok, code: ${response.status}. Message:`);
       console.log((await response.json())?.message);
       return "down";
     }
